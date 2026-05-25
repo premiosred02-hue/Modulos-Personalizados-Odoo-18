@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     CartelEditorView.xml
+     Template OWL principal — equivalente a App.jsx de React
+     ══════════════════════════════════════════════════════════════════════ -->
+<t t-name="cc_cartel.CartelEditorView" owl="1">
+    <div class="cc-main-wrapper">
+
+        <!-- ── HEADER TOOLBAR (equivalente a <header class="global-header">) ── -->
+        <header class="cc-global-header no-print">
+            <div class="cc-header-left">
+                <div class="cc-brand">
+                    <span class="cc-brand-icon">🎨</span>
+                    <span class="cc-brand-name">Constructor de Carteles</span>
+                </div>
+            </div>
+
+            <div class="cc-header-center">
+                <div class="cc-toolbar-group">
+                    <!-- Import -->
+                    <button class="cc-btn-tool" t-on-click="onImportClick" title="Importar Imagen de Diseño">
+                        <span class="cc-tool-icon">⬆️</span> Importar
+                        <input id="cc-design-import" type="file" class="cc-hidden-input"
+                               accept="image/*" t-on-change="onImportDesign"/>
+                    </button>
+                    <div class="cc-toolbar-divider"/>
+
+                    <!-- Zoom Controls -->
+                    <div class="cc-zoom-control">
+                        <button class="cc-btn-icon" t-on-click="onZoomOut" title="Zoom Out">−</button>
+                        <span class="cc-zoom-label" t-on-click="onZoomLabelClick"
+                              title="Click para ajustar al viewport">
+                            <t t-esc="zoomPercent"/>%
+                        </span>
+                        <button class="cc-btn-icon" t-on-click="onZoomIn" title="Zoom In">+</button>
+                        <input type="range" class="cc-zoom-slider"
+                               min="0.1" max="3" step="0.05"
+                               t-att-value="editor.zoom"
+                               t-on-input="onZoomSlider"/>
+                    </div>
+                    <div class="cc-toolbar-divider"/>
+
+                    <!-- Security Border Toggle -->
+                    <button t-att-class="'cc-btn-tool ' + (securityActive ? 'cc-active-feature' : '')"
+                            t-on-click="toggleSecurity" title="Borde de Seguridad Anticopia">
+                        🛡️ Seguridad
+                    </button>
+                    <div class="cc-toolbar-divider"/>
+
+                    <!-- Actions -->
+                    <button class="cc-btn-tool" t-on-click="onSave">💾 Guardar</button>
+                    <button class="cc-btn-tool cc-btn-primary" t-on-click="exportToPDF">
+                        📄 Exportar PDF
+                    </button>
+                    <button class="cc-btn-tool" t-on-click="onPrint">🖨️ Imprimir</button>
+                </div>
+            </div>
+
+            <div class="cc-header-right">
+                <div class="cc-format-badge">
+                    <t t-esc="formatName"/>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── APP BODY ── -->
+        <div class="cc-app-container">
+
+            <!-- Sidebar Editor -->
+            <div t-att-class="'cc-editor-sidebar no-print ' + (editor.isSidebarVisible ? '' : 'collapsed')">
+                <CartelSidebar
+                    t-if="editor.isSidebarVisible"
+                    design="design"
+                    onUpdateContent.bind="updateContent"
+                    onUpdateUI.bind="updateUI"
+                    onUpdatePack.bind="updatePack"
+                    onUpdatePackItem.bind="updatePackItem"
+                    onChangeFormat.bind="changeFormat"
+                    onExport.bind="exportToPDF"
+                />
+            </div>
+
+            <!-- Sidebar Toggle Bar -->
+            <button t-att-class="'cc-sidebar-toggle no-print ' + (editor.isSidebarVisible ? '' : 'collapsed')"
+                    t-on-click="toggleSidebar"
+                    t-att-title="editor.isSidebarVisible ? 'Ocultar Editor' : 'Mostrar Editor'">
+                <span t-if="editor.isSidebarVisible">◀</span>
+                <span t-else="">▶</span>
+            </button>
+
+            <!-- Canvas Viewport -->
+            <main class="cc-canvas-viewport"
+                  t-ref="viewport"
+                  t-on-wheel="onWheel"
+                  t-on-mousedown="onMouseDown"
+                  t-on-mousemove="onMouseMove"
+                  t-on-mouseup="onMouseUp"
+                  t-on-mouseleave="onMouseUp"
+                  t-att-style="cursorStyle">
+
+                <div class="cc-canvas-container" t-att-style="containerStyle">
+                    <div id="cc-print-area" t-ref="canvas" class="cc-design-canvas"
+                         t-att-style="canvasStyle">
+
+                        <!-- Borde de seguridad (anticopia) -->
+                        <div t-if="securityActive" class="cc-security-border-layer"/>
+
+                        <!-- Plantillas (equivalente a renderizado condicional de React) -->
+                        <TemplateA4V2 t-if="showA4V2"
+                            content="design.content"
+                            ui="design.ui"
+                            onReorderPacks.bind="reorderPacks"/>
+
+                        <TemplateA4V1 t-if="showA4V1"
+                            content="design.content"
+                            ui="design.ui"
+                            onReorderPacks.bind="reorderPacks"/>
+
+                        <TemplateSquare50 t-if="showSquare50"
+                            content="design.content"
+                            ui="design.ui"
+                            onReorderPacks.bind="reorderPacks"/>
+
+                        <TemplateBanner150_50 t-if="showBanner"
+                            content="design.content"
+                            ui="design.ui"
+                            onReorderPacks.bind="reorderPacks"/>
+
+                        <TemplatePoster70_100 t-if="showPoster"
+                            content="design.content"
+                            ui="design.ui"
+                            onReorderPacks.bind="reorderPacks"/>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Processing Overlay (equivalente al overlay de React) -->
+        <div t-if="editor.isProcessing" class="cc-processing-overlay">
+            <div class="cc-processing-modal">
+                <div class="cc-spinner"/>
+                <h3>🤖 Analizando Diseño...</h3>
+                <p>El sistema está extrayendo la estructura, colores y tipografía de tu imagen.</p>
+                <img t-if="editor.importingImage"
+                     t-att-src="editor.importingImage"
+                     class="cc-preview-import"
+                     alt="Preview"/>
+            </div>
+        </div>
+
+    </div>
+</t>
+
+</templates>

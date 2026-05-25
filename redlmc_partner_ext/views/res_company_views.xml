@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        REDLMC — Extensión formulario de empresa (res.company) v1.2
+        ─────────────────────────────────────────────────────────────
+        ARQUITECTURA:
+          ┌─ Smart Button "🔑 N Licencias" (cabecera del formulario)
+          │    → Abre lista/form filtrada de redlmc.company.license
+          │    → Formulario con company_id pre-rellenado
+          │    → SIN edición inline en la pestaña (evita EvalError de
+          │       Odoo 18 con parent_id al usar editable="bottom")
+          │
+          └─ Pestaña "🔑 Licencias" (readonly summary)
+               → Lista de solo lectura que muestra las licencias
+               → Para dar de alta → Smart Button o menú dedicado
+
+        UX DEPLOY-READY:
+          Sin IDs hardcodeados. Funciona en local, staging y Hetzner.
+          El smart button abre la ventana de altas con company_id
+          pre-rellenado = 0 clics para rellenar la empresa.
+
+        FIX EVALERROR Odoo 18:
+          La lista de la pestaña NO usa editable="bottom".
+          La adición de registros se hace desde el formulario en
+          ventana nueva/dialog, donde el contexto es limpio (solo
+          los campos de redlmc.company.license, sin parent_id).
+
+        Ref: SKILL-GRUPO-EMPRESARIAL.md §5 · 80.05 BRIEF-DEV
+        Contrato: 30.05 (REDLMC SL → REDROYAL SL)
+    -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         1. EXTENSIÓN DEL FORMULARIO DE EMPRESA
+            • Smart button con contador de licencias
+            • Pestaña "🔑 Licencias" con lista readonly
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="view_company_form_redlmc_licenses" model="ir.ui.view">
+        <field name="name">res.company.form.redlmc.licenses</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+
+            <!-- ── SMART BUTTON ──────────────────────────────────────
+                 Se inserta en el div oe_button_box que ya existe en el
+                 formulario de empresa nativo de Odoo 18.
+                 Si no existe ese div, lo crea.
+                 ─────────────────────────────────────────────────────── -->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_open_licenses"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-key"
+                        string="Licencias">
+                    <field name="redlmc_license_count"
+                           widget="statinfo"
+                           string="Licencias"/>
+                </button>
+            </xpath>
+
+            <!-- ── PESTAÑA LICENCIAS ─────────────────────────────────
+                 Añadida al final del notebook del formulario de empresa.
+                 La lista es READ-ONLY para evitar el EvalError de Odoo 18.
+                 Para dar de alta usar el smart button (arriba) que
+                 abre el form con company_id pre-rellenado.
+                 ─────────────────────────────────────────────────────── -->
+            <xpath expr="//notebook" position="inside">
+
+                <page name="redlmc_licencias_empresa"
+                      string="🔑 Licencias">
+
+                    <!-- Banner informativo con instrucciones de uso -->
+                    <div class="alert alert-info mb-3" role="status">
+                        <div class="row">
+                            <div class="col-9">
+                                <strong>🔑 Licencias de software de esta empresa</strong><br/>
+                                Aquí se muestran los contratos SaaS y licencias registradas.
+                                <strong>Para añadir una nueva</strong>, pulsa el botón
+                                <strong>"🔑 Licencias"</strong> de la cabecera (parte superior
+                                del formulario) o ve a
+                                <strong>Ajustes → Usuarios y compañías → Licencias SaaS → Nuevo</strong>.
+                            </div>
+                            <div class="col-3 text-end">
+                                <button name="action_open_licenses"
+                                        type="object"
+                                        string="+ Nueva licencia"
+                                        class="btn btn-sm btn-primary mt-1"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista readonly — SIN editable="bottom"
+                         Esto evita el EvalError de Odoo 18 donde el evaluador JS
+                         busca "parent_id" en el contexto del sub-registro
+                         (redlmc.company.license) al hacer addInlineRecord.
+                         Al pulsar una fila se abre el form en dialog (comportamiento
+                         nativo de Odoo cuando la lista no es editable inline). -->
+                    <field name="redlmc_license_ids"
+                           string="Licencias registradas">
+                        <list decoration-success="license_status == 'active'"
+                              decoration-warning="license_status in ('pending', 'suspended') or is_expiring_soon"
+                              decoration-danger="license_status in ('expired', 'cancelled')"
+                              decoration-muted="license_status == 'draft'">
+
+                            <field name="name"
+                                   string="Nombre de la licencia"/>
+                            <field name="license_type"/>
+                            <field name="provider_id"
+                                   string="Proveedor"/>
+                            <field name="tenant_code"
+                                   string="Tenant"
+                                   optional="show"/>
+                            <field name="contract_ref"
+                                   string="Contrato"
+                                   optional="show"/>
+                            <field name="contract_signed"
+                                   string="✓ Firmado"
+                                   optional="show"/>
+                            <field name="date_start"
+                                   string="Inicio"/>
+                            <field name="date_end"
+                                   string="Fin"
+                                   optional="show"/>
+                            <field name="monthly_fee"
+                                   string="Cuota/mes (€)"
+                                   optional="show"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   column_invisible="1"/>
+                            <field name="invoice_ref"
+                                   string="1ª Factura"
+                                   optional="hide"/>
+                            <field name="license_status"
+                                   widget="badge"
+                                   decoration-success="license_status == 'active'"
+                                   decoration-warning="license_status in ('pending', 'suspended')"
+                                   decoration-danger="license_status in ('expired', 'cancelled')"
+                                   decoration-muted="license_status == 'draft'"/>
+                            <field name="is_expiring_soon"
+                                   string="⚠️ Vence pronto"
+                                   optional="show"/>
+                            <field name="days_to_expiry"
+                                   string="Días"
+                                   optional="hide"/>
+                        </list>
+                    </field>
+
+                    <div class="alert alert-warning mt-2" role="status">
+                        <strong>📋 Recordatorio contable:</strong>
+                        Las cuotas SaaS se facturan con IVA 21% deducible.
+                        Ref. contrato REDLMC→REDROYAL: <strong>30.05</strong> ·
+                        Primera factura: <strong>RL-2026-001</strong>
+                    </div>
+
+                </page>
+
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         2. FORMULARIO INDIVIDUAL DE LICENCIA
+            Ventana de alta/edición. Se abre:
+              A) Desde el smart button → lista → "Nuevo"
+              B) Desde el smart button → lista → click en una fila
+              C) Desde Ajustes → Licencias SaaS → Nuevo
+
+            company_id llega pre-rellenado desde el contexto en caso A.
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="view_redlmc_company_license_form" model="ir.ui.view">
+        <field name="name">redlmc.company.license.form</field>
+        <field name="model">redlmc.company.license</field>
+        <field name="arch" type="xml">
+            <form string="Licencia SaaS">
+                <header>
+                    <field name="license_status"
+                           widget="statusbar"
+                           statusbar_visible="draft,pending,active,suspended,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nombre de la licencia"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="Ej: SaaS PremiosRed — REDLMC SL"/>
+                        </h1>
+                        <div>
+                            <field name="license_type"
+                                   placeholder="Tipo de licencia…"/>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Partes del contrato">
+                            <field name="company_id"
+                                   options="{'no_create': true}"
+                                   help="Empresa que TIENE la licencia (ej: REDROYAL SL)"/>
+                            <field name="provider_id"
+                                   options="{'no_create': true}"
+                                   placeholder="Ej: REDLMC SL"
+                                   help="Empresa que OTORGA la licencia (ej: REDLMC SL)"/>
+                            <field name="provider_company_id"
+                                   options="{'no_create': true}"
+                                   placeholder="Solo si es empresa del grupo en este Odoo"
+                                   help="Si el proveedor también es empresa en este Odoo, vincular aquí"/>
+                        </group>
+                        <group string="Identificación técnica">
+                            <field name="tenant_code"
+                                   placeholder="Ej: REDROYAL"
+                                   help="Discriminador multi-tenant. Ej: REDROYAL"/>
+                            <field name="api_key"
+                                   groups="base.group_system"
+                                   placeholder="Solo visible para administradores"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Referencia contractual">
+                            <field name="contract_ref"
+                                   placeholder="Ej: 30.05"
+                                   help="Número del contrato firmado. Ej: 30.05 (CONTRATO-SAAS-REDLMC-REDROYAL)"/>
+                            <field name="contract_signed"
+                                   widget="boolean_toggle"
+                                   help="Marcar cuando esté físicamente firmado por ambas partes"/>
+                            <field name="invoice_ref"
+                                   placeholder="Ej: RL-2026-001"
+                                   help="Primera factura emitida por la licencia"/>
+                        </group>
+                        <group string="Vigencia">
+                            <field name="date_start"/>
+                            <field name="date_end"
+                                   placeholder="Vacío = indefinida / auto-renovable"/>
+                            <field name="auto_renew"
+                                   widget="boolean_toggle"/>
+                            <field name="days_to_expiry"
+                                   readonly="1"
+                                   invisible="not date_end"
+                                   string="Días hasta vencimiento"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Condiciones económicas">
+                            <field name="monthly_fee"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"
+                                   help="Base imponible sin IVA. Ej: 619,83€ + 21% IVA = 750€/mes"/>
+                            <field name="annual_fee"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"
+                                   readonly="1"
+                                   string="Coste anual equivalente"/>
+                            <field name="currency_id"
+                                   options="{'no_create': true}"/>
+                        </group>
+                        <group string="Alertas">
+                            <div class="alert alert-warning" role="status"
+                                 invisible="not is_expiring_soon">
+                                <strong>⚠️ Licencia vence en menos de 30 días.</strong><br/>
+                                Iniciar proceso de renovación o notificar al proveedor.
+                            </div>
+                            <field name="is_expiring_soon" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Notas y condiciones especiales"
+                              name="redlmc_license_notes_page">
+                            <field name="notes"
+                                   nolabel="1"
+                                   placeholder="Condiciones SLA, historial de renovaciones, cláusulas especiales…"/>
+                        </page>
+                    </notebook>
+
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         3. VISTA LISTA GLOBAL DE LICENCIAS
+            Accesible desde Ajustes → Licencias SaaS
+            y desde el smart button de la empresa.
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="view_redlmc_company_license_list" model="ir.ui.view">
+        <field name="name">redlmc.company.license.list</field>
+        <field name="model">redlmc.company.license</field>
+        <field name="arch" type="xml">
+            <list decoration-success="license_status == 'active'"
+                  decoration-warning="license_status in ('pending', 'suspended') or is_expiring_soon"
+                  decoration-danger="license_status in ('expired', 'cancelled')"
+                  decoration-muted="license_status == 'draft'">
+                <field name="name"/>
+                <field name="company_id" string="Empresa titular"/>
+                <field name="provider_id" string="Proveedor"/>
+                <field name="license_type"/>
+                <field name="tenant_code" optional="show"/>
+                <field name="contract_ref" optional="show"/>
+                <field name="contract_signed" optional="show"/>
+                <field name="date_start"/>
+                <field name="date_end" optional="show"/>
+                <field name="monthly_fee"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="invoice_ref" optional="hide"/>
+                <field name="license_status" widget="badge"/>
+                <field name="is_expiring_soon" optional="show"/>
+                <field name="days_to_expiry" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         4. ACCIÓN GLOBAL + MENÚ
+            Menú: Ajustes → Usuarios y compañías → Licencias SaaS
+            Deploy-ready: usa xmlid estables, no IDs numéricos
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="action_redlmc_company_licenses" model="ir.actions.act_window">
+        <field name="name">Licencias SaaS del Grupo</field>
+        <field name="res_model">redlmc.company.license</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay licencias registradas todavía.
+            </p>
+            <p>
+                Registra aquí las licencias de software de cada empresa del grupo.<br/>
+                <strong>Ejemplo:</strong> REDROYAL SL — SaaS PremiosRed (REDLMC SL)
+                — Contrato 30.05 — Cuota 619,83€/mes + IVA
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú bajo Ajustes → Usuarios y compañías (visible para admins) -->
+    <menuitem
+        id="menu_redlmc_company_licenses"
+        name="Licencias SaaS"
+        parent="base.menu_action_res_company_form"
+        action="action_redlmc_company_licenses"
+        sequence="20"
+        groups="base.group_system"/>
+
+</odoo>

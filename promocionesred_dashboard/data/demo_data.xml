@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    PREMIOSRED — Datos de demostración alineados con el Vault v2.0
+    Fuente de Verdad: 00.02 MOC-MAESTRO · 40.03 CARTEL-A4 · 50.01 ACTORES-Y-COMISIONES
+    
+    REGLA DE ORO: El Cartel-A4 manda sobre cualquier otro documento.
+    - Pack activo 2026: Pack General 6€ (ÚNICO)
+    - Packs futuros: PTECH 7€, PMODA 8€, PPREM 9€ (NO comercializados en 2026)
+    - Split: 45% Pool Actores / 55% Pool REDROYAL
+    - Donación: 2% pagado por REDROYAL (5 causas x 0,40%)
+    - SEPA: mínimo 50€ · Día 6 de cada mes
+    - Botón de Parada de Emergencia: 21/12/2026 23:59:59
+-->
+<odoo>
+<data noupdate="1">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- PACKS — Solo Pack General 6€ ACTIVO en 2026 (Vault 40.03 CARTEL-A4) -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- PACK ACTIVO 2026 — Pack General 6€ -->
+    <record id="demo_pack_ptk" model="pr.pack">
+        <field name="name">Pack General PremiosRed 2026</field>
+        <field name="code">PTK</field>
+        <field name="description">Pack unico activo campaña 2026. Incluye: numero sorteo + bono Booking.com 2 noches + cupon descuento patrocinador. Premio: 20.000€. Sorteo: 22/12/2026 ante Notario.</field>
+        <field name="price">6.00</field>
+        <field name="donation_pct">2.0</field>
+        <field name="pack_status">active</field>
+        <field name="campaign_year">2026</field>
+        <field name="launch_date">2026-01-01</field>
+        <field name="end_date">2026-12-21</field>
+        <field name="sorteo_ref">SORT-PremiosRed-22DIC2026</field>
+    </record>
+
+    <!-- PACK FUTURO — Tecnología 7€ (pendiente patrocinador Apple/Samsung) -->
+    <record id="demo_pack_ptech" model="pr.pack">
+        <field name="name">Pack Tecnologia</field>
+        <field name="code">PTECH</field>
+        <field name="description">Diseñado. NO comercializado en 2026. Pendiente firma contrato patrocinador tecnología.</field>
+        <field name="price">7.00</field>
+        <field name="donation_pct">2.0</field>
+        <field name="pack_status">future</field>
+        <field name="campaign_year">2027</field>
+    </record>
+
+    <!-- PACK FUTURO — Moda 8€ (pendiente patrocinador Zara/Inditex) -->
+    <record id="demo_pack_pmoda" model="pr.pack">
+        <field name="name">Pack Moda</field>
+        <field name="code">PMODA</field>
+        <field name="description">Diseñado. NO comercializado en 2026. Pendiente firma contrato patrocinador moda.</field>
+        <field name="price">8.00</field>
+        <field name="donation_pct">2.0</field>
+        <field name="pack_status">future</field>
+        <field name="campaign_year">2027</field>
+    </record>
+
+    <!-- PACK FUTURO — Premium 9€ (pendiente patrocinador Marriott) -->
+    <record id="demo_pack_pprem" model="pr.pack">
+        <field name="name">Pack Premium</field>
+        <field name="code">PPREM</field>
+        <field name="description">Diseñado. NO comercializado en 2026. Pendiente firma contrato patrocinador hotelero premium.</field>
+        <field name="price">9.00</field>
+        <field name="donation_pct">2.0</field>
+        <field name="pack_status">future</field>
+        <field name="campaign_year">2027</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ACTORES — Red comercial completa (Vault 50.01 ACTORES-Y-COMISIONES) -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- CCP #1 — Juan Rodríguez Pérez (Captador Ciudad Real) -->
+    <record id="demo_ccp_juan" model="pr.actor">
+        <field name="name">Juan Rodriguez Perez</field>
+        <field name="actor_type">CCP</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">juan.rodriguez@premiosred.com</field>
+        <field name="phone">+34 652 000 001</field>
+        <field name="tax_id">70988501J</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099100</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="contract_version">CCP-AgenciaMercantil-v1.0</field>
+        <field name="commission_pct">3.0</field>
+        <field name="municipio">Santa Cruz de Mudela</field>
+        <field name="provincia">Ciudad Real</field>
+        <field name="total_sales">780.00</field>
+        <field name="total_earned">23.40</field>
+        <field name="pending_payout">23.40</field>
+    </record>
+
+    <!-- COM #1 — Sales Force SL (Comercial Madrid) -->
+    <record id="demo_com_sf" model="pr.actor">
+        <field name="name">Sales Force SL</field>
+        <field name="actor_type">COM</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">contacto@salesforce-demo.com</field>
+        <field name="phone">+34 91 000 0001</field>
+        <field name="tax_id">B87654321</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099200</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="contract_version">COM-MarcoB2B-v2.0</field>
+        <field name="commission_pct">2.0</field>
+        <field name="municipio">Madrid</field>
+        <field name="provincia">Madrid</field>
+        <field name="total_sales">1200.00</field>
+        <field name="total_earned">24.00</field>
+        <field name="pending_payout">24.00</field>
+    </record>
+
+    <!-- ASE #1 — Ana Martínez López (Asesora Sevilla) -->
+    <record id="demo_ase_ana" model="pr.actor">
+        <field name="name">Ana Martinez Lopez</field>
+        <field name="actor_type">ASE</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">ana.martinez@premiosred.com</field>
+        <field name="phone">+34 95 000 0001</field>
+        <field name="tax_id">28765432B</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099300</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="contract_version">ASE-AcuerdoMercantil-v1.0</field>
+        <field name="commission_pct">2.0</field>
+        <field name="municipio">Sevilla</field>
+        <field name="provincia">Sevilla</field>
+        <field name="total_sales">540.00</field>
+        <field name="total_earned">10.80</field>
+        <field name="pending_payout">10.80</field>
+    </record>
+
+    <!-- COL #1 — Bar Central Mudela (captado por CCP Juan) -->
+    <record id="demo_col_bar" model="pr.actor">
+        <field name="name">Bar Central Mudela</field>
+        <field name="actor_type">COL</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">barcentral@test.premiosred.com</field>
+        <field name="phone">+34 926 000 001</field>
+        <field name="tax_id">B12345678</field>
+        <field name="sector">hosteleria</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099401</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="contract_version">COL-Mercantil-v2.0</field>
+        <field name="captor_id" ref="demo_ccp_juan"/>
+        <field name="qr_code_id">QR-020001</field>
+        <field name="municipio">Santa Cruz de Mudela</field>
+        <field name="provincia">Ciudad Real</field>
+        <field name="commission_pct">45.0</field>
+        <field name="total_sales">180.00</field>
+        <field name="total_earned">81.00</field>
+        <field name="pending_payout">81.00</field>
+    </record>
+
+    <!-- COL #2 — Restaurante La Plaza (captado por COM Sales Force) -->
+    <record id="demo_col_rest" model="pr.actor">
+        <field name="name">Restaurante La Plaza Ciudad Real</field>
+        <field name="actor_type">COL</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">laplaza@test.premiosred.com</field>
+        <field name="phone">+34 926 000 002</field>
+        <field name="tax_id">B23456789</field>
+        <field name="sector">restauracion</field>
+        <field name="kyb_status">submitted</field>
+        <field name="banco_iban">ES0621008256150200099402</field>
+        <field name="iban_verified">0</field>
+        <field name="contrato_firmado">0</field>
+        <field name="captor_id" ref="demo_com_sf"/>
+        <field name="qr_code_id">QR-020002</field>
+        <field name="municipio">Ciudad Real</field>
+        <field name="provincia">Ciudad Real</field>
+        <field name="commission_pct">45.0</field>
+        <field name="total_sales">0.00</field>
+        <field name="total_earned">0.00</field>
+        <field name="pending_payout">0.00</field>
+    </record>
+
+    <!-- COL #3 — Hotel Cervantes (captado por ASE Ana) -->
+    <record id="demo_col_hotel" model="pr.actor">
+        <field name="name">Hotel Cervantes Ciudad Real</field>
+        <field name="actor_type">COL</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">hotel.cervantes@test.premiosred.com</field>
+        <field name="phone">+34 926 000 003</field>
+        <field name="tax_id">B34567890</field>
+        <field name="sector">hotel</field>
+        <field name="kyb_status">pending</field>
+        <field name="banco_iban">ES0621008256150200099403</field>
+        <field name="iban_verified">0</field>
+        <field name="contrato_firmado">0</field>
+        <field name="captor_id" ref="demo_ase_ana"/>
+        <field name="qr_code_id">QR-020003</field>
+        <field name="municipio">Ciudad Real</field>
+        <field name="provincia">Ciudad Real</field>
+        <field name="commission_pct">45.0</field>
+        <field name="total_sales">0.00</field>
+        <field name="total_earned">0.00</field>
+        <field name="pending_payout">0.00</field>
+    </record>
+
+    <!-- COL #4 — Empresa Autobuses Mudela (sector transporte) -->
+    <record id="demo_col_bus" model="pr.actor">
+        <field name="name">Autobuses Mudela SA</field>
+        <field name="actor_type">COL</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">autobuses@test.premiosred.com</field>
+        <field name="phone">+34 926 000 004</field>
+        <field name="tax_id">A45678901</field>
+        <field name="sector">transporte</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099404</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="captor_id" ref="demo_ccp_juan"/>
+        <field name="qr_code_id">QR-020004</field>
+        <field name="municipio">Santa Cruz de Mudela</field>
+        <field name="provincia">Ciudad Real</field>
+        <field name="commission_pct">45.0</field>
+        <field name="total_sales">96.00</field>
+        <field name="total_earned">43.20</field>
+        <field name="pending_payout">43.20</field>
+    </record>
+
+    <!-- SUB #1 — Miguel García (camarero Bar Central) -->
+    <record id="demo_sub_miguel" model="pr.actor">
+        <field name="name">Miguel Garcia Lopez</field>
+        <field name="actor_type">SUB</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">miguel.garcia@test.premiosred.com</field>
+        <field name="phone">+34 600 000 001</field>
+        <field name="tax_id">12345678A</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099501</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="contract_version">SUB-Mercantil-v2.0</field>
+        <field name="parent_id" ref="demo_col_bar"/>
+        <field name="captor_id" ref="demo_ccp_juan"/>
+        <field name="qr_code_id">QR-050001</field>
+        <field name="commission_pct">25.0</field>
+        <field name="total_sales">90.00</field>
+        <field name="total_earned">22.50</field>
+        <field name="pending_payout">22.50</field>
+    </record>
+
+    <!-- SUB #2 — Carmen López (conductora Autobuses Mudela) -->
+    <record id="demo_sub_carmen" model="pr.actor">
+        <field name="name">Carmen Lopez Garcia</field>
+        <field name="actor_type">SUB</field>
+        <field name="status">ACTIVO</field>
+        <field name="email">carmen.lopez@test.premiosred.com</field>
+        <field name="phone">+34 600 000 002</field>
+        <field name="tax_id">23456789B</field>
+        <field name="kyb_status">approved</field>
+        <field name="banco_iban">ES0621008256150200099502</field>
+        <field name="iban_verified">1</field>
+        <field name="contrato_firmado">1</field>
+        <field name="contract_version">SUB-Mercantil-v2.0</field>
+        <field name="parent_id" ref="demo_col_bus"/>
+        <field name="captor_id" ref="demo_ccp_juan"/>
+        <field name="qr_code_id">QR-050002</field>
+        <field name="commission_pct">25.0</field>
+        <field name="total_sales">60.00</field>
+        <field name="total_earned">15.00</field>
+        <field name="pending_payout">15.00</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- CUPONES — Hash Chain DGOJ + Split 55/45 verificable                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- NOTA: Los cupones se crean via código Python (create()) para que   -->
+    <!-- el Hash Chain sea real. Los demos XML son solo referencias.        -->
+    <!-- En produccion usar: env['pr.cupon'].create({...})                  -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- DONACIONES DEMO — Periodo enero 2026                               -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <record id="demo_donacion_ene26" model="pr.donacion">
+        <field name="periodo">2026-01-01</field>
+        <!-- 30 cupones x 0,12€ = 3,60€ total. Distribucion ejemplo: -->
+        <!-- 85% AECC (default) = ~0,10€ por cupon -->
+        <field name="total_aecc">3.06</field>      <!-- 85% de 3,60€ -->
+        <field name="total_caritas">0.18</field>    <!-- ~5% -->
+        <field name="total_manos">0.12</field>      <!-- ~3% -->
+        <field name="total_cruz_roja">0.12</field>  <!-- ~3% -->
+        <field name="total_episcopal">0.12</field>  <!-- ~4% -->
+        <field name="num_cupones">30</field>
+        <field name="sepa_enviado">0</field>
+    </record>
+
+</data>
+</odoo>

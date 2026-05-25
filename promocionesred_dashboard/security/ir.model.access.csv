@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pr_lead_user,pr.lead.user,model_pr_lead,base.group_user,1,1,1,1
+access_pr_network_user,pr.network.user,model_pr_network,base.group_user,1,1,1,1
+access_pr_email_log_user,pr.email.log.user,model_pr_email_log,base.group_user,1,1,1,1
+access_pr_email_template_user,pr.email.template.user,model_pr_email_template,base.group_user,1,1,1,1
+access_pr_actor_user,pr.actor.user,model_pr_actor,base.group_user,1,1,1,1
+access_pr_pack_user,pr.pack.user,model_pr_pack,base.group_user,1,1,1,0
+access_pr_cupon_user,pr.cupon.user,model_pr_cupon,base.group_user,1,1,1,0
+access_pr_donacion_user,pr.donacion.user,model_pr_donacion,base.group_user,1,1,1,0

@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="promocionesred_dashboard.PrEmailManager">
+        <div class="pr_animate_in">
+            <header class="pr_section_header">
+                <div>
+                    <h2>Email Marketing &amp; Tracking</h2>
+                    <p class="pr_text_muted">Gestiona envíos y plantillas personalizadas.</p>
+                </div>
+                <div style="display:flex;gap:1rem">
+                    <button class="pr_btn_primary" t-on-click="toggleEditor"
+                        t-att-style="state.showEditor ? 'background:#ef4444' : ''">
+                        <t t-if="state.showEditor">✕ Cerrar Editor</t>
+                        <t t-else="">📝 Nueva Plantilla</t>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Editor de plantillas -->
+            <div class="pr_card pr_animate_in" style="margin-bottom:2rem;border:1px solid var(--pr-accent)" t-if="state.showEditor">
+                <h3>Diseñador de Plantillas</h3>
+                <p class="pr_text_muted" style="font-size:0.75rem;margin-bottom:1rem">
+                    Usa <strong>[NAME]</strong> para el nombre del cliente y <strong>[LINK]</strong> para el enlace de seguimiento.
+                </p>
+                <form t-on-submit="saveTpl">
+                    <div class="pr_form_group">
+                        <label>Nombre de la Plantilla</label>
+                        <input type="text" t-att-value="state.editingTemplate.name"
+                            t-on-input="(ev) => this.onTplField('name', ev)" required="1" placeholder="Ej: Follow-up Ayuntamientos"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Asunto del Correo</label>
+                        <input type="text" t-att-value="state.editingTemplate.subject"
+                            t-on-input="(ev) => this.onTplField('subject', ev)" required="1"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Cuerpo del Mensaje</label>
+                        <textarea rows="6" t-on-input="(ev) => this.onTplField('body', ev)" required="1"
+                            placeholder="Escribe el contenido aquí..."><t t-esc="state.editingTemplate.body"/></textarea>
+                    </div>
+                    <button type="submit" class="pr_btn_primary">💾 Guardar Plantilla</button>
+                </form>
+            </div>
+
+            <!-- KPIs email -->
+            <div class="pr_kpi_grid">
+                <div class="pr_card"><h3>Envíos Totales</h3><div class="pr_kpi_value"><t t-esc="props.history.length"/></div></div>
+                <div class="pr_card"><h3>Aperturas (Views)</h3><div class="pr_kpi_value"><t t-esc="totalViews"/></div></div>
+                <div class="pr_card"><h3>Clics en Enlace</h3><div class="pr_kpi_value"><t t-esc="totalClicks"/></div></div>
+                <div class="pr_card"><h3>Ratio Conversión</h3><div class="pr_kpi_value"><t t-esc="conversionRate"/>%</div></div>
+            </div>
+
+            <!-- Panel de envío -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem">
+                <div class="pr_card">
+                    <h3 style="margin-bottom:1rem">Nuevo Envío</h3>
+                    <div class="pr_form_group">
+                        <label>Seleccionar Destinatario</label>
+                        <select t-on-change="onSelectLead">
+                            <option value="">-- Buscar Lead con Email --</option>
+                            <t t-foreach="props.leads.filter(l => l.email)" t-as="l" t-key="l.id">
+                                <option t-att-value="l.id"><t t-esc="l.name"/> (<t t-esc="l.email"/>)</option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="pr_form_row">
+                        <div class="pr_form_group">
+                            <label>Categoría</label>
+                            <select t-on-change="onSelectCategory">
+                                <option value="COL">2-COL (Colaborador)</option>
+                                <option value="CCP">2.3-CCP (Captador)</option>
+                                <option value="SUB">2.6-SUB (Subcolaborador)</option>
+                                <option value="SPP">3-SPP (Sponsor Principal)</option>
+                            </select>
+                        </div>
+                        <div class="pr_form_group">
+                            <label>Seleccionar Plantilla</label>
+                            <select t-on-change="onSelectTemplate">
+                                <t t-foreach="allTemplates" t-as="tpl" t-key="tpl.id">
+                                    <option t-att-value="tpl.id"><t t-esc="tpl.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="pr_btn_primary" style="width:100%" t-on-click="sendEmail">
+                        🚀 Enviar con Seguimiento
+                    </button>
+                </div>
+                <div class="pr_card">
+                    <h3 style="margin-bottom:1rem">Vista Previa en Tiempo Real</h3>
+                    <div class="pr_email_preview">
+                        <div class="pr_email_subject">Asunto: <t t-esc="currentTemplate and currentTemplate.subject or '-'"/></div>
+                        <div class="pr_email_body"><t t-esc="currentTemplate and currentTemplate.body or ''"/></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial -->
+            <section>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                    <h3 style="margin:0">Control de Campañas y Tracking</h3>
+                    <button class="pr_btn_action pr_btn_delete" t-on-click="clearHistory"
+                        style="width:auto;padding:6px 12px;font-size:0.7rem">
+                        🗑️ Limpiar Historial
+                    </button>
+                </div>
+                <div class="pr_table_container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Destinatario</th><th>Categoría</th><th>Fecha Envío</th>
+                                <th>País</th><th>Visto</th><th>Interacción</th><th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="props.history" t-as="item" t-key="item.id">
+                                <tr>
+                                    <td>
+                                        <div style="font-weight:600"><t t-esc="item.name"/></div>
+                                        <div class="pr_text_muted" style="font-size:0.7rem"><t t-esc="item.recipient"/></div>
+                                    </td>
+                                    <td><span class="pr_badge pr_badge_info" style="font-size:0.65rem"><t t-esc="item.category"/></span></td>
+                                    <td style="font-size:0.75rem"><t t-esc="item.sent_at"/></td>
+                                    <td style="text-align:center"><t t-esc="item.country or '---'"/></td>
+                                    <td style="text-align:center">
+                                        <t t-if="(item.views or 0) > 0">✅ (<t t-esc="item.views"/>)</t>
+                                        <t t-else="">📩 Enviado</t>
+                                    </td>
+                                    <td style="text-align:center">
+                                        <span t-if="(item.clicks or 0) > 0" class="pr_badge pr_badge_success" style="font-size:0.65rem">
+                                            KLIC! (<t t-esc="item.clicks"/>)
+                                        </span>
+                                        <t t-else="">---</t>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'pr_badge ' + ((item.clicks or 0) > 0 ? 'pr_badge_success' : 'pr_badge_warning')">
+                                            <t t-if="(item.clicks or 0) > 0">Convertido</t>
+                                            <t t-else="">Seguimiento</t>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr t-if="props.history.length === 0">
+                                <td colspan="7" style="text-align:center;padding:2rem;color:#6c757d">Sin historial de envíos.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </t>
+</templates>

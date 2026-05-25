@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="promocionesred_dashboard.PrSecurityView">
+        <div class="pr_animate_in">
+            <header>
+                <h2>SEC-OPS Security Monitor</h2>
+                <p class="pr_text_muted">Monitoreo en tiempo real y gestión dinámica de accesos y auditoría.</p>
+            </header>
+            <div class="pr_sub_nav">
+                <button t-att-class="state.secTab === 'users' ? 'pr_sub_nav_item active' : 'pr_sub_nav_item'"
+                    t-on-click="() => this.setSecTab('users')">Gestión de Usuarios</button>
+                <button t-att-class="state.secTab === 'movements' ? 'pr_sub_nav_item active' : 'pr_sub_nav_item'"
+                    t-on-click="() => this.setSecTab('movements')">Historial de Movimientos</button>
+            </div>
+
+            <!-- Tab Usuarios -->
+            <div t-if="state.secTab === 'users'" class="pr_kpi_grid">
+                <div class="pr_card" style="grid-column:span 2">
+                    <h3>Administración de Cuentas (res.users Odoo)</h3>
+                    <div class="pr_table_container" style="margin-top:1rem">
+                        <table>
+                            <thead>
+                                <tr><th>Nombre</th><th>Login</th><th>ID</th></tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.users" t-as="u" t-key="u.id">
+                                    <tr>
+                                        <td><t t-esc="u.name"/></td>
+                                        <td><t t-esc="u.login"/></td>
+                                        <td style="font-size:0.7rem;color:#6c757d"><t t-esc="u.id"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pr_card">
+                    <h3>Nueva Credencial</h3>
+                    <form t-on-submit="handleCreateUser" style="margin-top:1rem">
+                        <div class="pr_form_group">
+                            <label>Nombre</label>
+                            <input type="text" t-att-value="state.newUser.name"
+                                t-on-input="(ev) => this.onUserField('name', ev)" required="1"/>
+                        </div>
+                        <div class="pr_form_group">
+                            <label>Login (Email)</label>
+                            <input type="email" t-att-value="state.newUser.login"
+                                t-on-input="(ev) => this.onUserField('login', ev)" required="1"/>
+                        </div>
+                        <div class="pr_form_group">
+                            <label>Password</label>
+                            <input type="password" t-att-value="state.newUser.password"
+                                t-on-input="(ev) => this.onUserField('password', ev)" required="1"/>
+                        </div>
+                        <button type="submit" class="pr_btn_primary" style="width:100%;margin-top:1rem">Generar Acceso</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab Movimientos (audit log via mail.message) -->
+            <div t-if="state.secTab === 'movements'" class="pr_card pr_animate_in">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                    <h3>Registro de Auditoría</h3>
+                </div>
+                <div class="pr_table_container">
+                    <table>
+                        <thead>
+                            <tr><th>Fecha/Hora</th><th>Autor</th><th>Asunto</th><th>Mensaje</th></tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="state.logs.length === 0">
+                                <tr><td colspan="4" style="text-align:center;padding:2rem;color:#6c757d">No hay registros de actividad.</td></tr>
+                            </t>
+                            <t t-foreach="state.logs" t-as="log" t-key="log.id">
+                                <tr>
+                                    <td style="font-size:0.75rem"><t t-esc="formatDate(log.date)"/></td>
+                                    <td><t t-esc="log.author_id and log.author_id[1] or 'Sistema'"/></td>
+                                    <td><t t-esc="log.subject or '-'"/></td>
+                                    <td style="font-size:0.8rem"><t t-out="log.body or '-'"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ═══════════════════════════════════════════════════════════════
+             REDLMC Licencias — Menús de navegación
+             Punto de entrada al modelo redlmc.company.license
+             (definido en redlmc_partner_ext/models/redlmc_company_license.py)
+             ═══════════════════════════════════════════════════════════════ -->
+
+        <!-- Acción: Lista de todas las licencias SaaS -->
+        <record id="action_redlmc_company_license_all" model="ir.actions.act_window">
+            <field name="name">Licencias SaaS</field>
+            <field name="res_model">redlmc.company.license</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_filter_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay licencias registradas todavía.
+                </p>
+                <p>
+                    Registra aquí las licencias SaaS emitidas por REDLMC SL
+                    a sus clientes (ej: REDROYAL SL — contrato 30.05).
+                </p>
+            </field>
+        </record>
+
+        <!-- Menú raíz: REDLMC SaaS (solo visible para admins del sistema) -->
+        <menuitem
+            id="menu_redlmc_saas_root"
+            name="🔑 REDLMC SaaS"
+            sequence="90"
+            groups="base.group_system"
+        />
+
+        <!-- Submenú: Licencias -->
+        <menuitem
+            id="menu_redlmc_licencias"
+            name="Licencias"
+            parent="menu_redlmc_saas_root"
+            action="action_redlmc_company_license_all"
+            sequence="10"
+        />
+
+    </data>
+</odoo>

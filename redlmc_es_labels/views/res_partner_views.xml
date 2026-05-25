@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Hereda la vista de formulario de res.partner para cambiar
+        las etiquetas del campo company_type a terminología española:
+
+        Individual / Individuo  →  Persona Física
+        Company    / Compañía   →  Empresa
+
+        Ref: Ley 58/2003 General Tributaria arts. 35-36
+    -->
+
+    <!-- Vista formulario de contacto/proveedor/cliente -->
+    <record id="view_partner_form_es_labels" model="ir.ui.view">
+        <field name="name">res.partner.form.es.labels</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Cambiar etiquetas del campo company_type en el widget radio -->
+            <xpath expr="//field[@name='company_type']" position="replace">
+                <field name="company_type"
+                       widget="radio"
+                       options="{'horizontal': true}"
+                       selection="[['person', 'Persona Física'], ['company', 'Empresa']]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

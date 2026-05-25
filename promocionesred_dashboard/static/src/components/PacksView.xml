@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PacksView">
+<div class="pr_view_container">
+    <div class="pr_section_header">
+        <div>
+            <h2 class="pr_section_title">📦 Catálogo de Packs</h2>
+            <p class="pr_section_subtitle">Vault 40.01 PACKS-Y-PREMIOS · 2% donación solidaria por pack · Ley Mecenazgo 49/2002</p>
+        </div>
+    </div>
+    <div t-if="state.loading" class="pr_loading_box"><div class="pr_spinner"/><p>Cargando packs...</p></div>
+    <t t-if="!state.loading">
+        <!-- KPIs globales -->
+        <div class="pr_kpi_grid">
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">📦</span><div><div class="pr_kpi_label">Packs activos</div><div class="pr_kpi_value" style="color:#4f46e5"><t t-esc="activePacks.length"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">🎟️</span><div><div class="pr_kpi_label">Total vendidos</div><div class="pr_kpi_value" style="color:#059669"><t t-esc="totalSold"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">💶</span><div><div class="pr_kpi_label">Ingresos totales</div><div class="pr_kpi_value" style="color:#059669"><t t-esc="fmt(totalRevenue)"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">❤️</span><div><div class="pr_kpi_label">Fondo donaciones</div><div class="pr_kpi_value" style="color:#dc2626"><t t-esc="fmt(totalDonations)"/></div></div></div>
+        </div>
+        <!-- Cards de packs -->
+        <div t-if="state.packs.length === 0" class="pr_empty_state">
+            <p>No hay packs configurados. Los packs se gestionan desde el ORM de Odoo.</p>
+        </div>
+        <div class="pr_cards_grid">
+            <t t-foreach="state.packs" t-as="pack" t-key="pack.id">
+                <div class="pr_pack_card" t-att-class="pack.pack_status !== 'active' ? 'pr_pack_inactive' : ''">
+                    <!-- Badge estado -->
+                    <div class="pr_pack_header">
+                        <div class="pr_pack_code"><t t-esc="pack.code"/></div>
+                        <span class="pr_badge" t-att-style="
+                            pack.pack_status === 'active'   ? 'background:rgba(5,150,105,0.1);color:#059669' :
+                            pack.pack_status === 'future'   ? 'background:rgba(79,70,229,0.1);color:#4f46e5' :
+                            'background:rgba(107,114,128,0.1);color:#6b7280'">
+                            <t t-esc="pack.pack_status === 'active' ? '✅ Activo' : pack.pack_status === 'future' ? '🔜 Futuro' : '⏸️ Inactivo'"/>
+                        </span>
+                    </div>
+                    <!-- Nombre -->
+                    <div class="pr_pack_name"><t t-esc="pack.name"/></div>
+                    <!-- Precio destacado -->
+                    <div class="pr_pack_price"><t t-esc="fmt(pack.price)"/></div>
+                    <div class="pr_pack_price_label">PVP · Campaña <t t-esc="pack.campaign_year"/></div>
+                    <!-- Distribución -->
+                    <div class="pr_pack_distribution">
+                        <div class="pr_pack_dist_item" style="color:#059669">
+                            <div class="pr_pack_dist_label">Pool Actores</div>
+                            <div class="pr_pack_dist_value">45%</div>
+                        </div>
+                        <div class="pr_pack_dist_item" style="color:#4f46e5">
+                            <div class="pr_pack_dist_label">REDROYAL</div>
+                            <div class="pr_pack_dist_value">53%</div>
+                        </div>
+                        <div class="pr_pack_dist_item" style="color:#dc2626">
+                            <div class="pr_pack_dist_label">Donación</div>
+                            <div class="pr_pack_dist_value"><t t-esc="pack.donation_pct"/>%</div>
+                        </div>
+                    </div>
+                    <!-- Donación por unidad -->
+                    <div class="pr_pack_donation">
+                        ❤️ <t t-esc="fmt(pack.donation_per_unit)"/> por pack → Fondo solidario
+                    </div>
+                    <!-- KPIs del pack -->
+                    <div class="pr_pack_stats">
+                        <div>
+                            <div class="pr_kpi_label">Vendidos</div>
+                            <div style="font-weight:800;color:#4f46e5"><t t-esc="pack.total_sold"/></div>
+                        </div>
+                        <div>
+                            <div class="pr_kpi_label">Ingresos</div>
+                            <div style="font-weight:800;color:#059669"><t t-esc="fmt(pack.total_revenue)"/></div>
+                        </div>
+                        <div>
+                            <div class="pr_kpi_label">Donado</div>
+                            <div style="font-weight:800;color:#dc2626"><t t-esc="fmt(pack.total_donations)"/></div>
+                        </div>
+                    </div>
+                    <!-- Sorteo -->
+                    <t t-if="pack.sorteo_ref">
+                        <div class="pr_pack_sorteo">🎰 <t t-esc="pack.sorteo_ref"/></div>
+                    </t>
+                </div>
+            </t>
+        </div>
+        <!-- Info Ley Mecenazgo -->
+        <div class="pr_info_banner">
+            <span>❤️ El 2% de cada pack va íntegramente al fondo solidario — paga REDROYAL SL, no el COL ni el SUB</span>
+            <span>⚖️ Ley Mecenazgo 49/2002 · Deducción IS 35-40% → coste neto real ~1,2%</span>
+            <span>📤 5 transferencias SEPA mensuales (una por causa) · Día 6 del mes siguiente</span>
+        </div>
+    </t>
+</div>
+</t>
+</templates>

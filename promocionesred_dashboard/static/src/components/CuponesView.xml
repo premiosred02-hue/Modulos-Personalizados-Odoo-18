@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- PREMIOSRED - CuponesView v5.2 (Odoo Owl) - Encoding: UTF-8 ASCII-safe -->
+
+<t t-name="promocionesred_dashboard.CuponesView">
+  <div class="pr_cupones_root">
+
+    <!-- HEADER -->
+    <div class="pr_section_header">
+      <div>
+        <h2>Cupones</h2>
+        <p class="pr_section_subtitle">
+          Banco de codigos por patrocinador · Trazabilidad cliente · Usados vs pendientes
+        </p>
+      </div>
+      <div class="pr_header_actions">
+        <div class="pr_search_wrap">
+          <i class="fa fa-search pr_search_icon"/>
+          <input type="text" class="pr_search_input"
+                 placeholder="Buscar cliente, email, codigo, orden..."
+                 t-model="state.searchQuery" id="cupon_search"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="pr_kpi_grid">
+      <div class="pr_kpi_card">
+        <div class="pr_kpi_label">Total codigos</div>
+        <div class="pr_kpi_value" t-esc="state.totalCodigos"/>
+      </div>
+      <div class="pr_kpi_card pr_kpi_green">
+        <div class="pr_kpi_label">Usados</div>
+        <div class="pr_kpi_value pr_value_green" t-esc="state.totalUsados"/>
+      </div>
+      <div class="pr_kpi_card pr_kpi_amber">
+        <div class="pr_kpi_label">Pendientes</div>
+        <div class="pr_kpi_value pr_value_amber" t-esc="state.totalPendientes"/>
+      </div>
+      <div class="pr_kpi_card pr_kpi_indigo">
+        <div class="pr_kpi_label">Tasa de uso</div>
+        <div class="pr_kpi_value pr_value_indigo" t-esc="state.tasaUso + '%'"/>
+      </div>
+      <div class="pr_kpi_card">
+        <div class="pr_kpi_label">Clientes activos</div>
+        <div class="pr_kpi_value" t-esc="state.clientes.length"/>
+      </div>
+      <div class="pr_kpi_card" t-att-class="state.allPatsLoaded ? 'pr_kpi_green' : 'pr_kpi_red'">
+        <div class="pr_kpi_label">Patrocinadores con codigos</div>
+        <div class="pr_kpi_value"
+             t-att-style="state.allPatsLoaded ? 'color:#059669' : 'color:#dc2626'"
+             t-esc="state.patsConCodigos + '/' + state.patrocinadores.length"/>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="pr_tabs_bar">
+      <button class="pr_tab_btn" id="cupon_tab_banco"
+              t-att-class="state.activeTab === 'banco' ? 'pr_tab_btn pr_tab_active' : 'pr_tab_btn'"
+              t-on-click="() => this.setTab('banco')">
+        <i class="fa fa-cubes"/> Banco de Codigos por Patrocinador
+      </button>
+      <button class="pr_tab_btn" id="cupon_tab_clientes"
+              t-att-class="state.activeTab === 'clientes' ? 'pr_tab_btn pr_tab_active' : 'pr_tab_btn'"
+              t-on-click="() => this.setTab('clientes')">
+        <i class="fa fa-users"/> Cupones por Cliente
+      </button>
+      <button class="pr_tab_btn" id="cupon_tab_pdv"
+              t-att-class="state.activeTab === 'pdv' ? 'pr_tab_btn pr_tab_active' : 'pr_tab_btn'"
+              t-on-click="() => this.setTab('pdv')">
+        <i class="fa fa-map-marker"/> Seguimiento PDV
+      </button>
+    </div>
+
+    <!-- TAB 1: BANCO DE CODIGOS POR PATROCINADOR -->
+    <t t-if="state.activeTab === 'banco'">
+      <div class="pr_card pr_card_no_pad">
+        <div class="pr_table_info_bar">
+          Cada pack PTK incluye 1 codigo de cada patrocinador.
+          Los codigos pueden cargarse manualmente (CSV/lista) o generarse automaticamente con prefijo del patrocinador.
+        </div>
+        <div class="pr_table_responsive">
+          <table class="pr_table">
+            <thead>
+              <tr>
+                <th>N</th>
+                <th>Patrocinador</th>
+                <th>Prefijo</th>
+                <th>Cargados</th>
+                <th>Usados</th>
+                <th>Pendientes</th>
+                <th>Tasa uso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="state.patrocinadores" t-as="pat" t-key="pat.num">
+                <t t-set="pat_pend" t-value="pat.cargados - pat.usados"/>
+                <t t-set="pat_tasa" t-value="pat.cargados ? Math.round((pat.usados / pat.cargados) * 100) : 0"/>
+                <tr>
+                  <td class="pr_text_center pr_muted" t-esc="pat.num"/>
+                  <td>
+                    <div class="pr_pat_name" t-esc="pat.obj"/>
+                    <div class="pr_pat_cat" t-esc="pat.cat"/>
+                  </td>
+                  <td><code class="pr_mono" t-esc="pat.cod_prefix + '-XXXXXX'"/></td>
+                  <td class="pr_text_center" style="font-weight:700" t-esc="pat.cargados"/>
+                  <td class="pr_text_center pr_value_green" t-esc="pat.usados"/>
+                  <td class="pr_text_center pr_value_amber" t-esc="pat_pend"/>
+                  <td>
+                    <div class="pr_progress_wrap">
+                      <div class="pr_progress_bar">
+                        <div class="pr_progress_fill"
+                             t-att-style="'width:' + pat_tasa + '%;background:' + tasaColor(pat_tasa)"/>
+                      </div>
+                      <span class="pr_progress_label"
+                            t-att-style="'color:' + tasaColor(pat_tasa)"
+                            t-esc="pat_tasa + '%'"/>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="pr_action_btns">
+                      <button class="pr_btn_primary pr_btn_sm"
+                              t-att-id="'cupon_upload_' + pat.num"
+                              t-on-click="() => this.openUploadModal(pat.num)">
+                        <i class="fa fa-upload"/> Cargar
+                      </button>
+                      <button class="pr_btn_secondary pr_btn_sm"
+                              t-att-id="'cupon_auto_' + pat.num"
+                              t-on-click="() => this.autoGenerate(pat.num, 100)">
+                        <i class="fa fa-bolt"/> Auto x100
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </t>
+
+    <!-- TAB 2: CUPONES POR CLIENTE -->
+    <t t-if="state.activeTab === 'clientes'">
+      <div class="pr_clientes_section">
+        <div class="pr_filters_row">
+          <input type="text" class="pr_search_input"
+                 placeholder="Buscar por nombre, email u orden..."
+                 t-model="state.searchCli" id="cupon_search_cli"/>
+        </div>
+
+        <t t-if="filteredClientes.length > 0">
+          <div class="pr_clientes_list">
+            <t t-foreach="filteredClientes" t-as="cliente" t-key="cliente.id">
+              <div class="pr_cliente_card">
+                <div class="pr_cliente_header"
+                     t-on-click="() => this.toggleCliente(cliente.id)"
+                     t-att-id="'cliente_hdr_' + cliente.id">
+                  <div class="pr_cliente_info">
+                    <div class="pr_cliente_name" t-esc="cliente.user_name"/>
+                    <div class="pr_cliente_meta">
+                      <span t-esc="cliente.user_email"/>
+                      <span class="pr_dot">·</span>
+                      <span t-esc="cliente.user_phone"/>
+                      <span class="pr_dot">·</span>
+                      <span t-esc="'Orden: ' + cliente.orden"/>
+                    </div>
+                  </div>
+                  <div class="pr_cliente_stats">
+                    <span class="pr_badge pr_badge_green"
+                          t-esc="cliente.cupones.filter(c => c.usado).length + ' usados'"/>
+                    <span class="pr_badge"
+                          t-esc="cliente.cupones.filter(c => !c.usado).length + ' pendientes'"/>
+                    <span class="pr_badge pr_badge_indigo"
+                          t-esc="cliente.pack"/>
+                    <i t-att-class="state.clienteExpanded === cliente.id ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
+                  </div>
+                </div>
+
+                <t t-if="state.clienteExpanded === cliente.id">
+                  <div class="pr_cliente_body">
+                    <div class="pr_cliente_detail_row">
+                      <span class="pr_detail_label">Compra:</span>
+                      <span t-esc="cliente.fecha_compra"/>
+                      <span class="pr_dot">·</span>
+                      <span class="pr_detail_label">COL:</span>
+                      <span t-esc="cliente.col_name"/>
+                      <span class="pr_dot">·</span>
+                      <span class="pr_detail_label">Zona:</span>
+                      <span t-esc="cliente.zona"/>
+                    </div>
+                    <div class="pr_cupones_grid">
+                      <t t-foreach="cliente.cupones" t-as="cup" t-key="cup.pat_num">
+                        <div t-att-class="cup.usado ? 'pr_cupon_chip pr_cupon_used' : 'pr_cupon_chip pr_cupon_pending'">
+                          <div class="pr_cupon_chip_code" t-esc="cup.codigo"/>
+                          <div class="pr_cupon_chip_pat" t-esc="cup.pat_nombre"/>
+                          <t t-if="cup.usado">
+                            <div class="pr_cupon_chip_date" t-esc="'Usado: ' + cup.fecha_uso"/>
+                          </t>
+                          <t t-else="">
+                            <div class="pr_cupon_chip_date">Pendiente</div>
+                          </t>
+                        </div>
+                      </t>
+                    </div>
+                    <div class="pr_hash_row">
+                      <span class="pr_hash_label">Sorteo:</span>
+                      <span class="pr_hash_value" t-esc="cliente.sorteo_code"/>
+                      <span class="pr_dot">·</span>
+                      <span class="pr_hash_label">Hash DGOJ:</span>
+                      <span class="pr_hash_value" t-esc="cliente.own_hash"/>
+                    </div>
+                  </div>
+                </t>
+
+              </div>
+            </t>
+          </div>
+        </t>
+
+        <t t-if="filteredClientes.length === 0">
+          <div class="pr_empty_state">
+            <div class="pr_empty_icon"><i class="fa fa-ticket fa-3x"/></div>
+            <div class="pr_empty_title">Sin cupones</div>
+            <div class="pr_empty_sub">No hay cupones que coincidan con la busqueda.</div>
+          </div>
+        </t>
+      </div>
+    </t>
+
+    <!-- TAB 3: SEGUIMIENTO PDV - Arbol jerarquico COL > Local > Cartel > Codigos -->
+    <t t-if="state.activeTab === 'pdv'">
+      <div class="pr_pdv_root">
+
+        <!-- NIVEL 1: EMPRESA (COL) -->
+        <div class="pr_tree_col_header">
+          <div style="display:flex;align-items:center;gap:1rem">
+            <i class="fa fa-building" style="font-size:2rem;color:#4f46e5"/>
+            <div>
+              <div class="pr_tree_col_name" t-esc="state.col.name"/>
+              <div class="pr_tree_col_meta">
+                CIF: <b t-esc="state.col.cif"/> ·
+                <t t-esc="state.col.email"/> ·
+                Comision <b t-esc="state.col.commission_pct + '%'"/>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:1.5rem;align-items:center">
+            <div class="pr_tree_stat"><div class="pr_tree_stat_val" t-esc="state.tiendas.length"/><div class="pr_tree_stat_lbl">Locales</div></div>
+            <div class="pr_tree_stat"><div class="pr_tree_stat_val" t-esc="state.carteles.length"/><div class="pr_tree_stat_lbl">Carteles</div></div>
+            <div class="pr_tree_stat"><div class="pr_tree_stat_val" style="color:#059669" t-esc="pdvKPIs.totalUsados"/><div class="pr_tree_stat_lbl">Escaneados</div></div>
+            <div class="pr_tree_stat"><div class="pr_tree_stat_val" style="color:#d97706" t-esc="pdvKPIs.totalPendiente"/><div class="pr_tree_stat_lbl">Disponibles</div></div>
+            <div class="pr_tree_stat">
+              <div class="pr_tree_stat_val" t-att-style="'color:' + tasaColor(pdvKPIs.tasaGlobal)"><t t-esc="pdvKPIs.tasaGlobal + '%'"/></div>
+              <div class="pr_tree_stat_lbl">Tasa uso</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NIVEL 2: LOCALES (TIENDAS) -->
+        <t t-foreach="state.tiendas" t-as="tienda" t-key="tienda.id">
+          <t t-set="cartsT" t-value="cartelesOf(tienda.id)"/>
+          <t t-set="totT"   t-value="cartsT.reduce((s,c) => s+c.cargados, 0)"/>
+          <t t-set="usaT"   t-value="cartsT.reduce((s,c) => s+c.usados, 0)"/>
+          <t t-set="tasaT"  t-value="totT ? Math.round(usaT/totT*100) : 0"/>
+          <t t-set="openT"  t-value="state.expandedTiendas[tienda.id]"/>
+
+          <div class="pr_tree_tienda_header"
+               t-on-click="() => this.toggleTienda(tienda.id)"
+               t-att-id="'tienda_' + tienda.id">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+              <i t-att-class="openT ? 'fa fa-chevron-down pr_tree_arrow' : 'fa fa-chevron-right pr_tree_arrow'"/>
+              <i class="fa fa-home" style="font-size:1.2rem;color:#4f46e5"/>
+              <div>
+                <div class="pr_tree_tienda_name" t-esc="tienda.nombre"/>
+                <div class="pr_tree_tienda_meta">Zona: <t t-esc="tienda.zona"/> · SUB: <b t-esc="tienda.sub_name"/> · <t t-esc="tienda.sub_email"/></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem;align-items:center">
+              <span class="pr_badge" style="background:rgba(79,70,229,0.1);color:#4f46e5"><t t-esc="cartsT.length"/> carteles</span>
+              <span class="pr_badge" style="background:rgba(5,150,105,0.1);color:#059669"><t t-esc="usaT"/> usados</span>
+              <span class="pr_badge" t-att-style="'color:' + tasaColor(tasaT)"><t t-esc="tasaT + '%'"/></span>
+            </div>
+          </div>
+
+          <!-- NIVEL 3: CARTELES -->
+          <t t-if="openT">
+            <div class="pr_tree_tienda_body">
+              <t t-foreach="cartsT" t-as="cartel" t-key="cartel.id">
+                <t t-set="openC"  t-value="state.expandedCarteles[cartel.id]"/>
+                <t t-set="fLabel" t-value="codFilterLabel(cartel.id)"/>
+
+                <div class="pr_tree_cartel_header"
+                     t-on-click="() => this.toggleCartel(cartel.id)"
+                     t-att-id="'cartel_' + cartel.id">
+                  <div style="display:flex;align-items:center;gap:0.75rem">
+                    <i t-att-class="openC ? 'fa fa-chevron-down pr_tree_arrow pr_tree_arrow_sm' : 'fa fa-chevron-right pr_tree_arrow pr_tree_arrow_sm'"/>
+                    <i class="fa fa-qrcode" style="color:#4f46e5"/>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:0.5rem">
+                        <code class="pr_qr_code" t-esc="cartel.codigo"/>
+                        <span class="pr_badge" style="background:rgba(79,70,229,0.08);color:#4f46e5;font-size:0.68rem">Auto</span>
+                        <span class="pr_badge"
+                              t-att-style="cartel.activo ? 'background:rgba(5,150,105,0.1);color:#059669' : 'background:rgba(220,38,38,0.1);color:#dc2626'">
+                          <t t-esc="cartel.activo ? 'Activo' : 'Inactivo'"/>
+                        </span>
+                      </div>
+                      <div style="font-size:0.72rem;color:#6b7280;margin-top:2px">
+                        Pos. <t t-esc="cartel.posicion"/> · <t t-esc="cartel.ubicacion"/> · Alta: <t t-esc="cartel.fecha_alta"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:1rem;align-items:center">
+                    <div style="text-align:center">
+                      <div style="font-size:1rem;font-weight:800;color:#4f46e5" t-esc="cartel.cargados"/>
+                      <div style="font-size:0.65rem;color:#6b7280">Total</div>
+                    </div>
+                    <div style="text-align:center">
+                      <div style="font-size:1rem;font-weight:800;color:#059669" t-esc="cartel.usados"/>
+                      <div style="font-size:0.65rem;color:#6b7280">Usados</div>
+                    </div>
+                    <div style="text-align:center">
+                      <div style="font-size:1rem;font-weight:800;color:#d97706" t-esc="cartel.pendientes"/>
+                      <div style="font-size:0.65rem;color:#6b7280">Dispon.</div>
+                    </div>
+                    <div style="text-align:center">
+                      <div style="font-size:1rem;font-weight:800"
+                           t-att-style="'color:' + tasaColor(cartel.tasa)"
+                           t-esc="cartel.tasa + '%'"/>
+                      <div style="font-size:0.65rem;color:#6b7280">Tasa</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- NIVEL 4: CODIGOS INDIVIDUALES -->
+                <t t-if="openC">
+                  <div class="pr_tree_cartel_body">
+                    <div class="pr_cod_filter_bar">
+                      <button t-att-class="fLabel === 'todos'       ? 'pr_cod_filter_btn active'      : 'pr_cod_filter_btn'"
+                              t-on-click="() => this.setCartelCodFilter(cartel.id, 'todos')">
+                        Todos (<t t-esc="cartel.codigos.length"/>)
+                      </button>
+                      <button t-att-class="fLabel === 'usado'       ? 'pr_cod_filter_btn active green' : 'pr_cod_filter_btn'"
+                              t-on-click="() => this.setCartelCodFilter(cartel.id, 'usado')">
+                        Usados (<t t-esc="cartel.total_usados_real"/>)
+                      </button>
+                      <button t-att-class="fLabel === 'disponible'  ? 'pr_cod_filter_btn active amber' : 'pr_cod_filter_btn'"
+                              t-on-click="() => this.setCartelCodFilter(cartel.id, 'disponible')">
+                        Disponibles (<t t-esc="cartel.total_disp_real"/>)
+                      </button>
+                    </div>
+                    <table class="pr_cod_table">
+                      <thead>
+                        <tr>
+                          <th>Codigo</th>
+                          <th>Patron</th>
+                          <th>Estado</th>
+                          <th>Cliente</th>
+                          <th>Fecha uso</th>
+                          <th>Generado</th>
+                          <th>Alta</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <t t-if="codigosOf(cartel).length === 0">
+                          <tr><td colspan="7" class="pr_table_empty">Sin codigos en este filtro.</td></tr>
+                        </t>
+                        <t t-foreach="codigosOf(cartel)" t-as="cod" t-key="cod.cod_id">
+                          <tr t-att-class="cod.estado === 'usado' ? 'pr_cod_row_usado' : 'pr_cod_row_disp'">
+                            <td><code class="pr_mono" style="font-size:0.78rem" t-esc="cod.cod_id"/></td>
+                            <td><span class="pr_badge" style="background:rgba(79,70,229,0.08);color:#4f46e5" t-esc="cod.patron"/></td>
+                            <td>
+                              <span t-if="cod.estado === 'usado'" class="pr_badge" style="background:rgba(5,150,105,0.1);color:#059669">Usado</span>
+                              <span t-else="" class="pr_badge" style="background:rgba(217,119,6,0.1);color:#d97706">Disponible</span>
+                            </td>
+                            <td style="font-size:0.8rem" t-esc="cod.cliente or '-'"/>
+                            <td style="font-size:0.78rem;color:#6b7280" t-esc="cod.fecha_uso or '-'"/>
+                            <td><span class="pr_badge" style="font-size:0.65rem" t-esc="cod.generado"/></td>
+                            <td style="font-size:0.75rem;color:#6b7280" t-esc="cod.fecha_gen"/>
+                          </tr>
+                        </t>
+                      </tbody>
+                    </table>
+                    <t t-if="cartel.total_usados_real > 6 or cartel.total_disp_real > 4">
+                      <div style="padding:0.5rem 1rem;font-size:0.75rem;color:#6b7280;border-top:1px solid var(--pr-border)">
+                        <i class="fa fa-info-circle"/> Demo: <b style="color:#059669" t-esc="cartel.total_usados_real"/> usados
+                        + <b style="color:#d97706" t-esc="cartel.total_disp_real"/> disponibles reales.
+                        En produccion desde <code>pr.cupon</code> ORM.
+                      </div>
+                    </t>
+                  </div>
+                </t>
+
+              </t><!-- /carteles -->
+            </div>
+          </t><!-- /openT -->
+
+        </t><!-- /tiendas -->
+      </div>
+    </t><!-- /pdv -->
+
+    <!-- MODAL CSV -->
+    <t t-if="state.uploadModal !== null">
+      <div class="pr_modal_backdrop" t-on-click="closeUploadModal">
+        <div class="pr_modal_box" t-on-click.stop="">
+
+          <t t-set="pat_modal" t-value="state.patrocinadores.find(p => p.num === state.uploadModal)"/>
+
+          <div class="pr_modal_header">
+            <h3 class="pr_modal_title">
+              Cargar codigos --
+              <t t-esc="pat_modal and pat_modal.obj"/>
+            </h3>
+            <button class="pr_modal_close" t-on-click="closeUploadModal" id="cupon_modal_close">x</button>
+          </div>
+
+          <div class="pr_modal_hint">
+            Pega los codigos del patrocinador, uno por linea.
+            Prefijo esperado: <code t-esc="pat_modal and pat_modal.cod_prefix + '-XXXXXX'"/>
+          </div>
+
+          <textarea class="pr_modal_textarea"
+                    rows="8"
+                    t-model="state.uploadText"
+                    t-att-placeholder="pat_modal ? pat_modal.cod_prefix + '-ABC123\n' + pat_modal.cod_prefix + '-DEF456' : ''"
+                    id="cupon_modal_textarea"/>
+
+          <div class="pr_modal_count">
+            <t t-esc="state.uploadText.split('\n').filter(l => l.trim()).length"/> codigos detectados
+          </div>
+
+          <button class="pr_btn_accent_outline pr_btn_full"
+                  id="cupon_modal_autogen"
+                  t-on-click="() => this.autoGenerateModal(state.uploadModal, 100)">
+            <i class="fa fa-bolt"/> Generar 100 auto (<t t-esc="pat_modal and pat_modal.cod_prefix"/>)
+          </button>
+
+          <div class="pr_modal_footer">
+            <button class="pr_btn_secondary pr_btn_flex1"
+                    id="cupon_modal_cancel"
+                    t-on-click="closeUploadModal">Cancelar</button>
+            <button class="pr_btn_primary pr_btn_flex2"
+                    id="cupon_modal_confirm"
+                    t-att-disabled="!state.uploadText.trim()"
+                    t-on-click="() => this.uploadCodes(state.uploadModal)">
+              Cargar codigos
+            </button>
+          </div>
+        </div>
+      </div>
+    </t>
+
+  </div>
+</t>
+
+</templates>

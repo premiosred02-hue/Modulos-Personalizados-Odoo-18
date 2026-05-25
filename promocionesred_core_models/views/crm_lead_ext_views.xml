@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_lead_view_form_ext_premiosred" model="ir.ui.view">
+        <field name="name">crm.lead.form.premiosred</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="premiosred_data" string="Datos PremiosRed">
+                    <group>
+                        <group string="Métricas QR y Portal">
+                            <field name="pr_encrypted_id" readonly="1"/>
+                            <field name="pr_scan_count" readonly="1"/>
+                        </group>
+                        <group string="Orquestación">
+                            <field name="pr_custom_label"/>
+                            <field name="pr_portal_type"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

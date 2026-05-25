@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Secuencias para cada tipo de actor -->
+        <record id="seq_actor_col" model="ir.sequence">
+            <field name="name">Código de Actor COL</field>
+            <field name="code">premiosred.actor.col</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <record id="seq_actor_sub" model="ir.sequence">
+            <field name="name">Código de Actor SUB</field>
+            <field name="code">premiosred.actor.sub</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <record id="seq_actor_ccp" model="ir.sequence">
+            <field name="name">Código de Actor CCP</field>
+            <field name="code">premiosred.actor.ccp</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <record id="seq_actor_com" model="ir.sequence">
+            <field name="name">Código de Actor COM</field>
+            <field name="code">premiosred.actor.com</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <record id="seq_actor_ase" model="ir.sequence">
+            <field name="name">Código de Actor ASE</field>
+            <field name="code">premiosred.actor.ase</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

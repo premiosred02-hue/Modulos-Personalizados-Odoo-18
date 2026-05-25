@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ================================================================
+             REDLMC — Etiquetas España: Términos contables en español
+             Enterprise v18: Solo menús nativos de Odoo (sin OCA)
+             Las referencias a om_account_*, accounting_pdf_reports,
+             om_fiscal_year y om_recurring_payments han sido eliminadas
+             porque no existen en Odoo 18 Enterprise.
+             ================================================================ -->
+
+        <!-- ── Menú principal de Contabilidad ── -->
+        <record id="account.menu_board_journal_1" model="ir.ui.menu">
+            <field name="name">Tablero</field>
+        </record>
+        <record id="account.menu_finance_receivables" model="ir.ui.menu">
+            <field name="name">Clientes</field>
+        </record>
+        <record id="account.menu_finance_payables" model="ir.ui.menu">
+            <field name="name">Proveedores</field>
+        </record>
+        <record id="account.menu_finance_entries" model="ir.ui.menu">
+            <field name="name">Contabilidad</field>
+        </record>
+        <record id="account.menu_finance_reports" model="ir.ui.menu">
+            <field name="name">Informes</field>
+        </record>
+        <record id="account.menu_finance_configuration" model="ir.ui.menu">
+            <field name="name">Configuración</field>
+        </record>
+
+        <!-- ── Facturas ── -->
+        <record id="account.menu_action_move_out_invoice_type" model="ir.ui.menu">
+            <field name="name">Facturas</field>
+        </record>
+        <record id="account.menu_action_move_out_refund_type" model="ir.ui.menu">
+            <field name="name">Facturas rectificativas</field>
+        </record>
+        <record id="account.menu_action_account_payments_receivable" model="ir.ui.menu">
+            <field name="name">Pagos</field>
+        </record>
+        <record id="account.menu_account_customer" model="ir.ui.menu">
+            <field name="name">Clientes</field>
+        </record>
+
+        <!-- ── Proveedores ── -->
+        <record id="account.menu_action_move_in_invoice_type" model="ir.ui.menu">
+            <field name="name">Facturas de Proveedor</field>
+        </record>
+        <record id="account.menu_action_move_in_refund_type" model="ir.ui.menu">
+            <field name="name">Facturas rectificativas</field>
+        </record>
+        <record id="account.menu_action_account_payments_payable" model="ir.ui.menu">
+            <field name="name">Pagos</field>
+        </record>
+        <record id="account.menu_account_supplier" model="ir.ui.menu">
+            <field name="name">Proveedores</field>
+        </record>
+
+        <!-- ── Contabilidad (Asientos / Plan) ── -->
+        <record id="account.menu_action_move_journal_line_form" model="ir.ui.menu">
+            <field name="name">Asientos Contables</field>
+        </record>
+        <record id="account.menu_action_account_form" model="ir.ui.menu">
+            <field name="name">Plan Contable</field>
+        </record>
+        <record id="account.menu_action_tax_form" model="ir.ui.menu">
+            <field name="name">Impuestos</field>
+        </record>
+        <record id="account.menu_action_account_journal_form" model="ir.ui.menu">
+            <field name="name">Diarios</field>
+        </record>
+        <record id="account.menu_action_account_moves_all" model="ir.ui.menu">
+            <field name="name">Apuntes Contables</field>
+        </record>
+        <record id="account.menu_action_analytic_lines_tree" model="ir.ui.menu">
+            <field name="name">Apuntes Analíticos</field>
+        </record>
+
+        <!-- ── Productos ── -->
+        <record id="account.product_product_menu_sellable" model="ir.ui.menu">
+            <field name="name">Productos</field>
+        </record>
+        <record id="account.product_product_menu_purchasable" model="ir.ui.menu">
+            <field name="name">Productos</field>
+        </record>
+
+        <!-- ── Gestión (Informes) ── -->
+        <record id="account.account_reports_management_menu" model="ir.ui.menu">
+            <field name="name">Gestión</field>
+        </record>
+
+        <!-- ================================================================
+             NOTA: Las siguientes secciones han sido ELIMINADAS para Enterprise:
+             - Accounting PDF Reports (OCA → usa informes nativos Enterprise)
+             - OM Account Accountant (OCA → usa account_accountant Enterprise)
+             - OM Account Asset (OCA → usa account_asset Enterprise)
+             - OM Account Budget (OCA → usa account_budget Enterprise)
+             - OM Account Daily Reports (OCA → sin equivalente directo)
+             - OM Account Followup (OCA → usa account_followup Enterprise)
+             - OM Fiscal Year (OCA → gestión nativa de años fiscales)
+             - OM Recurring Payments (OCA → pagos recurrentes Enterprise)
+             ================================================================ -->
+    </data>
+</odoo>

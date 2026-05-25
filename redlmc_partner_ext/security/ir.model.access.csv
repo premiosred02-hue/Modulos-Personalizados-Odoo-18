@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_redlmc_col_sub_user,redlmc.col.sub (usuario),model_redlmc_col_sub,base.group_user,1,1,1,0
+access_redlmc_col_sub_admin,redlmc.col.sub (admin),model_redlmc_col_sub,base.group_system,1,1,1,1
+access_redlmc_company_license_user,redlmc.company.license (usuario),model_redlmc_company_license,base.group_user,1,0,0,0
+access_redlmc_company_license_manager,redlmc.company.license (manager),model_redlmc_company_license,base.group_system,1,1,1,1
+access_redlmc_actor_role_user,redlmc.actor.role (usuario),model_redlmc_actor_role,base.group_user,1,0,0,0
+access_redlmc_actor_role_admin,redlmc.actor.role (admin),model_redlmc_actor_role,base.group_system,1,1,1,1
+access_redlmc_store_user,redlmc.store (usuario),model_redlmc_store,base.group_user,1,1,1,0
+access_redlmc_store_admin,redlmc.store (admin),model_redlmc_store,base.group_system,1,1,1,1
+access_redlmc_qr_cartel_user,redlmc.qr.cartel (usuario),model_redlmc_qr_cartel,base.group_user,1,1,1,0
+access_redlmc_qr_cartel_admin,redlmc.qr.cartel (admin),model_redlmc_qr_cartel,base.group_system,1,1,1,1

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Asumiendo que el menú principal de actores está en redlmc_partner_ext o usamos uno genérico de Contactos -->
+    <menuitem id="menu_premiosred_onboarding" 
+              name="Alta de Nuevo Actor (KYB)" 
+              parent="contacts.menu_contacts" 
+              action="action_onboarding_wizard" 
+              sequence="1"/>
+</odoo>

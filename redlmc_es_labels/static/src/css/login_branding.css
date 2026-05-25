@@ -1,0 +1,359 @@
+/* =========================================================================
+   REDLMC SL / PromocionesRed — Login Page Custom Branding
+   Módulo: redlmc_es_labels
+   ========================================================================= */
+
+/* ── Importar fuente premium ─────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
+
+/* ── Variables de marca REDLMC ───────────────────────────────────────────── */
+:root {
+    --redlmc-purple:     #5B2D8E;
+    --redlmc-purple-dk:  #3D1B6B;
+    --redlmc-purple-lt:  #7C3DAF;
+    --redlmc-accent:     #E84B3C;
+    --redlmc-gold:       #F0A500;
+    --redlmc-white:      #FFFFFF;
+    --redlmc-glass:      rgba(255, 255, 255, 0.12);
+    --redlmc-glass-bd:   rgba(255, 255, 255, 0.25);
+    --redlmc-shadow:     0 24px 48px rgba(0, 0, 0, 0.35);
+    --redlmc-text-muted: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Fondo del cuerpo: gradiente animado REDLMC ──────────────────────────── */
+body.o_login_page {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 20% 20%, rgba(91, 45, 142, 0.9) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(61, 27, 107, 0.95) 0%, transparent 60%),
+        radial-gradient(ellipse at 60% 10%, rgba(124, 61, 175, 0.5) 0%, transparent 40%),
+        linear-gradient(135deg, #1a0536 0%, #2d0f5e 40%, #3d1b6b 70%, #5b2d8e 100%);
+    font-family: 'Inter', 'Outfit', sans-serif !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* ── Efecto de partículas / orbes de fondo ───────────────────────────────── */
+body.o_login_page::before {
+    content: '';
+    position: fixed;
+    top: -30%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(240, 165, 0, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: redlmc-orb-float 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.o_login_page::after {
+    content: '';
+    position: fixed;
+    bottom: -20%;
+    left: -15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(232, 75, 60, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: redlmc-orb-float 10s ease-in-out infinite reverse;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes redlmc-orb-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-30px) scale(1.05); }
+}
+
+/* ── Tarjeta de login: Glassmorphism ──────────────────────────────────────── */
+.oe_login_form,
+#wrap .container .oe_login_form,
+.o_login_page .card,
+.o_login_page form {
+    position: relative;
+    z-index: 10;
+}
+
+.o_login_page .card,
+div.card.o_login_card {
+    background:  rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 24px !important;
+    box-shadow:
+        0 32px 64px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    overflow: hidden;
+    max-width: 420px;
+    width: 100%;
+    animation: redlmc-card-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes redlmc-card-in {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Borde superior de color de marca */
+.o_login_page .card::before,
+div.card.o_login_card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--redlmc-accent), var(--redlmc-gold), var(--redlmc-purple-lt));
+    z-index: 1;
+}
+
+/* ── Logo del header ──────────────────────────────────────────────────────── */
+.o_login_page .card-header,
+div.card.o_login_card .card-header {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 28px 32px 20px !important;
+    text-align: center;
+}
+
+/* Logo empresa (img dentro del card-header) */
+.o_login_page .card-header img,
+.o_login_page img.o_login_logo {
+    max-height: 56px !important;
+    filter: brightness(0) invert(1) !important; /* Logo blanco */
+    transition: transform 0.3s ease;
+}
+
+.o_login_page .card-header img:hover {
+    transform: scale(1.03);
+}
+
+/* ── Cabecera personalizada REDLMC (debajo del logo) ─────────────────────── */
+.redlmc-login-header {
+    text-align: center;
+    padding: 8px 0 0;
+}
+
+.redlmc-login-header .redlmc-brand {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--redlmc-gold);
+    display: block;
+    margin-top: 8px;
+}
+
+.redlmc-login-header .redlmc-tagline {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+    display: block;
+}
+
+/* ── Cuerpo del formulario ───────────────────────────────────────────────── */
+.o_login_page .card-body,
+div.card.o_login_card .card-body {
+    padding: 28px 32px !important;
+}
+
+/* ── Labels ──────────────────────────────────────────────────────────────── */
+.o_login_page label,
+.o_login_page .col-form-label {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px !important;
+}
+
+/* ── Inputs ──────────────────────────────────────────────────────────────── */
+.o_login_page .form-control,
+.o_login_page input[type="text"],
+.o_login_page input[type="password"],
+.o_login_page input[type="email"] {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    font-size: 0.9rem !important;
+    padding: 11px 14px !important;
+    transition: all 0.25s ease !important;
+    backdrop-filter: blur(8px);
+}
+
+.o_login_page .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.o_login_page .form-control:focus,
+.o_login_page input:focus {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border-color: var(--redlmc-gold) !important;
+    box-shadow: 0 0 0 3px rgba(240, 165, 0, 0.18) !important;
+    outline: none !important;
+    color: #ffffff !important;
+}
+
+/* ── Botón Log in ────────────────────────────────────────────────────────── */
+.o_login_page .btn-primary {
+    background: linear-gradient(135deg, var(--redlmc-purple-lt) 0%, var(--redlmc-accent) 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    padding: 12px !important;
+    text-transform: uppercase !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow: 0 8px 24px rgba(91, 45, 142, 0.4) !important;
+    width: 100% !important;
+    margin-top: 8px;
+}
+
+.o_login_page .btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(91, 45, 142, 0.6) !important;
+    background: linear-gradient(135deg, var(--redlmc-accent) 0%, var(--redlmc-gold) 100%) !important;
+}
+
+.o_login_page .btn-primary:active {
+    transform: translateY(0) !important;
+}
+
+/* ── Links (Reset Password, etc.) ────────────────────────────────────────── */
+.o_login_page a,
+.o_login_page .card-body a {
+    color: var(--redlmc-gold) !important;
+    text-decoration: none !important;
+    font-size: 0.8rem !important;
+    transition: color 0.2s ease;
+}
+
+.o_login_page a:hover {
+    color: #ffffff !important;
+    text-decoration: underline !important;
+}
+
+/* ── Selector de Base de datos ───────────────────────────────────────────── */
+.o_login_page select.form-select,
+.o_login_page select {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    padding: 10px 14px !important;
+}
+
+.o_login_page .o_select_db_btn,
+.o_login_page .btn-secondary {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.8rem !important;
+}
+
+/* ── Footer de la card ───────────────────────────────────────────────────── */
+.o_login_page .card-footer,
+div.card.o_login_card .card-footer {
+    background: rgba(0, 0, 0, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 14px 32px !important;
+    text-align: center;
+}
+
+/* ── Ocultar "Powered by Odoo" y sustituir ───────────────────────────────── */
+.o_login_page .card-footer a[href*="odoo.com"],
+.o_login_page .card-footer a[href*="odoo"],
+.o_login_page a.o_logo,
+.o_login_page .powered_by_odoo {
+    display: none !important;
+}
+
+/* Footer personalizado REDLMC */
+.o_login_page .card-footer::after {
+    content: '© 2026 REDLMC SL · PromocionesRed.com · Todos los derechos reservados';
+    font-size: 0.65rem !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+    display: block;
+}
+
+/* ── "Manage Databases" → estilo discreto ────────────────────────────────── */
+.o_login_page .card-footer a:not([href*="odoo"]) {
+    font-size: 0.72rem !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 0.7;
+}
+
+.o_login_page .card-footer a:not([href*="odoo"]):hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    opacity: 1;
+}
+
+/* ── Separador del footer ─────────────────────────────────────────────────── */
+.o_login_page .card-footer .o_login_footer_separator {
+    display: none !important;
+}
+
+/* ── Texto "Don't have an account?" ─────────────────────────────────────── */
+.o_login_page .text-center.small {
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-size: 0.78rem !important;
+    margin-top: 14px;
+}
+
+/* ── Insignia inferior fuera de la card ─────────────────────────────────── */
+.redlmc-footer-badge {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.redlmc-footer-badge::before {
+    content: '●';
+    color: var(--redlmc-gold);
+    font-size: 0.4rem;
+    animation: redlmc-pulse 2s ease-in-out infinite;
+}
+
+@keyframes redlmc-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .o_login_page .card,
+    div.card.o_login_card {
+        border-radius: 16px !important;
+        margin: 16px !important;
+    }
+    .o_login_page .card-body {
+        padding: 20px 20px !important;
+    }
+}

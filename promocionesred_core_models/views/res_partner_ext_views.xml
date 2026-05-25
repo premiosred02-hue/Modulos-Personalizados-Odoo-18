@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit_premiosred" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.premiosred</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="PremiosRed" name="premiosred_data">
+                    <group>
+                        <group string="Configuración de Red">
+                            <field name="pr_role"/>
+                            <field name="pr_is_promoter"/>
+                            <field name="pr_commission_pct" widget="percentage"/>
+                            <field name="pr_entity_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

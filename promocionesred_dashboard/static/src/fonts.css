@@ -1,0 +1,6 @@
+/* PromocionesRed — fonts.css
+   NOTA: El @import de Google Fonts ha sido eliminado.
+   Razón: Los @import en bundles CSS concatenados de Odoo 18 rompen el parser CSS del navegador.
+   La fuente Inter se carga mediante font-face nativo o se usa el stack del sistema.
+   Inter está disponible en la mayoría de sistemas modernos como fuente del sistema.
+*/

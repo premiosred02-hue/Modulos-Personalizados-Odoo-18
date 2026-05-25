@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vista Formulario -->
+        <record id="view_redlmc_tenant_metrics_form" model="ir.ui.view">
+            <field name="name">redlmc.tenant.metrics.form</field>
+            <field name="model">redlmc.tenant.metrics</field>
+            <field name="arch" type="xml">
+                <form string="Telemetría SaaS">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="tenant_id"/>
+                                <field name="fecha"/>
+                                <field name="status"/>
+                                <field name="odoo_version"/>
+                            </group>
+                            <group>
+                                <field name="active_users"/>
+                                <field name="invoices_count"/>
+                                <field name="contacts_count"/>
+                                <field name="db_size_mb"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Respuesta Cruda JSON">
+                                <field name="raw_response"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vista Lista -->
+        <record id="view_redlmc_tenant_metrics_tree" model="ir.ui.view">
+            <field name="name">redlmc.tenant.metrics.tree</field>
+            <field name="model">redlmc.tenant.metrics</field>
+            <field name="arch" type="xml">
+                <list string="Telemetría SaaS" create="false" edit="false">
+                    <field name="fecha"/>
+                    <field name="tenant_id"/>
+                    <field name="status"/>
+                    <field name="active_users"/>
+                    <field name="invoices_count"/>
+                    <field name="db_size_mb"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Filtros y Agrupación -->
+        <record id="view_redlmc_tenant_metrics_search" model="ir.ui.view">
+            <field name="name">redlmc.tenant.metrics.search</field>
+            <field name="model">redlmc.tenant.metrics</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="tenant_id"/>
+                    <filter string="Errores" name="errors" domain="[('status', '!=', 'ok')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Cliente/Tenant" name="group_by_tenant" context="{'group_by': 'tenant_id'}"/>
+                        <filter string="Estado" name="group_by_status" context="{'group_by': 'status'}"/>
+                        <filter string="Fecha" name="group_by_fecha" context="{'group_by': 'fecha:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Acción -->
+        <record id="action_redlmc_tenant_metrics" model="ir.actions.act_window">
+            <field name="name">Monitor SaaS REDLMC</field>
+            <field name="res_model">redlmc.tenant.metrics</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_group_by_tenant': 1}</field>
+        </record>
+
+        <!-- Menú -->
+        <menuitem id="menu_redlmc_saas_root" name="SaaS Monitor" sequence="50"/>
+        <menuitem id="menu_redlmc_saas_metrics" name="Telemetría de Clientes" parent="menu_redlmc_saas_root" action="action_redlmc_tenant_metrics" sequence="10"/>
+
+    </data>
+</odoo>

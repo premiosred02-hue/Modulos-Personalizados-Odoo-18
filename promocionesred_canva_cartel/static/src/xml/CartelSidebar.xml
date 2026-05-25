@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     CartelSidebar.xml
+     Template OWL del panel lateral de edición — equivalente a Sidebar.jsx
+     ══════════════════════════════════════════════════════════════════════ -->
+<t t-name="cc_cartel.CartelSidebar" owl="1">
+    <aside class="cc-sidebar-inner">
+
+        <!-- Header del sidebar con tabs de navegación -->
+        <div class="cc-sidebar-header">
+            <div class="cc-sidebar-tabs">
+                <button t-att-class="'cc-tab ' + (isActiveSection('general') ? 'active' : '')"
+                        t-on-click="() => toggleSection('general')">⚙️ Config</button>
+                <button t-att-class="'cc-tab ' + (isActiveSection('content') ? 'active' : '')"
+                        t-on-click="() => toggleSection('content')">✍️ Texto</button>
+                <button t-att-class="'cc-tab ' + (isActiveSection('packs') ? 'active' : '')"
+                        t-on-click="() => toggleSection('packs')">📦 Packs</button>
+                <button t-att-class="'cc-tab ' + (isActiveSection('legal') ? 'active' : '')"
+                        t-on-click="() => toggleSection('legal')">⚖️ Legal</button>
+            </div>
+            <button class="cc-btn-export-sidebar" t-on-click="props.onExport" title="Exportar PDF">
+                📄 PDF
+            </button>
+        </div>
+
+        <div class="cc-sidebar-scroll">
+
+            <!-- ── TAB: CONFIGURACIÓN GENERAL ── -->
+            <div t-if="isActiveSection('general')" class="cc-sidebar-section">
+                <h3 class="cc-section-title">🎛️ Configuración General</h3>
+
+                <!-- Formato -->
+                <div class="cc-input-group">
+                    <label>Formato del Cartel</label>
+                    <select t-on-change="changeFormat">
+                        <t t-foreach="formats" t-as="fmt" t-key="fmt[0]">
+                            <option t-att-value="fmt[0]"
+                                    t-att-selected="fmt[0] === design.active_format ? 'selected' : false">
+                                <t t-esc="fmt[1].name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+
+                <!-- Color del borde -->
+                <div class="cc-input-group">
+                    <label>Color del Borde</label>
+                    <div class="cc-color-row">
+                        <input type="color"
+                               t-att-value="design.ui.border_color || '#f37021'"
+                               t-on-input="onBorderColorChange"
+                               class="cc-color-picker"/>
+                        <input type="text"
+                               t-att-value="design.ui.border_color || '#f37021'"
+                               t-on-input="onBorderColorChange"/>
+                    </div>
+                </div>
+
+                <!-- Espesor del borde -->
+                <div class="cc-input-group">
+                    <label>Espesor del Borde
+                        <span class="cc-value-badge"><t t-esc="design.ui.border_width || '0px'"/></span>
+                    </label>
+                    <input type="range" min="0" max="50"
+                           t-att-value="borderWidthNum"
+                           t-on-input="onBorderWidthChange"/>
+                </div>
+
+                <!-- Estilo del borde -->
+                <div class="cc-input-group">
+                    <label>Estilo del Borde</label>
+                    <select t-on-change="onBorderStyleChange">
+                        <option value="solid" t-att-selected="(design.ui.border_style || 'solid') === 'solid' ? 'selected' : false">Sólido</option>
+                        <option value="dashed" t-att-selected="design.ui.border_style === 'dashed' ? 'selected' : false">Guiones</option>
+                        <option value="dotted" t-att-selected="design.ui.border_style === 'dotted' ? 'selected' : false">Puntos</option>
+                        <option value="double" t-att-selected="design.ui.border_style === 'double' ? 'selected' : false">Doble</option>
+                    </select>
+                </div>
+
+                <!-- Redondeo de esquinas -->
+                <div class="cc-input-group">
+                    <label>Redondeo de Esquinas
+                        <span class="cc-value-badge"><t t-esc="design.ui.border_radius || '0px'"/></span>
+                    </label>
+                    <input type="range" min="0" max="100"
+                           t-att-value="borderRadiusNum"
+                           t-on-input="onBorderRadiusChange"/>
+                </div>
+
+                <!-- Opciones -->
+                <div class="cc-checkbox-group">
+                    <label class="cc-checkbox-label cc-security-label">
+                        <input type="checkbox"
+                               t-att-checked="design.ui.show_security_border === true"
+                               t-on-change="onSecurityBorderChange"/>
+                        🛡️ Borde de Seguridad (Anticopia)
+                    </label>
+                </div>
+                <div class="cc-checkbox-group">
+                    <label class="cc-checkbox-label">
+                        <input type="checkbox"
+                               t-att-checked="design.ui.show_partner_logos !== false"
+                               t-on-change="onShowPartnersChange"/>
+                        Mostrar Logos Aliados
+                    </label>
+                </div>
+            </div>
+
+            <!-- ── TAB: CONTENIDO ── -->
+            <div t-if="isActiveSection('content')" class="cc-sidebar-section">
+                <h3 class="cc-section-title">✍️ Contenido del Cartel</h3>
+
+                <div class="cc-input-group">
+                    <label>Título Principal de la Promo</label>
+                    <textarea rows="2" t-on-input="onPromoTitleChange"><t t-esc="design.content.promo_title"/></textarea>
+                </div>
+
+                <div class="cc-input-group">
+                    <label>Subtítulo</label>
+                    <textarea rows="2" t-on-input="onPromoSubtitleChange"><t t-esc="design.content.promo_subtitle"/></textarea>
+                </div>
+
+                <div class="cc-input-group">
+                    <label>Texto Solidario</label>
+                    <textarea rows="2" t-on-input="onSolidarityChange"><t t-esc="design.content.solidarity_text"/></textarea>
+                </div>
+
+                <div class="cc-input-group">
+                    <label>URL del QR</label>
+                    <input type="text"
+                           t-att-value="design.content.qr_url"
+                           t-on-input="onQrUrlChange"
+                           placeholder="https://premiosred.com"/>
+                </div>
+            </div>
+
+            <!-- ── TAB: PACKS ── -->
+            <div t-if="isActiveSection('packs')" class="cc-sidebar-section">
+                <h3 class="cc-section-title">📦 Gestión de Packs</h3>
+
+                <t t-foreach="packs" t-as="pack" t-key="pack.id">
+                    <div class="cc-pack-editor"
+                         t-att-style="'border-left: 4px solid ' + pack.color">
+
+                        <!-- Cabecera del pack (colapsable) -->
+                        <div class="cc-pack-header" t-on-click="() => togglePack(pack_index)">
+                            <div class="cc-pack-color-dot" t-att-style="'background:' + pack.color"/>
+                            <span class="cc-pack-name"><t t-esc="pack.name"/></span>
+                            <span class="cc-pack-price-badge">
+                                <t t-esc="pack.price"/>€
+                            </span>
+                            <span class="cc-pack-chevron">
+                                <t t-if="isPackExpanded(pack_index)">▾</t>
+                                <t t-else="">▸</t>
+                            </span>
+                        </div>
+
+                        <!-- Campos del pack (colapsables) -->
+                        <div t-if="isPackExpanded(pack_index)" class="cc-pack-fields">
+                            <div class="cc-input-group">
+                                <label>Logo (URL)</label>
+                                <input type="text" t-att-value="pack.logo"
+                                       t-on-input="(ev) => onPackLogoChange(pack_index, ev)"
+                                       placeholder="URL del logotipo"/>
+                            </div>
+                            <div class="cc-input-group">
+                                <label>Nombre del Pack</label>
+                                <input type="text" t-att-value="pack.name"
+                                       t-on-input="(ev) => onPackNameChange(pack_index, ev)"/>
+                            </div>
+                            <div class="cc-input-group">
+                                <label>Subtítulo</label>
+                                <input type="text" t-att-value="pack.subtitle"
+                                       t-on-input="(ev) => onPackSubtitleChange(pack_index, ev)"/>
+                            </div>
+                            <div class="cc-pack-price-color">
+                                <div class="cc-input-group cc-half">
+                                    <label>Precio (€)</label>
+                                    <input type="text" t-att-value="pack.price"
+                                           t-on-input="(ev) => onPackPriceChange(pack_index, ev)"/>
+                                </div>
+                                <div class="cc-input-group cc-half">
+                                    <label>Color</label>
+                                    <input type="color" t-att-value="pack.color"
+                                           t-on-input="(ev) => onPackColorChange(pack_index, ev)"
+                                           class="cc-color-picker-full"/>
+                                </div>
+                            </div>
+
+                            <label class="cc-sub-label">Beneficios:</label>
+                            <t t-foreach="pack.items" t-as="item" t-key="item_index">
+                                <div class="cc-input-group">
+                                    <textarea rows="2" class="cc-text-xs"
+                                              t-att-value="item"
+                                              t-on-input="(ev) => onPackItemChange(pack_index, item_index, ev)"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- ── TAB: LEGAL ── -->
+            <div t-if="isActiveSection('legal')" class="cc-sidebar-section">
+                <h3 class="cc-section-title">⚖️ Texto Legal</h3>
+                <div class="cc-legal-notice">
+                    ℹ️ Este texto aparece en el pie del cartel. Mantenlo actualizado según bases legales vigentes.
+                </div>
+                <div class="cc-input-group">
+                    <textarea rows="12" t-on-input="onLegalChange"><t t-esc="design.content.legal_text"/></textarea>
+                </div>
+            </div>
+
+        </div><!-- /sidebar-scroll -->
+    </aside>
+</t>
+
+</templates>

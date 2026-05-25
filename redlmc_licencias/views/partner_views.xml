@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_partner_form_inherit_redlmc_license" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.redlmc.license</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Licencia SaaS REDLMC" name="redlmc_saas_license" invisible="not is_company">
+                        <group>
+                            <group string="Detalles Técnicos">
+                                <field name="is_saas_client" widget="boolean_toggle"/>
+                                <field name="tenant_id" invisible="not is_saas_client"/>
+                                <field name="license_type" invisible="not is_saas_client"/>
+                                <field name="instance_url" invisible="not is_saas_client" widget="url"/>
+                                <field name="instance_port" invisible="not is_saas_client"/>
+                            </group>
+                            <group string="Estado del Contrato">
+                                <field name="license_status" invisible="not is_saas_client"/>
+                                <field name="license_start_date" invisible="not is_saas_client"/>
+                                <field name="license_renewal_date" invisible="not is_saas_client"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Filtros para el Kanban/Tree -->
+        <record id="view_res_partner_filter_redlmc_license" model="ir.ui.view">
+            <field name="name">res.partner.select.redlmc.license</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='type_company']" position="after">
+                    <separator/>
+                    <filter string="Clientes SaaS Activos" name="saas_active" domain="[('is_saas_client', '=', True), ('license_status', '=', 'activo')]"/>
+                    <filter string="Clientes SaaS Suspendidos" name="saas_suspended" domain="[('is_saas_client', '=', True), ('license_status', '=', 'suspendido')]"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

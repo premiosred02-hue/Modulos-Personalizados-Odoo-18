@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- TemplatePoster70_100 — Gran formato vertical 700x1000mm -->
+<t t-name="cc_cartel.TemplatePoster70_100" owl="1">
+    <div class="template-poster-70-100 templates-fidelity">
+        <header class="template-header">
+            <div class="template-brand poster-brand">Premios<span>Red</span>.com</div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="amazon-header-logo poster-logo"/>
+        </header>
+
+        <div class="poster-hero-title"><t t-esc="props.content.promo_title"/></div>
+        <div class="poster-highlight-bar">¡TÚ DECIDES QUÉ GANAR! HAY 20.000€ EN PREMIOS A REPARTIR</div>
+
+        <div class="poster-support-section">
+            <div class="support-title">CONVIERTE TU COMPRA EN ESPERANZA</div>
+            <div class="charity-grid">
+                <div class="charity-box cancer"><div class="charity-icon">🎀</div><div class="charity-box-text"><span>CONTRA EL CÁNCER</span></div></div>
+                <div class="charity-box caritas"><div class="charity-icon">❤️</div><div class="charity-box-text"><span>CÁRITAS</span></div></div>
+                <div class="charity-box manos"><div class="charity-icon">🤝</div><div class="charity-box-text"><span>MANOS UNIDAS</span></div></div>
+                <div class="charity-box iglesia"><div class="charity-icon">⛪</div><div class="charity-box-text"><span>IGLESIA</span></div></div>
+            </div>
+        </div>
+
+        <div class="poster-packs-grid">
+            <t t-foreach="packs" t-as="pack" t-key="pack.id">
+                <div class="improved-pack-card poster-pack" t-att-style="'border-color:' + pack.color">
+                    <div class="pack-top-label" t-att-style="'background-color:' + pack.color">
+                        <t t-esc="pack.name"/>
+                    </div>
+                    <div class="pack-main-content">
+                        <div class="pack-logo-container poster-pack-logo">
+                            <img t-att-src="pack.logo" alt=""/>
+                        </div>
+                        <div class="pack-details">
+                            <ul>
+                                <t t-foreach="pack.items.slice(0,3)" t-as="item" t-key="item_index">
+                                    <li><t t-esc="item"/></li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="pack-price-tag poster-price">
+                            <div class="price-small-label">PRECIO</div>
+                            <div class="price-amount" t-att-style="'color:' + pack.color">
+                                <t t-esc="pack.price"/><span>€</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pack-footer-bar" t-att-style="'background-color:' + pack.color">
+                        <t t-esc="pack.items[3] || ''"/>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <div class="poster-bottom">
+            <div class="poster-legal"><t t-esc="props.content.legal_text"/></div>
+            <div class="poster-qr-zone">
+                <div class="call-to-action">
+                    <div class="cta-text">ESCANEA AQUÍ<br/>PARA COMPRAR Y<br/>PARTICIPAR</div>
+                </div>
+                <div class="qr-secure-box">
+                    <div class="qr-header-label">CODIGO</div>
+                    <img t-att-src="qrSrc" width="200" height="200" alt="QR"/>
+                    <div class="qr-footer-label">ZONA 1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

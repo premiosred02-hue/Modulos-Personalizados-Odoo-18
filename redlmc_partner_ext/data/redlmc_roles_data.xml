@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Patrocinador -->
+        <record id="role_sponsor" model="redlmc.actor.role">
+            <field name="name">⭐ Patrocinador</field>
+            <field name="code">sponsor</field>
+            <field name="commission_pct">0.0</field>
+            <field name="excludes_from_draw">True</field>
+        </record>
+        <!-- Colaborador -->
+        <record id="role_col" model="redlmc.actor.role">
+            <field name="name">🤝 Colaborador (COL)</field>
+            <field name="code">col</field>
+            <field name="commission_pct">20.0</field>
+            <field name="excludes_from_draw">True</field>
+        </record>
+        <!-- Sub-colaborador -->
+        <record id="role_sub" model="redlmc.actor.role">
+            <field name="name">👤 Sub-colaborador (SUB)</field>
+            <field name="code">sub</field>
+            <field name="commission_pct">25.0</field>
+            <field name="excludes_from_draw">True</field>
+        </record>
+        <!-- Captador CCP -->
+        <record id="role_ccp" model="redlmc.actor.role">
+            <field name="name">📋 Captador de COLs (CCP)</field>
+            <field name="code">ccp</field>
+            <field name="commission_pct">3.0</field>
+            <field name="excludes_from_draw">True</field>
+        </record>
+        <!-- Comercial COM -->
+        <record id="role_com" model="redlmc.actor.role">
+            <field name="name">💼 Comercial en bloque (COM)</field>
+            <field name="code">com</field>
+            <field name="commission_pct">2.0</field>
+            <field name="excludes_from_draw">True</field>
+        </record>
+        <!-- Asesor ASE -->
+        <record id="role_ase" model="redlmc.actor.role">
+            <field name="name">🔗 Asesor / conector (ASE)</field>
+            <field name="code">ase</field>
+            <field name="commission_pct">2.0</field>
+            <field name="excludes_from_draw">True</field>
+        </record>
+        
+        <!-- ============================================== -->
+        <!-- NUEVOS ROLES SOLICITADOS -->
+        <!-- ============================================== -->
+        
+        <!-- Usuario General -->
+        <record id="role_usu_gen" model="redlmc.actor.role">
+            <field name="name">🧑 Usuario General</field>
+            <field name="code">usu_gen</field>
+            <field name="commission_pct">0.0</field>
+            <field name="excludes_from_draw">False</field>
+        </record>
+
+        <!-- Usuario QR (Reemplazo de "Ganador de sorteo") -->
+        <record id="role_usu_qr" model="redlmc.actor.role">
+            <field name="name">📱 Usuario QR</field>
+            <field name="code">usu_qr</field>
+            <field name="commission_pct">0.0</field>
+            <field name="excludes_from_draw">False</field>
+        </record>
+    </data>
+</odoo>

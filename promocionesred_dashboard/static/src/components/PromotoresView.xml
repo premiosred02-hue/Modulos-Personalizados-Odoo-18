@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PromotoresView">
+<div class="pr_view_container">
+    <div class="pr_section_header">
+        <div>
+            <h2 class="pr_section_title">🎯 Red de Promotores</h2>
+            <p class="pr_section_subtitle">CCP · COM · ASE — Captadores de COLs · Comisión pasiva · Pago día 6 SEPA</p>
+        </div>
+    </div>
+    <div t-if="state.loading" class="pr_loading_box"><div class="pr_spinner"/><p>Cargando promotores...</p></div>
+    <t t-if="!state.loading">
+        <!-- KPIs -->
+        <div class="pr_kpi_grid">
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">👥</span><div><div class="pr_kpi_label">Total</div><div class="pr_kpi_value"><t t-esc="kpis.total"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">✅</span><div><div class="pr_kpi_label">Activos</div><div class="pr_kpi_value" style="color:#059669"><t t-esc="kpis.activos"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">🏪</span><div><div class="pr_kpi_label">COLs en red</div><div class="pr_kpi_value" style="color:#4f46e5"><t t-esc="kpis.totalCols"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">💶</span><div><div class="pr_kpi_label">Total cobrado</div><div class="pr_kpi_value" style="color:#059669"><t t-esc="fmt(kpis.totalEarned)"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">⏳</span><div><div class="pr_kpi_label">Pendiente SEPA</div><div class="pr_kpi_value" style="color:#d97706"><t t-esc="fmt(kpis.totalPending)"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">⚠️</span><div><div class="pr_kpi_label">Sin IBAN</div><div class="pr_kpi_value" style="color:#dc2626"><t t-esc="kpis.sinIBAN"/></div></div></div>
+        </div>
+        <!-- Reglas negocio -->
+        <div class="pr_info_banner">
+            <span>🎯 CCP 3% · COM 2% · ASE 2% — comisión pasiva sobre ventas del COL captado</span>
+            <span>🚫 Sin QR propio — solo captan COLs para la red</span>
+            <span>📅 Pago día 6 SEPA · mínimo 50€</span>
+            <span>🔒 Promotor no ve wallet del COL (cuentas estancas)</span>
+        </div>
+        <!-- Filtros -->
+        <div class="pr_filter_bar">
+            <input class="pr_input" placeholder="🔍 Nombre, DNI, email, ciudad..." t-att-value="state.search" t-on-input="setSearch"/>
+            <select class="pr_select" t-on-change="setRole">
+                <option value="all">Todos los roles</option>
+                <option value="CCP">🎯 CCP — 3%</option>
+                <option value="COM">💼 COM — 2%</option>
+                <option value="ASE">🤝 ASE — 2%</option>
+            </select>
+            <select class="pr_select" t-on-change="setActive">
+                <option value="all">Todos</option>
+                <option value="active">✅ Activos</option>
+                <option value="inactive">🚫 Inactivos</option>
+            </select>
+            <span class="pr_result_count"><t t-esc="filtered.length"/> resultado(s)</span>
+        </div>
+        <!-- Tabla -->
+        <div class="pr_table_wrapper">
+            <table class="pr_table">
+                <thead><tr>
+                    <th>Promotor / Rol</th><th>DNI / Contacto</th><th>Ciudad</th>
+                    <th>COLs captados</th><th>Ventas red</th><th>Ganado</th>
+                    <th>Pendiente SEPA</th><th>Docs</th><th>Estado</th><th>Ver</th>
+                </tr></thead>
+                <tbody>
+                    <t t-if="filtered.length === 0">
+                        <tr><td colspan="10" class="pr_table_empty">No se encontraron promotores.</td></tr>
+                    </t>
+                    <t t-foreach="filtered" t-as="p" t-key="p.id">
+                        <tr t-att-class="!p.active ? 'pr_row_inactive' : ''">
+                            <td>
+                                <div class="pr_actor_cell">
+                                    <div class="pr_actor_avatar" t-att-style="'background:' + roleCfg(p.role).bg + ';border:1px solid ' + roleCfg(p.role).color + '44'">
+                                        <t t-esc="roleCfg(p.role).icon"/>
+                                    </div>
+                                    <div>
+                                        <div class="pr_actor_name"><t t-esc="p.name"/></div>
+                                        <span class="pr_badge" t-att-style="'background:' + roleCfg(p.role).bg + ';color:' + roleCfg(p.role).color">
+                                            <t t-esc="p.role"/> · <t t-esc="roleCfg(p.role).pct"/>%
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="pr_mono pr_accent pr_text_xs"><t t-esc="p.dni || '—'"/></div>
+                                <div class="pr_text_xs pr_muted"><t t-esc="p.email"/></div>
+                                <div class="pr_text_xs pr_muted"><t t-esc="p.phone || ''"/></div>
+                            </td>
+                            <td class="pr_text_sm pr_muted"><t t-esc="p.city || '—'"/></td>
+                            <td class="pr_text_center">
+                                <span class="pr_badge" t-att-style="p.cols_captados > 0 ? 'background:' + roleCfg(p.role).bg + ';color:' + roleCfg(p.role).color : 'background:var(--pr-glass);color:var(--pr-muted)'">
+                                    🏪 <t t-esc="p.cols_captados"/>
+                                </span>
+                            </td>
+                            <td style="font-weight:700"><t t-esc="fmt(p.total_sales_red)"/></td>
+                            <td style="font-weight:800;color:#059669"><t t-esc="fmt(p.total_earned)"/></td>
+                            <td>
+                                <div t-att-style="p.pending_payout > 0 ? 'font-weight:800;color:#d97706' : 'color:var(--pr-muted)'">
+                                    <t t-esc="fmt(p.pending_payout)"/>
+                                </div>
+                                <t t-if="p.pending_payout > 0 and p.pending_payout &lt; 50">
+                                    <div class="pr_text_xs" style="color:#d97706;font-weight:700">⚠️ min. 50€</div>
+                                </t>
+                                <t t-if="p.pending_payout >= 50">
+                                    <div class="pr_text_xs" style="color:#059669;font-weight:700">✅ Día 6 SEPA</div>
+                                </t>
+                            </td>
+                            <td>
+                                <div class="pr_text_xs" t-att-style="p.iban_verified ? 'color:#059669;font-weight:700' : 'color:#dc2626;font-weight:700'">
+                                    <t t-esc="p.iban_verified ? '✅ IBAN' : '❌ IBAN'"/>
+                                </div>
+                                <div class="pr_text_xs" t-att-style="p.contrato_firmado ? 'color:#059669;font-weight:700' : 'color:#d97706;font-weight:700'">
+                                    <t t-esc="p.contrato_firmado ? '✅ Contrato' : '⚠️ Contrato'"/>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="pr_badge" t-att-style="p.active ? 'background:rgba(5,150,105,0.1);color:#059669' : 'background:rgba(220,38,38,0.1);color:#dc2626'">
+                                    <t t-esc="p.active ? '✅ Activo' : '🚫 Pausa'"/>
+                                </span>
+                            </td>
+                            <td><button class="pr_btn_icon" t-on-click="() => this.select(p)">👁️</button></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <div class="pr_table_footer">
+                <span><t t-esc="filtered.length"/> de <t t-esc="state.promotores.length"/> promotores · Pago día 6 SEPA · mín. 50€</span>
+                <span>Sin QR propio · Solo captan COLs</span>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div t-if="state.selected" class="pr_modal_overlay" t-on-click="closeModal">
+            <div class="pr_modal_card" t-on-click.stop="">
+                <div class="pr_modal_header">
+                    <h3><t t-esc="roleCfg(state.selected.role).icon"/> <t t-esc="state.selected.name"/></h3>
+                    <button class="pr_modal_close" t-on-click="closeModal">✕</button>
+                </div>
+                <div class="pr_detail_rows">
+                    <div class="pr_detail_row"><span class="pr_detail_label">Rol</span><span><t t-esc="roleCfg(state.selected.role).label"/> (<t t-esc="state.selected.role"/>)</span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">% Comisión</span><span><t t-esc="state.selected.commission_pct"/>% pasivo sobre ventas del COL captado</span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">DNI/NIF</span><span><t t-esc="state.selected.dni || '—'"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Email</span><span><t t-esc="state.selected.email"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Teléfono</span><span><t t-esc="state.selected.phone || '—'"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Ciudad</span><span><t t-esc="state.selected.city || '—'"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">COLs captados</span><span><t t-esc="state.selected.cols_captados"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Ventas red</span><span><t t-esc="fmt(state.selected.total_sales_red)"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Total ganado</span><span><t t-esc="fmt(state.selected.total_earned)"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Pendiente SEPA</span><span><t t-esc="fmt(state.selected.pending_payout)"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">IBAN</span><span><t t-esc="state.selected.iban_verified ? '✅ Verificado' : '❌ Pendiente'"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Contrato</span><span><t t-esc="state.selected.contrato_firmado ? '✅ Firmado' : '⚠️ Pendiente'"/></span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">QR propio</span><span>🚫 No aplica — solo captan COLs</span></div>
+                    <div class="pr_detail_row"><span class="pr_detail_label">Alta en red</span><span><t t-esc="state.selected.joined_at || '—'"/></span></div>
+                </div>
+                <div class="pr_modal_actions"><button class="pr_btn pr_btn_secondary" t-on-click="closeModal">Cerrar</button></div>
+            </div>
+        </div>
+    </t>
+</div>
+</t>
+</templates>

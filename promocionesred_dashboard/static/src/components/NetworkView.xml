@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="promocionesred_dashboard.PrNetworkView">
+        <div class="pr_animate_in">
+            <header class="pr_section_header">
+                <div>
+                    <h2>Sales Network (COL/SUB)</h2>
+                    <p class="pr_text_muted">Manage your distribution hierarchy and commission splits.</p>
+                </div>
+                <button class="pr_btn_primary" t-on-click="() => this.state.showAddForm = !state.showAddForm">
+                    <t t-if="state.showAddForm">✕ Close Form</t>
+                    <t t-else="">+ Register Actor</t>
+                </button>
+            </header>
+
+            <!-- Formulario nuevo actor -->
+            <div class="pr_card pr_animate_in" style="margin-bottom:2rem" t-if="state.showAddForm">
+                <h3>New Network Member</h3>
+                <form t-on-submit="handleAddSubmit" style="margin-top:1rem">
+                    <div class="pr_form_row">
+                        <div class="pr_form_group">
+                            <label>Display Name</label>
+                            <input type="text" t-att-value="state.newActor.name"
+                                t-on-input="(ev) => this.onNewActorField('name', ev)" required="1"/>
+                        </div>
+                        <div class="pr_form_group">
+                            <label>System Role</label>
+                            <select t-on-change="(ev) => this.onNewActorField('role', ev)">
+                                <option value="2 COL">2 COL (Collaborator)</option>
+                                <option value="2.6 SUB">2.6 SUB (Sub-Collaborator)</option>
+                                <option value="2.2 CCP">2.2 CCP (Central Partner)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pr_form_row">
+                        <div class="pr_form_group">
+                            <label>Superior (Manager)</label>
+                            <select t-on-change="(ev) => this.onNewActorField('parent_id', ev)">
+                                <option value="">Independent (Direct COL)</option>
+                                <t t-foreach="colNodes" t-as="col" t-key="col.id">
+                                    <option t-att-value="col.id"><t t-esc="col.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="pr_form_group">
+                            <label>Status</label>
+                            <select t-on-change="(ev) => this.onNewActorField('status', ev)">
+                                <option value="Active">Active</option>
+                                <option value="Pending">Pending Audit</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="pr_btn_primary" style="width:100%">Complete Onboarding</button>
+                </form>
+            </div>
+
+            <!-- Sub-nav: list / hierarchy -->
+            <div class="pr_sub_nav">
+                <button t-att-class="state.viewMode === 'list' ? 'pr_sub_nav_item active' : 'pr_sub_nav_item'"
+                    t-on-click="() => this.state.viewMode = 'list'">Detailed List</button>
+                <button t-att-class="state.viewMode === 'hierarchy' ? 'pr_sub_nav_item active' : 'pr_sub_nav_item'"
+                    t-on-click="() => this.state.viewMode = 'hierarchy'">Network Hierarchy</button>
+            </div>
+
+            <!-- KPIs red -->
+            <div class="pr_kpi_grid">
+                <div class="pr_card" style="grid-column:span 3;padding:0.75rem 1.25rem;display:flex;align-items:center;gap:1rem">
+                    <span style="font-size:1.25rem">🔍</span>
+                    <input type="text" placeholder="Search by name or role..."
+                        style="border:none;background:transparent;width:100%;font-size:0.875rem"
+                        t-att-value="state.searchTerm"
+                        t-on-input="(ev) => this.state.searchTerm = ev.target.value"/>
+                </div>
+                <div class="pr_card" style="border-left:4px solid var(--pr-accent)">
+                    <h3>Collaborators (2 COL)</h3>
+                    <div class="pr_kpi_value" style="color:var(--pr-accent)">
+                        <t t-esc="props.network.filter(n => n.role === '2 COL').length"/>
+                    </div>
+                </div>
+                <div class="pr_card" style="border-left:4px solid var(--pr-secondary)">
+                    <h3>Sub-Collab (2.6 SUB)</h3>
+                    <div class="pr_kpi_value">
+                        <t t-esc="props.network.filter(n => n.role === '2.6 SUB').length"/>
+                    </div>
+                </div>
+                <div class="pr_card">
+                    <h3>Total Active</h3>
+                    <div class="pr_kpi_value">
+                        <t t-esc="props.network.filter(n => n.status === 'Active').length"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista Lista -->
+            <div t-if="state.viewMode === 'list'" class="pr_table_container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Actor</th><th>Role</th><th>Parent</th>
+                            <th>Status</th><th>% Base</th><th>% Override</th>
+                            <th style="text-align:right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="filteredNetwork" t-as="actor" t-key="actor.id">
+                            <tr>
+                                <td style="font-weight:600">
+                                    <input t-if="state.editingId === actor.id" class="pr_table_input"
+                                        t-att-value="state.editValues.name"
+                                        t-on-input="(ev) => this.onEditField('name', ev)"/>
+                                    <t t-else="" t-esc="actor.name"/>
+                                </td>
+                                <td>
+                                    <select t-if="state.editingId === actor.id" class="pr_table_select"
+                                        t-on-change="(ev) => this.onEditField('role', ev)">
+                                        <option value="2 COL">2 COL</option>
+                                        <option value="2.6 SUB">2.6 SUB</option>
+                                        <option value="2.2 CCP">2.2 CCP</option>
+                                    </select>
+                                    <span t-else="" t-att-class="'pr_badge ' + (actor.role === '2 COL' ? 'pr_badge_warning' : 'pr_badge_info')">
+                                        <t t-esc="actor.role"/>
+                                    </span>
+                                </td>
+                                <td class="pr_text_muted">
+                                    <t t-esc="actor.parent_id and actor.parent_id[1] or 'Independent'"/>
+                                </td>
+                                <td>
+                                    <span t-att-class="'pr_badge ' + (actor.status === 'Active' ? 'pr_badge_success' : 'pr_badge_info')">
+                                        <t t-esc="actor.status"/>
+                                    </span>
+                                </td>
+                                <td><t t-esc="actor.base_commission_pct"/>%</td>
+                                <td><t t-esc="actor.override_commission_pct"/>%</td>
+                                <td class="pr_row_actions">
+                                    <t t-if="state.editingId === actor.id">
+                                        <button class="pr_btn_action pr_btn_save" t-on-click="saveEdit">💾</button>
+                                        <button class="pr_btn_action" t-on-click="cancelEditing">✕</button>
+                                    </t>
+                                    <t t-else="">
+                                        <button class="pr_btn_action" t-on-click="() => this.startEditing(actor)">✏️</button>
+                                        <button class="pr_btn_action pr_btn_delete" t-on-click="() => this.handleDelete(actor.id)">🗑️</button>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Vista Jerarquía -->
+            <div t-if="state.viewMode === 'hierarchy'" class="pr_hierarchy_container">
+                <t t-foreach="colNodes" t-as="col" t-key="col.id">
+                    <div class="pr_card" style="margin-bottom:1rem;border-left:4px solid var(--pr-accent)">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div style="font-weight:700">
+                                <t t-esc="col.name"/>
+                                <span class="pr_badge pr_badge_warning" style="margin-left:8px">COL</span>
+                            </div>
+                            <div class="pr_text_muted" style="font-size:0.75rem">Status: <t t-esc="col.status"/></div>
+                        </div>
+                        <div style="margin-top:1rem;padding-left:1rem">
+                            <t t-foreach="getChildren(col.id)" t-as="sub" t-key="sub.id">
+                                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+                                    <div style="width:8px;height:8px;border-radius:50%;background:var(--pr-secondary)"/>
+                                    <div style="flex:1"><t t-esc="sub.name"/> <span class="pr_badge pr_badge_info">SUB</span></div>
+                                    <div class="pr_text_muted" style="font-size:0.75rem"><t t-esc="sub.base_commission_pct"/>% Comm.</div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

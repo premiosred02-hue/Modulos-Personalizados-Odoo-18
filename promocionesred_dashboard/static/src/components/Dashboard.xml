@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PrDashboard" owl="1">
+<div class="pr_dash_root">
+
+    <!-- TOPBAR HEADER -->
+    <div class="pr_dash_topbar">
+        <div class="pr_dash_topbar_left">
+            <div class="pr_dash_topbar_badges">
+                <span class="pr_dash_badge_campaign">CAMPANA 2026</span>
+                <span class="pr_dash_badge_live">LIVE</span>
+            </div>
+            <h1 class="pr_dash_title">Panel de Control</h1>
+            <p class="pr_dash_sub">Red PremiosRed · <t t-esc="totalActors"/> actores · Kill switch en <t t-esc="daysLeft"/>d</p>
+        </div>
+        <div class="pr_dash_topbar_right">
+            <button class="pr_dash_btn_primary" t-on-click="() => this.goTo('onboarding')">+ Nuevo actor</button>
+            <button class="pr_dash_btn_secondary" t-on-click="() => this.goTo('empresas')">Ver empresas</button>
+        </div>
+    </div>
+
+    <!-- KPI GRID -->
+    <div class="pr_dash_kpi_grid">
+        <div class="pr_dash_kpi">
+            <div class="pr_dash_kpi_label">Ingresos</div>
+            <div class="pr_dash_kpi_value"><t t-esc="revenue"/>€</div>
+            <div class="pr_dash_kpi_footer">
+                <span class="pr_dash_trend up">+12.5%</span>
+                <span class="pr_dash_kpi_sub">este mes</span>
+            </div>
+        </div>
+        <div class="pr_dash_kpi">
+            <div class="pr_dash_kpi_label">Escaneos QR</div>
+            <div class="pr_dash_kpi_value"><t t-esc="scans"/></div>
+            <div class="pr_dash_kpi_footer">
+                <span class="pr_dash_trend up">+28.3%</span>
+                <span class="pr_dash_kpi_sub">acumulado</span>
+            </div>
+        </div>
+        <div class="pr_dash_kpi">
+            <div class="pr_dash_kpi_label">Conversion</div>
+            <div class="pr_dash_kpi_value"><t t-esc="convRate"/>%</div>
+            <div class="pr_dash_kpi_footer">
+                <span class="pr_dash_trend up">+1.5%</span>
+                <span class="pr_dash_kpi_sub">venta/scan</span>
+            </div>
+        </div>
+        <div class="pr_dash_kpi">
+            <div class="pr_dash_kpi_label">Actores Red</div>
+            <div class="pr_dash_kpi_value"><t t-esc="totalActors"/></div>
+            <div class="pr_dash_kpi_footer">
+                <span class="pr_dash_kpi_sub"><t t-esc="activeActors"/> activos</span>
+            </div>
+        </div>
+        <div class="pr_dash_kpi">
+            <div class="pr_dash_kpi_label">COLs</div>
+            <div class="pr_dash_kpi_value"><t t-esc="colCount"/></div>
+            <div class="pr_dash_kpi_footer">
+                <span class="pr_dash_kpi_sub">puntos de venta</span>
+            </div>
+        </div>
+        <div class="pr_dash_kpi pr_dash_kpi_dark">
+            <div class="pr_dash_kpi_label">Provision Premios</div>
+            <div class="pr_dash_kpi_value">15.123€</div>
+            <div class="pr_dash_kpi_footer">
+                <span class="pr_dash_kpi_sub">IAJ + IRPF bloqueado</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILA PRINCIPAL: ventas + feed -->
+    <div class="pr_dash_row2">
+
+        <!-- Ventas recientes -->
+        <div class="pr_dash_card pr_dash_sales">
+            <div class="pr_dash_card_head">
+                <span class="pr_dash_card_title">Ventas recientes</span>
+                <button class="pr_dash_see_all" t-on-click="() => this.goTo('cupones')">Ver todas</button>
+            </div>
+            <div class="pr_table_wrapper">
+            <table class="pr_table">
+                <thead>
+                    <tr>
+                        <th>Local</th><th>Pack</th><th>Zona</th><th>Fecha</th><th>EUR</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="sales" t-as="s" t-key="s.id">
+                        <tr>
+                            <td class="pr_dash_td_bold" t-esc="s.local"/>
+                            <td class="pr_dash_td_muted" t-esc="s.pack"/>
+                            <td><span class="pr_dash_zone_badge" t-esc="s.zone"/></td>
+                            <td class="pr_dash_td_subtle" t-esc="s.date"/>
+                            <td class="pr_dash_td_amount" t-esc="s.pvp"/>
+                            <td>
+                                <span t-att-class="'pr_dash_dot ' + (s.ok ? 'pr_dash_dot_ok' : 'pr_dash_dot_warn')"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- Feed de actividad -->
+        <div class="pr_dash_card pr_dash_feed">
+            <div class="pr_dash_card_head">
+                <span class="pr_dash_card_title">Actividad</span>
+                <span class="pr_dash_live_dot">live</span>
+            </div>
+            <div class="pr_dash_feed_list">
+                <t t-foreach="feed" t-as="f" t-key="f_index">
+                    <div class="pr_dash_feed_item">
+                        <span class="pr_dash_feed_time" t-esc="f.t"/>
+                        <div class="pr_dash_feed_body">
+                            <div class="pr_dash_feed_text" t-esc="f.text"/>
+                            <span class="pr_dash_feed_label"
+                                  t-att-style="'color:' + (f.label === 'VENTA' ? '#16a34a' : f.label === 'ACTIV.' ? '#4f46e5' : '#d97706')"
+                                  t-esc="f.label"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILA INFERIOR: zonas + red actores -->
+    <div class="pr_dash_row3">
+
+        <!-- Zonas activas -->
+        <div class="pr_dash_card">
+            <div class="pr_dash_card_head">
+                <span class="pr_dash_card_title">Zonas activas</span>
+                <span class="pr_dash_card_sub"><t t-esc="scans"/> scans totales</span>
+            </div>
+            <div class="pr_dash_zones">
+                <t t-foreach="zones" t-as="z" t-key="z.name">
+                    <div class="pr_dash_zone_row">
+                        <div class="pr_dash_zone_meta">
+                            <span class="pr_dash_zone_name" t-esc="z.name"/>
+                            <span class="pr_dash_zone_n" t-esc="z.n"/>
+                        </div>
+                        <div class="pr_dash_bar_track">
+                            <div class="pr_dash_bar_fill" t-att-style="'width:' + z.pct + '%'"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+
+        <!-- Red de actores -->
+        <div class="pr_dash_card">
+            <div class="pr_dash_card_head">
+                <span class="pr_dash_card_title">Red de actores</span>
+                <span class="pr_dash_card_sub"><t t-esc="totalActors"/> total</span>
+            </div>
+            <div class="pr_dash_zones">
+                <t t-foreach="actors" t-as="a" t-key="a.code">
+                    <div class="pr_dash_actor_row">
+                        <span class="pr_dash_actor_code" t-esc="a.code"/>
+                        <div class="pr_dash_actor_info">
+                            <div class="pr_dash_actor_meta">
+                                <span class="pr_dash_actor_name" t-esc="a.name"/>
+                                <span class="pr_dash_actor_n" t-esc="getActorCount(a.code)"/>
+                            </div>
+                            <div class="pr_dash_bar_track">
+                                <div class="pr_dash_bar_fill"
+                                     t-att-style="'width:' + a.pct + '%; background:' + a.color"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIPELINE LEADS (heredado) -->
+    <div class="pr_dash_card" t-if="leads.length > 0">
+        <div class="pr_dash_card_head">
+            <span class="pr_dash_card_title">Pipeline de Leads</span>
+            <span class="pr_dash_card_sub"><t t-esc="leads.length"/> registros</span>
+        </div>
+        <div class="pr_table_wrapper">
+        <table class="pr_table">
+            <thead>
+                <tr>
+                    <th>Entidad</th><th>Tipo</th><th>Contacto</th><th>Estado</th><th>Fecha</th><th style="text-align:right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="leads" t-as="lead" t-key="lead.id">
+                    <tr>
+                        <td>
+                            <input t-if="state.editingId === lead.id" class="pr_table_input"
+                                   t-att-value="state.editValues.name"
+                                   t-on-input="(ev) => this.onEditField('name', ev)"/>
+                            <div t-else="">
+                                <div style="font-weight:700"><t t-esc="lead.name"/></div>
+                                <div class="pr_text_muted" style="font-size:0.68rem"><t t-esc="lead.tax_id"/></div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="pr_badge pr_badge_info" style="font-size:0.65rem">
+                                <t t-esc="getTypeLabel(lead.lead_type)"/>
+                            </span>
+                        </td>
+                        <td style="font-size:0.75rem">
+                            <div><t t-esc="lead.email || '-'"/></div>
+                            <div class="pr_text_muted"><t t-esc="lead.phone || '-'"/></div>
+                        </td>
+                        <td>
+                            <span t-att-class="'pr_badge ' + (lead.status === 'Contratado' ? 'pr_badge_success' : lead.status === 'En Negociacion' ? 'pr_badge_warning' : 'pr_badge_info')">
+                                <t t-esc="lead.status"/>
+                            </span>
+                        </td>
+                        <td style="font-size:0.75rem"><t t-esc="formatDate(lead.create_date)"/></td>
+                        <td class="pr_row_actions">
+                            <t t-if="state.editingId === lead.id">
+                                <button class="pr_btn_action pr_btn_save" t-on-click="saveEdit">Guardar</button>
+                                <button class="pr_btn_action" t-on-click="cancelEditing">Cancelar</button>
+                            </t>
+                            <t t-else="">
+                                <button class="pr_btn_action" t-on-click="() => this.startEditing(lead)">Editar</button>
+                                <button class="pr_btn_action pr_btn_delete" t-on-click="() => this.handleDelete(lead.id)">Eliminar</button>
+                            </t>
+                        </td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="pr_dash_quick_actions">
+        <t t-foreach="quickActions" t-as="qa" t-key="qa.label">
+            <button
+                t-att-class="'pr_dash_qa_btn ' + (qa.primary ? 'pr_dash_qa_primary' : '')"
+                t-on-click="() => this.goTo(qa.section)"
+                t-esc="qa.label"/>
+        </t>
+    </div>
+
+    <!-- BLOQUE FISCAL / COMPLIANCE -->
+    <div class="pr_dash_compliance">
+        <div class="pr_dash_compliance_item pr_dash_comp_green">
+            <div class="pr_dash_comp_icon">✅</div>
+            <div>
+                <div class="pr_dash_comp_title">Art. 3.i Ley 13/2011</div>
+                <div class="pr_dash_comp_sub">Combinacion Aleatoria -- sin licencia DGOJ</div>
+            </div>
+        </div>
+        <div class="pr_dash_compliance_item pr_dash_comp_blue">
+            <div class="pr_dash_comp_icon">🏛️</div>
+            <div>
+                <div class="pr_dash_comp_title">Deposito Notarial</div>
+                <div class="pr_dash_comp_sub">Notaria ABACO -- Ciudad Real (pendiente)</div>
+            </div>
+        </div>
+        <div class="pr_dash_compliance_item pr_dash_comp_amber">
+            <div class="pr_dash_comp_icon">⚠️</div>
+            <div>
+                <div class="pr_dash_comp_title">Modelo 685 AEAT</div>
+                <div class="pr_dash_comp_sub">IAJ 10% -- 4.000 EUR -- BLOQUEANTE pre-venta</div>
+            </div>
+        </div>
+        <div class="pr_dash_compliance_item pr_dash_comp_red">
+            <div class="pr_dash_comp_icon">⏱️</div>
+            <div>
+                <div class="pr_dash_comp_title">Kill Switch en <t t-esc="daysLeft"/> dias</div>
+                <div class="pr_dash_comp_sub">21/12/2026 23:59:59 -- todas las comisiones cesan</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</t>
+</templates>

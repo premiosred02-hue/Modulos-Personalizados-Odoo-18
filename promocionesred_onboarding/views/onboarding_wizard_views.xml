@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_onboarding_wizard_form" model="ir.ui.view">
+        <field name="name">premiosred.onboarding.wizard.form</field>
+        <field name="model">premiosred.onboarding.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Onboarding de Actor KYB">
+                <field name="step" invisible="1"/>
+                
+                <!-- PASO 1: Selección de Tipo -->
+                <group invisible="step != 1">
+                    <div class="oe_title">
+                        <h1>Bienvenido al Onboarding de PremiosRed</h1>
+                        <p>Seleccione el tipo de actor que desea dar de alta en el sistema.</p>
+                    </div>
+                    <group>
+                        <field name="actor_type" widget="radio"/>
+                    </group>
+                </group>
+
+                <!-- PASO 2: Datos Básicos y Específicos -->
+                <group invisible="step != 2">
+                    <group string="Datos de Identidad">
+                        <field name="name" required="step == 2"/>
+                        <field name="nif" required="step == 2"/>
+                        <field name="is_company" invisible="actor_type in ('ccp', 'com', 'ase', 'col')"/>
+                    </group>
+                    <group string="Contacto y Bancario">
+                        <field name="email" widget="email" required="step == 2"/>
+                        <field name="phone" widget="phone" required="step == 2"/>
+                        <field name="address"/>
+                        <field name="iban" required="step == 2"/>
+                    </group>
+
+                    <!-- Específicos COL -->
+                    <group string="Datos del Local (COL)" invisible="actor_type != 'col'">
+                        <field name="local_name" required="actor_type == 'col' and step == 2"/>
+                        <field name="local_type" required="actor_type == 'col' and step == 2"/>
+                        <field name="local_address" required="actor_type == 'col' and step == 2"/>
+                        <field name="local_footfall"/>
+                        <field name="captador_id"/>
+                    </group>
+
+                    <!-- Específicos SUB -->
+                    <group string="Vinculación a Local (SUB)" invisible="actor_type != 'sub'">
+                        <field name="col_id" required="actor_type == 'sub' and step == 2"/>
+                    </group>
+                </group>
+
+                <!-- PASO 3: Subida de Documentos KYB -->
+                <group invisible="step != 3">
+                    <div class="alert alert-info" role="alert">
+                        Por favor, adjunte la documentación requerida para la verificación KYB.
+                    </div>
+                    <group string="Documentos Personales">
+                        <field name="doc_dni_front" filename="DNI_Anverso.pdf" required="step == 3"/>
+                        <field name="doc_dni_back" filename="DNI_Reverso.pdf"/>
+                    </group>
+                    <group string="Documentos de Empresa / Autónomo" invisible="actor_type == 'ase'">
+                        <field name="doc_cif" invisible="actor_type != 'col' or is_company == False"/>
+                        <field name="doc_reta" invisible="actor_type not in ('sub', 'ccp', 'com')"/>
+                        <field name="doc_aeat" invisible="actor_type != 'ccp'"/>
+                        <field name="doc_ss" invisible="actor_type != 'ccp'"/>
+                        <field name="doc_ubo" invisible="actor_type != 'col' or is_company == False"/>
+                    </group>
+                    <group string="Otros">
+                        <field name="doc_iban" invisible="actor_type != 'col'"/>
+                        <field name="doc_foto_local" invisible="actor_type != 'col'"/>
+                        <field name="doc_auth_col" invisible="actor_type != 'sub'"/>
+                    </group>
+                </group>
+
+                <!-- PASO 4: Contrato y Consentimiento -->
+                <group invisible="step != 4">
+                    <group string="Contrato Mercantil">
+                        <field name="doc_contract" filename="Contrato_Firmado.pdf" required="step == 4"/>
+                    </group>
+                    <group string="Consentimientos Legales">
+                        <field name="acepta_contrato" required="step == 4"/>
+                        <field name="acepta_privacidad" required="step == 4"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="action_previous_step" string="Anterior" type="object" class="btn-secondary" invisible="step == 1"/>
+                    <button name="action_next_step" string="Siguiente" type="object" class="btn-primary" invisible="step == 4"/>
+                    <button name="action_create_actor" string="Completar Alta y Crear Actor" type="object" class="btn-success" invisible="step != 4"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_onboarding_wizard" model="ir.actions.act_window">
+        <field name="name">Alta Nuevo Actor (KYB)</field>
+        <field name="res_model">premiosred.onboarding.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

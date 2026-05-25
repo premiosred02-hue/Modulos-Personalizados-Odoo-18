@@ -1,0 +1,701 @@
+/**
+ * templates.css
+ * Estilos de los templates de cartel para OWL / Odoo 18
+ *
+ * SCOPE: Todas las reglas están dentro de .cc-design-canvas
+ * para NO contaminar el CSS global de Odoo / Bootstrap 5.
+ *
+ * Las plantillas tienen dimensiones físicas (mm) porque son documentos
+ * de impresión. El zoom/transform del editor las escala visualmente.
+ */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TEMPLATE A4 V2 — 210x297mm (vertical stack, layout principal)
+   ══════════════════════════════════════════════════════════════════════════ */
+.cc-design-canvas .template-a4-v2 {
+    --primary-orange: #f37021;
+    --dark-blue: #232f3e;
+
+    width: 210mm;
+    height: 297mm;
+    padding: 8mm;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: white;
+    color: #333;
+    font-family: 'Inter', Arial, sans-serif;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* ── Partes comunes de los templates ─────────────────────────────────── */
+.cc-design-canvas .template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 10px 0;
+    margin-bottom: 5px;
+}
+
+.cc-design-canvas .template-brand {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--primary-orange, #f37021);
+}
+
+.cc-design-canvas .template-brand span { color: #333; }
+
+.cc-design-canvas .amazon-header-logo { height: 35px; }
+
+.cc-design-canvas .subtitle-top {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: #333;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.cc-design-canvas .promo-title-main {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 900;
+    color: #333;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.cc-design-canvas .highlight-bar {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 19px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* ── Sección solidaria ──────────────────────────────────────────────── */
+.cc-design-canvas .support-section {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.cc-design-canvas .support-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.cc-design-canvas .support-subtitle {
+    font-size: 12px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.cc-design-canvas .charity-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.cc-design-canvas .charity-box {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.cc-design-canvas .charity-icon {
+    font-size: 20px;
+    min-width: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.cc-design-canvas .charity-box.cancer  { border-color: #fce4ec; background: #fffafb; }
+.cc-design-canvas .charity-box.caritas { border-color: #ffebee; background: #fffcfc; }
+.cc-design-canvas .charity-box.manos   { border-color: #e3f2fd; background: #fcfdfe; }
+.cc-design-canvas .charity-box.iglesia { border-color: #f3e5f5; background: #faf8ff; }
+
+.cc-design-canvas .charity-box-text {
+    font-size: 7px;
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.cc-design-canvas .charity-box-text span {
+    display: block;
+    color: #cc0000;
+    font-size: 7.5px;
+    margin-bottom: 1px;
+}
+
+/* ── Packs Container ─────────────────────────────────────────────────── */
+.cc-design-canvas .packs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.cc-design-canvas .improved-pack-card {
+    border: 2px solid;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    cursor: grab;
+    transition: all 0.2s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.cc-design-canvas .improved-pack-card:active { cursor: grabbing; }
+
+.cc-design-canvas .improved-pack-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+    border-style: dashed;
+}
+
+.cc-design-canvas .improved-pack-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.cc-design-canvas .pack-top-label {
+    color: white;
+    text-align: center;
+    padding: 3px;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.cc-design-canvas .pack-main-content {
+    display: flex;
+    padding: 4px 10px;
+    background: white;
+    align-items: center;
+}
+
+.cc-design-canvas .pack-logo-container {
+    width: 65px;
+    height: 65px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.cc-design-canvas .pack-logo-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.cc-design-canvas .pack-details { flex: 1; }
+
+.cc-design-canvas .pack-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cc-design-canvas .pack-details li {
+    font-size: 9.5px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    line-height: 1.1;
+    color: #000;
+    padding-left: 8px;
+    position: relative;
+}
+
+.cc-design-canvas .pack-details li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary-orange, #f37021);
+    font-size: 8px;
+}
+
+.cc-design-canvas .pack-price-tag {
+    width: 85px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.cc-design-canvas .price-small-label {
+    background: #333;
+    color: white;
+    font-size: 8px;
+    padding: 0 4px;
+    font-weight: 900;
+    border-radius: 1px;
+    display: inline-block;
+}
+
+.cc-design-canvas .price-amount { font-size: 42px; font-weight: 900; }
+.cc-design-canvas .price-amount span { font-size: 20px; }
+
+.cc-design-canvas .pack-footer-bar {
+    color: white;
+    text-align: center;
+    padding: 2px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* ── Bottom section (Legal + CTA + QR) ─────────────────────────────── */
+.cc-design-canvas .bottom-section {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 36% 28% 36%;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.cc-design-canvas .legal-box {
+    font-size: 7px;
+    line-height: 1.25;
+    font-weight: 700;
+    text-align: justify;
+    color: #333;
+}
+
+.cc-design-canvas .call-to-action {
+    color: var(--primary-orange, #f37021);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.cc-design-canvas .cta-text {
+    font-size: 13px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1;
+}
+
+.cc-design-canvas .qr-secure-box {
+    border: 5px solid #ffeb3b;
+    padding: 8px;
+    text-align: center;
+    position: relative;
+    background: white;
+    box-sizing: border-box;
+}
+
+.cc-design-canvas .qr-secure-box img {
+    display: block;
+    margin: 0 auto;
+}
+
+.cc-design-canvas .qr-header-label {
+    background: #ffeb3b;
+    color: #333;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 4px;
+    margin-bottom: 8px;
+}
+
+.cc-design-canvas .qr-footer-label {
+    background: #ffeb3b;
+    color: #333;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 4px;
+    margin-top: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   A4 V1 — 2 columnas con grid de packs
+   ══════════════════════════════════════════════════════════════════════════ */
+.cc-design-canvas .template-a4-v2.a4-v1 { /* mismo contenedor base */ }
+
+.cc-design-canvas .a4-v1 .main-layout-v1 {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.cc-design-canvas .a4-v1 .left-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.cc-design-canvas .a4-v1 .title-v1 {
+    font-size: 30px;
+    font-weight: 900;
+    margin: 5px 0;
+    color: #333;
+}
+
+.cc-design-canvas .a4-v1 .subtitle-v1 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #555;
+}
+
+.cc-design-canvas .a4-v1 .promo-context {
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--primary-orange, #f37021);
+    letter-spacing: 0.08em;
+}
+
+.cc-design-canvas .a4-v1 .packs-grid-v1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.cc-design-canvas .a4-v1 .solidarity-stripe {
+    background: #232f3e;
+    color: white;
+    padding: 8px;
+    font-weight: 900;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 9px;
+    margin-top: auto;
+}
+
+.cc-design-canvas .a4-v1 .right-sidebar-v1 {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    padding-top: 40px;
+    flex-shrink: 0;
+}
+
+.cc-design-canvas .a4-v1 .call-to-action-v1 {
+    text-align: center;
+    color: var(--primary-orange, #f37021);
+}
+
+.cc-design-canvas .a4-v1 .cta-arrow { font-size: 24px; }
+.cc-design-canvas .a4-v1 .v1-qr { width: 100%; }
+
+.cc-design-canvas .a4-v1 .partners-box-v1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.cc-design-canvas .a4-v1 .partners-box-v1 img {
+    max-width: 120px;
+    max-height: 30px;
+    object-fit: contain;
+}
+
+.cc-design-canvas .a4-v1 .footer-v1 {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 8px;
+}
+
+.cc-design-canvas .a4-v1 .legal-v1 {
+    font-size: 6.5px;
+    line-height: 1.25;
+    font-weight: 600;
+    color: #444;
+    text-align: justify;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TEMPLATE SQUARE 50x50 CM — 500x500mm
+   ══════════════════════════════════════════════════════════════════════════ */
+.cc-design-canvas .template-square-50 {
+    width: 500mm;
+    height: 500mm;
+    padding: 20mm;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: white;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #333;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.cc-design-canvas .template-square-50 .template-brand  { font-size: 100px; }
+.cc-design-canvas .template-square-50 .amazon-header-logo { height: 90px; }
+.cc-design-canvas .template-square-50 .subtitle-top  { font-size: 30px; margin-bottom: 20px; }
+.cc-design-canvas .template-square-50 .promo-title-main { font-size: 60px; margin-bottom: 25px; }
+.cc-design-canvas .template-square-50 .highlight-bar  { font-size: 50px; padding: 25px; margin-bottom: 25px; }
+.cc-design-canvas .template-square-50 .charity-icon   { font-size: 50px; }
+.cc-design-canvas .template-square-50 .charity-box-text { font-size: 20px; }
+.cc-design-canvas .template-square-50 .charity-box-text span { font-size: 22px; }
+.cc-design-canvas .template-square-50 .support-title  { font-size: 28px; }
+.cc-design-canvas .template-square-50 .pack-top-label { font-size: 40px; padding: 8px; }
+.cc-design-canvas .template-square-50 .pack-logo-container { width: 180px; height: 180px; margin-right: 30px; }
+.cc-design-canvas .template-square-50 .pack-details li { font-size: 26px; margin-bottom: 8px; }
+.cc-design-canvas .template-square-50 .price-amount   { font-size: 110px; }
+.cc-design-canvas .template-square-50 .price-amount span { font-size: 55px; }
+.cc-design-canvas .template-square-50 .pack-footer-bar { font-size: 28px; padding: 8px; }
+.cc-design-canvas .template-square-50 .price-small-label { font-size: 20px; }
+.cc-design-canvas .template-square-50 .pack-price-tag { width: 200px; }
+.cc-design-canvas .template-square-50 .bottom-section { margin-top: 20px; }
+.cc-design-canvas .template-square-50 .legal-box   { font-size: 18px; }
+.cc-design-canvas .template-square-50 .cta-text    { font-size: 34px; }
+.cc-design-canvas .template-square-50 .qr-header-label,
+.cc-design-canvas .template-square-50 .qr-footer-label { font-size: 32px; }
+.cc-design-canvas .template-square-50 .qr-secure-box   { border-width: 12px; padding: 20px; }
+
+.cc-design-canvas .square-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TEMPLATE BANNER 150x50 CM — 1500x500mm
+   ══════════════════════════════════════════════════════════════════════════ */
+.cc-design-canvas .template-banner-150-50 {
+    width: 1500mm;
+    height: 500mm;
+    display: flex;
+    flex-direction: row;
+    background: white;
+    font-family: 'Inter', Arial, sans-serif;
+    overflow: hidden;
+    padding: 20mm;
+    gap: 20mm;
+    box-sizing: border-box;
+}
+
+.cc-design-canvas .banner-left-col {
+    width: 350mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.cc-design-canvas .banner-brand {
+    font-size: 90px;
+    font-weight: 900;
+    color: #f37021;
+    line-height: 1;
+}
+
+.cc-design-canvas .banner-brand span { color: #333; }
+
+.cc-design-canvas .banner-promo-title {
+    font-size: 55px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #333;
+    line-height: 1.1;
+}
+
+.cc-design-canvas .banner-highlight {
+    background: #333;
+    color: white;
+    font-size: 50px;
+    font-weight: 900;
+    padding: 15px 20px;
+    text-transform: uppercase;
+}
+
+.cc-design-canvas .banner-packs-col {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: stretch;
+}
+
+.cc-design-canvas .banner-pack-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 8px;
+    gap: 10px;
+}
+
+.cc-design-canvas .banner-pack-logo {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cc-design-canvas .banner-pack-logo img {
+    max-height: 100%;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+.cc-design-canvas .banner-pack-name {
+    font-size: 36px;
+    font-weight: 900;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.cc-design-canvas .banner-pack-price {
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.cc-design-canvas .banner-qr-col {
+    width: 260mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cc-design-canvas .banner-qr-col .qr-secure-box { border-width: 10px; padding: 15px; }
+.cc-design-canvas .banner-qr-col .qr-header-label,
+.cc-design-canvas .banner-qr-col .qr-footer-label { font-size: 28px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TEMPLATE POSTER 70x100 CM — 700x1000mm
+   ══════════════════════════════════════════════════════════════════════════ */
+.cc-design-canvas .template-poster-70-100 {
+    width: 700mm;
+    height: 1000mm;
+    padding: 20mm;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #333;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.cc-design-canvas .poster-brand  { font-size: 80px !important; }
+.cc-design-canvas .poster-logo   { height: 75px !important; }
+
+.cc-design-canvas .poster-hero-title {
+    font-size: 65px;
+    font-weight: 900;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 15px 0;
+    line-height: 1.1;
+    color: #333;
+}
+
+.cc-design-canvas .poster-highlight-bar {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 42px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.cc-design-canvas .poster-support-section { margin-bottom: 20px; }
+.cc-design-canvas .poster-support-section .charity-grid { gap: 12px; margin-bottom: 15px; }
+.cc-design-canvas .poster-support-section .charity-icon { font-size: 40px; }
+.cc-design-canvas .poster-support-section .charity-box-text { font-size: 16px; }
+.cc-design-canvas .poster-support-section .charity-box-text span { font-size: 18px; }
+
+.cc-design-canvas .poster-packs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.cc-design-canvas .poster-pack .pack-top-label { font-size: 32px; padding: 6px; }
+.cc-design-canvas .poster-pack-logo { width: 130px !important; height: 130px !important; margin-right: 20px !important; }
+.cc-design-canvas .poster-pack .pack-details li { font-size: 18px !important; margin-bottom: 5px !important; }
+.cc-design-canvas .poster-price { width: 160px !important; }
+.cc-design-canvas .poster-price .price-amount { font-size: 80px !important; }
+.cc-design-canvas .poster-price .price-amount span { font-size: 40px !important; }
+.cc-design-canvas .poster-price .price-small-label { font-size: 16px !important; }
+.cc-design-canvas .poster-pack .pack-footer-bar { font-size: 20px; padding: 5px; }
+
+.cc-design-canvas .poster-bottom {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.cc-design-canvas .poster-legal {
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #333;
+    text-align: justify;
+}
+
+.cc-design-canvas .poster-qr-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.cc-design-canvas .poster-qr-zone .qr-secure-box { border-width: 8px; padding: 12px; }
+.cc-design-canvas .poster-qr-zone .qr-header-label,
+.cc-design-canvas .poster-qr-zone .qr-footer-label { font-size: 22px; }
+.cc-design-canvas .poster-qr-zone .cta-text {
+    font-size: 22px;
+    color: #f37021;
+    font-weight: 900;
+    text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRINT MEDIA — se aplica al contexto de impresión directa
+   ══════════════════════════════════════════════════════════════════════════ */
+@media print {
+    .no-print { display: none !important; }
+
+    .cc-design-canvas .template-a4-v2,
+    .cc-design-canvas .template-square-50,
+    .cc-design-canvas .template-banner-150-50,
+    .cc-design-canvas .template-poster-70-100 {
+        box-shadow: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

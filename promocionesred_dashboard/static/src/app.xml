@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <!--
+        ⚠️ REGLA #2: t-name == static template en app.js
+        JS:  static template = "promocionesred_dashboard.DashboardApp";
+        XML: t-name="promocionesred_dashboard.DashboardApp"
+    -->
+    <t t-name="promocionesred_dashboard.DashboardApp">
+        <div class="pr_app_container">
+
+            <!-- Overlay para cerrar menú móvil -->
+            <div t-if="state.isMenuOpen" class="pr_menu_overlay" t-on-click="closeMenu"/>
+
+            <!-- SIDEBAR (equivalente al <aside> del React) -->
+            <aside t-att-class="state.isMenuOpen ? 'pr_sidebar is_open' : 'pr_sidebar'">
+                <div class="pr_logo">PROMOCIONES RED</div>
+                <button class="pr_mobile_close" t-on-click="closeMenu">✕</button>
+
+                <nav class="pr_nav">
+                    <div class="pr_nav_section_label">Operaciones</div>
+                    <button
+                        t-att-class="state.activeTab === 'dashboard' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('dashboard')"
+                    >
+                        <span class="pr_nav_icon">📊</span>
+                        <span>Panel General</span>
+                    </button>
+
+                    <button t-if="canAccess('leads')"
+                        t-att-class="state.activeTab === 'leads' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('leads')"
+                    >
+                        <span class="pr_nav_icon">🎯</span>
+                        <span>Prospectos</span>
+                    </button>
+
+                    <button t-if="canAccess('network')"
+                        t-att-class="state.activeTab === 'network' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('network')"
+                    >
+                        <span class="pr_nav_icon">🌐</span>
+                        <span>Red</span>
+                    </button>
+
+                    <button t-if="canAccess('my-qr')"
+                        t-att-class="state.activeTab === 'my-qr' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('my-qr')"
+                    >
+                        <span class="pr_nav_icon">📱</span>
+                        <span>Mi QR</span>
+                    </button>
+
+                    <button t-if="canAccess('finance')"
+                        t-att-class="state.activeTab === 'finance' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('finance')"
+                    >
+                        <span class="pr_nav_icon">💰</span>
+                        <span>Finanzas</span>
+                    </button>
+
+                    <button t-if="canAccess('email')"
+                        t-att-class="state.activeTab === 'email' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('email')"
+                    >
+                        <span class="pr_nav_icon">✉️</span>
+                        <span>Correo</span>
+                    </button>
+
+                    <button t-if="canAccess('legal')"
+                        t-att-class="state.activeTab === 'legal' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('legal')"
+                    >
+                        <span class="pr_nav_icon">⚖️</span>
+                        <span>Legal</span>
+                    </button>
+
+                    <!-- Solo ADM -->
+                    <t t-if="userRole === 'ADM'">
+                        <button
+                            t-att-class="state.activeTab === 'audit' ? 'pr_nav_item active' : 'pr_nav_item'"
+                            t-on-click="() => this.setTab('audit')"
+                        >
+                            <span class="pr_nav_icon">🔍</span>
+                            <span>Auditoría</span>
+                        </button>
+                        <button
+                            t-att-class="state.activeTab === 'security' ? 'pr_nav_item active' : 'pr_nav_item'"
+                            t-on-click="() => this.setTab('security')"
+                        >
+                            <span class="pr_nav_icon">🔒</span>
+                            <span>Seguridad</span>
+                        </button>
+                    </t>
+
+                    <!-- Seccion Onboarding -->
+                    <div class="pr_nav_section_label">Gestión</div>
+                    <button
+                        t-att-class="state.activeTab === 'onboarding' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('onboarding')"
+                    >
+                        <span class="pr_nav_icon">📝</span>
+                        <span>Registro (Alta)</span>
+                    </button>
+
+                    <!-- Seccion Portal de Ventas -->
+                    <div class="pr_nav_section_label">Portal de Ventas</div>
+                    <button
+                        t-att-class="state.activeTab === 'empresas' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('empresas')"
+                    >
+                        <span class="pr_nav_icon">🏪</span>
+                        <span>Empresas</span>
+                    </button>
+                    <button
+                        t-att-class="state.activeTab === 'promotores' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('promotores')"
+                    >
+                        <span class="pr_nav_icon">🎯</span>
+                        <span>Promotores</span>
+                    </button>
+                    <button
+                        t-att-class="state.activeTab === 'packs' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('packs')"
+                    >
+                        <span class="pr_nav_icon">📦</span>
+                        <span>Paquetes</span>
+                    </button>
+                    <button
+                        t-att-class="state.activeTab === 'cupones' ? 'pr_nav_item active' : 'pr_nav_item'"
+                        t-on-click="() => this.setTab('cupones')"
+                    >
+                        <span class="pr_nav_icon">🎟️</span>
+                        <span>Cupones</span>
+                    </button>
+                </nav>
+
+                <div class="pr_user_footer">
+                    <div class="pr_user_name" t-esc="session.name"/>
+                    <div class="pr_user_role" t-esc="userRole + ' (Privilegios)'"/>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="pr_main">
+                <!-- Header -->
+                <header class="pr_header">
+                    <div class="pr_header_left">
+                        <button class="pr_menu_toggle" t-on-click="toggleMenu">☰</button>
+                        <div>
+                            <h1 class="pr_page_title" t-esc="state.activeTab.replace('-', ' ')"/>
+                            <p class="pr_welcome">Hola, <t t-esc="session.name"/> 👋</p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Loading spinner -->
+                <div t-if="state.isLoading" class="pr_loading">
+                    <i class="fa fa-spinner fa-spin fa-2x"/>
+                    <span>Cargando sistema PROMOCIONES RED...</span>
+                </div>
+
+                <!-- Contenido por tab (equivalente a los {activeTab === 'x' && <Component/>}) -->
+                <div t-elif="!state.isLoading" class="pr_content">
+                    <PrDashboard
+                        t-if="state.activeTab === 'dashboard'"
+                        stats="state.stats"
+                        leads="state.leads"
+                        onDelete.bind="deleteLead"
+                        onUpdate.bind="updateLead"
+                        navigate.bind="setTab"
+                    />
+                    <PrLeadForm
+                        t-if="state.activeTab === 'leads'"
+                        network="state.network"
+                        onAdd.bind="addLead"
+                    />
+                    <PrNetworkView
+                        t-if="state.activeTab === 'network'"
+                        network="state.network"
+                        onAdd.bind="addNetworkActor"
+                        onUpdate.bind="updateNetworkActor"
+                        onDelete.bind="deleteNetworkActor"
+                    />
+                    <PrMyQRView
+                        t-if="state.activeTab === 'my-qr'"
+                    />
+                    <PrEmailManager
+                        t-if="state.activeTab === 'email'"
+                        leads="state.leads"
+                        history="state.emailHistory"
+                        templates="state.emailTemplates"
+                        onClearHistory.bind="clearEmailHistory"
+                        onSaveTemplate.bind="saveTemplate"
+                    />
+                    <PrFinanceView
+                        t-if="state.activeTab === 'finance'"
+                        stats="state.stats"
+                        leads="state.leads"
+                    />
+                    <PrLegalView
+                        t-if="state.activeTab === 'legal'"
+                    />
+                    <PrAuditView
+                        t-if="state.activeTab === 'audit'"
+                    />
+                    <PrSecurityView
+                        t-if="state.activeTab === 'security'"
+                        initialTab="'users'"
+                    />
+                    <PrSecurityView
+                        t-if="state.activeTab === 'movements'"
+                        initialTab="'movements'"
+                    />
+                    <PrOnboardingView
+                        t-if="state.activeTab === 'onboarding'"
+                    />
+                    <!-- Portal de Ventas -->
+                    <PrEmpresasView
+                        t-if="state.activeTab === 'empresas'"
+                    />
+                    <PrPromotoresView
+                        t-if="state.activeTab === 'promotores'"
+                    />
+                    <PrPacksView
+                        t-if="state.activeTab === 'packs'"
+                    />
+                    <PrCuponesView
+                        t-if="state.activeTab === 'cupones'"
+                    />
+                </div>
+            </main>
+
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate="1": Protege el cron de ser reseteado al hacer `odoo -u`.
+         Los cambios hechos desde la UI (hora, activado) se preservan. -->
+    <data noupdate="1">
+        <record id="cron_fiscal_alerts" model="ir.cron">
+            <field name="name">REDLMC AI — Alertas Fiscales Automáticas</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">
+# Fechas fiscales calculadas dinámicamente por año para no caducar.
+# Se puede extender manualmente en: Ajustes → Técnico → Acciones programadas
+alert_email = env['ir.config_parameter'].sudo().get_param('redlmc.ai_alert_email')
+alerts_enabled = env['ir.config_parameter'].sudo().get_param('redlmc.ai_fiscal_alerts')
+if alerts_enabled and alert_email:
+    year = datetime.date.today().year
+    next_year = year + 1
+    fiscal_deadlines = [
+        {'model': 'Modelo 036 (Baja censal)',      'deadline': f'{year}-06-15',     'amount': 0},
+        {'model': 'Modelo 685 (IS fraccionado)',    'deadline': f'{year}-08-01',     'amount': 4000},
+        {'model': 'Modelo 303 Q3 (IVA)',           'deadline': f'{year}-10-20',     'amount': None},
+        {'model': 'Modelo 111 Q3 (IRPF Ret.)',     'deadline': f'{year}-10-20',     'amount': None},
+        {'model': 'Modelo 115 Q3 (Alquiler)',      'deadline': f'{year}-10-20',     'amount': None},
+        {'model': 'Modelo 303 Q4 (IVA)',           'deadline': f'{next_year}-01-20','amount': None},
+        {'model': 'Modelo 111 Q4 (IRPF Ret.)',     'deadline': f'{next_year}-01-20','amount': None},
+        {'model': 'Modelo 190 Anual (IRPF Res.)',  'deadline': f'{next_year}-01-31','amount': None},
+        {'model': 'Modelo 390 Anual (IVA Res.)',   'deadline': f'{next_year}-01-30','amount': None},
+        {'model': 'Modelo 200 IS Anual',           'deadline': f'{next_year}-07-25','amount': None},
+    ]
+    today = datetime.date.today()
+    for item in fiscal_deadlines:
+        try:
+            deadline_date = datetime.datetime.strptime(item['deadline'], '%Y-%m-%d').date()
+            days_remaining = (deadline_date - today).days
+            if 0 &lt;= days_remaining &lt;= 7:
+                gemini = env['redlmc.gemini.service']
+                body = gemini.get_fiscal_alert(
+                    model_name=item['model'],
+                    deadline=item['deadline'],
+                    amount=item['amount'] or 0
+                )
+                env['mail.mail'].sudo().create({
+                    'subject': f'⚠️ ALERTA FISCAL: {item["model"]} — vence en {days_remaining}d',
+                    'body_html': '&lt;pre style="font-family:monospace"&gt;' + body + '&lt;/pre&gt;',
+                    'email_to': alert_email,
+                    'auto_delete': True
+                }).send()
+        except Exception as err:
+            log.warning('REDLMC AI cron_fiscal_alerts error en %s: %s', item.get('model'), err)
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <field name="priority">100</field>
+        </record>
+    </data>
+</odoo>
+

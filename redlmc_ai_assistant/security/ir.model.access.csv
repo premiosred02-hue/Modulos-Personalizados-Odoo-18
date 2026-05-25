@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_redlmc_gemini_service,redlmc.gemini.service,model_redlmc_gemini_service,base.group_user,1,0,0,0

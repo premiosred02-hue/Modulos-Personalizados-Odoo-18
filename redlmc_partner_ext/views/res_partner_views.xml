@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        REDLMC — Extensión formulario res.partner v1.1.0
+        ─────────────────────────────────────────────────
+        Añade al formulario de contactos de Odoo 18:
+
+        BLOQUE A (cabecera) — "Red Comercial PremiosRed"
+          • Selector de los 5 roles: COL / SUB / CCP / COM / ASE
+          • Exclusión automática del sorteo (Bases Legales §8)
+          • Zona geográfica + URL del QR (para COL)
+          • Acumulador comisiones YTD + alerta AML
+
+        PESTAÑA 1 — "🔑 Licencias SaaS"
+          • Tipo, tenant code, vigencia, cuota mensual
+          • API Key con generador criptográfico + fecha de rotación
+
+        PESTAÑA 2 — "👥 Sub-colaboradores"
+          • Solo visible si is_company = True
+          • Lista COL→SUBs con datos fiscales completos
+
+        Ref: SKILL-GRUPO-EMPRESARIAL.md §3 · 60.03 CASH-SWEEP.md
+        Actor split: 45% pool → COL 20% / SUB 25% / CCP 3% / COM 2% / ASE 2%
+    -->
+
+    <record id="view_partner_form_redlmc_partner_ext" model="ir.ui.view">
+        <field name="name">res.partner.form.redlmc.partner.ext</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- ══════════════════════════════════════════════════════
+                 SELECTOR DE ROL — encima del toggle Persona Física/Empresa
+                 ──────────────────────────────────────────────────────
+                 Posición: ANTES del campo company_type (los botones de
+                 "Persona Física" / "Empresa" en la cabecera del formulario).
+
+                 Es el punto de entrada para clasificar un contacto en la
+                 red PremiosRed sin necesidad de entrar en el bloque completo.
+                 Al seleccionar un rol, el bloque "🌐 Red Comercial" se expande
+                 automáticamente debajo de la dirección.
+
+                 Opciones de cara al cliente:
+                   • Patrocinador     → rol 'sponsor'
+                   • Colaborador      → rol 'col'  (punto de venta fijo)
+                   • Sub-colaborador  → rol 'sub'  (vendedor itinerante)
+                 ══════════════════════════════════════════════════════ -->
+            <xpath expr="//field[@name='company_type']" position="before">
+                <field name="redlmc_actor_role_id"
+                       placeholder="— Seleccionar Rol PremiosRed —"
+                       nolabel="0"
+                       style="margin-bottom: 4px; font-weight: 500;"
+                       options="{'no_create': False, 'no_open': False}"/>
+            </xpath>
+
+
+
+            <!-- ══════════════════════════════════════════════════════
+                 PESTAÑAS — Al final del notebook
+                 ══════════════════════════════════════════════════════ -->
+            <xpath expr="//notebook" position="inside">
+
+                <!-- ─────────────────────────────────────────────
+                     PESTAÑA 1 — ACCESO PORTAL EXTERNO (Reemplaza la antigua de SaaS)
+                     ───────────────────────────────────────────── -->
+                <page name="redlmc_portal_access"
+                      string="🔐 Acceso Portal"
+                      invisible="not redlmc_actor_role_id">
+
+                    <div class="alert alert-info" role="alert">
+                        <strong>Dashboard Externo:</strong> Gestión de acceso para que los actores (COL, SUB, etc.) inicien sesión en <code>portal.premiosred.com</code>.
+                    </div>
+
+                    <!-- API Key para Actores -->
+                    <group string="🔐 Credenciales y Enlaces del Portal">
+                        <group>
+                            <field name="redlmc_saas_license_key"/>
+                            <field name="redlmc_portal_username" widget="email"/>
+                            <field name="redlmc_portal_password"/>
+                            <field name="redlmc_api_key"
+                                   placeholder="Pulsa 'Generar nueva API Key'"
+                                   readonly="1"/>
+                            <field name="redlmc_api_key_date"
+                                   string="Generada el"
+                                   readonly="1"/>
+                            <field name="redlmc_invitation_url" 
+                                   widget="url" 
+                                   readonly="1"
+                                   text="🔗 Copiar Enlace de Invitación"/>
+                        </group>
+                        <group>
+                            <button name="action_generate_api_key"
+                                    string="🔄 Generar nuevo Token de Acceso"
+                                    type="object"
+                                    class="btn-primary mb-2"
+                                    confirm="¿Seguro? La clave anterior quedará invalidada inmediatamente y el actor deberá usar el nuevo enlace para iniciar sesión."/>
+                            <div class="text-muted mt-3">
+                                <b>¿Cómo invitar?</b><br/>
+                                Envía la <i>URL de Invitación</i> a los prospectos de este actor. Automáticamente quedarán registrados como sus sub-colaboradores cuando completen el Onboarding.
+                            </div>
+                        </group>
+                    </group>
+                </page>
+
+
+                <!-- ─────────────────────────────────────────────
+                     PESTAÑA 2 — SUB-COLABORADORES
+                     Solo visible si is_company = True (Empresa / COL)
+                     ───────────────────────────────────────────── -->
+                <page name="redlmc_sub_col"
+                      string="👥 Sub-colaboradores"
+                      invisible="not is_company or not redlmc_is_col">
+
+                    <group>
+                        <group string="Identificación del punto de venta">
+                            <field name="redlmc_is_col"
+                                   widget="boolean_toggle"/>
+                            <field name="redlmc_col_code"
+                                   invisible="not redlmc_is_col"
+                                   placeholder="Ej: COL-001"/>
+                            <field name="redlmc_col_commission_pct"
+                                   invisible="not redlmc_is_col"/>
+                            <field name="redlmc_sub_count"
+                                   invisible="not redlmc_is_col"
+                                   string="SUBs asignados"
+                                   readonly="1"/>
+                        </group>
+                        <group string="ℹ️ Split comisional"
+                               invisible="not redlmc_is_col">
+                            <div class="alert alert-info o_field_widget" role="alert">
+                                <strong>Por cada pack de 6€ vendido:</strong><br/>
+                                Pool actores = <strong>45%</strong> (2,70€) —
+                                COL + SUBs lo comparten según el % configurado.<br/>
+                                REDROYAL retiene el <strong>55%</strong>
+                                (captadores + donación 2% + provisión premio + beneficio).
+                            </div>
+                        </group>
+                    </group>
+
+                    <field name="redlmc_sub_ids"
+                           invisible="not redlmc_is_col"
+                           string="Sub-colaboradores (SUBs) vinculados a este COL">
+                        <list editable="bottom"
+                              decoration-success="status == 'active'"
+                              decoration-warning="status == 'suspended'"
+                              decoration-danger="status == 'inactive'"
+                              decoration-muted="status == 'draft'">
+
+                            <field name="sub_partner_id"
+                                   string="Persona Física (SUB)"
+                                   options="{'create': true, 'create_edit': true}"/>
+                            <field name="sub_code" optional="show"/>
+                            <field name="status" widget="badge"/>
+                            <field name="commission_pct" string="% Comisión" optional="show"/>
+                            <field name="fiscal_type" optional="show"/>
+                            <field name="nif" optional="show"/>
+                            <field name="iban" optional="hide"/>
+                            <field name="is_irpf_subject" string="IRPF 19%" optional="show"/>
+                            <field name="reta_active" string="RETA ✓" optional="hide"/>
+                            <field name="aml_alert" string="⚠️ AML" optional="hide"
+                                   decoration-danger="aml_alert == True"/>
+                            <field name="contract_date" optional="hide"/>
+                            <field name="qr_mobile_active" string="QR activo" optional="show"/>
+                        </list>
+                    </field>
+
+                    <div class="alert alert-warning mt-3" role="alert"
+                         invisible="not redlmc_is_col">
+                        <strong>⚠️ Ley 10/2010 PBC:</strong>
+                        Comisiones <strong>&gt; 3.000€/mes</strong> por actor
+                        requieren revisión documental. Verificar en el Cash Sweep del Día 6.
+                    </div>
+                </page>
+
+                <!-- ─────────────────────────────────────────────
+                     PESTAÑA 3 — TIENDAS Y CARTELES QR (COL)
+                     ───────────────────────────────────────────── -->
+                <page name="redlmc_stores"
+                      string="🏢 Tiendas y Carteles"
+                      invisible="not is_company or not redlmc_is_col">
+                    <div class="alert alert-info" role="alert">
+                        Administra las sucursales físicas y los carteles QR expuestos en cada una.
+                    </div>
+                    <field name="redlmc_store_ids" context="{'default_col_id': id}">
+                        <list editable="bottom">
+                            <field name="name" string="Nombre de la Tienda"/>
+                            <field name="street" string="Dirección" optional="show"/>
+                            <field name="city" optional="show"/>
+                            <field name="sub_count" string="Nº SUBs" readonly="1"/>
+                            <field name="cartel_count" string="Nº Carteles" readonly="1"/>
+                        </list>
+                        <form>
+                            <sheet>
+                                <div class="oe_title">
+                                    <h1><field name="name" placeholder="Nombre de la Tienda"/></h1>
+                                </div>
+                                <group>
+                                    <group>
+                                        <field name="street"/>
+                                        <field name="city"/>
+                                        <field name="zip"/>
+                                    </group>
+                                    <group>
+                                        <field name="sub_count"/>
+                                        <field name="cartel_count"/>
+                                    </group>
+                                </group>
+                                <notebook>
+                                    <page string="Carteles QR">
+                                        <field name="cartel_ids">
+                                            <list editable="bottom">
+                                                <field name="name" string="Ubicación"/>
+                                                <field name="qr_code_uid" readonly="1"/>
+                                                <field name="qr_url" widget="url" readonly="1"/>
+                                                <field name="active" widget="boolean_toggle"/>
+                                            </list>
+                                        </field>
+                                    </page>
+                                    <page string="Personal (SUBs)">
+                                        <field name="sub_ids" readonly="1"/>
+                                    </page>
+                                </notebook>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+
+                <!-- ─────────────────────────────────────────────
+                     PESTAÑA 4 — USUARIOS QR (Seguimiento de Captación)
+                     ───────────────────────────────────────────── -->
+                <page name="redlmc_qr_tracking"
+                      string="📱 Seguimiento QR"
+                      invisible="redlmc_actor_type != 'usu_qr'">
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>Radiografía de Captación:</strong> Este panel muestra el progreso del Usuario QR desde que escanea el código hasta la posible compra del pack.
+                    </div>
+
+                    <group>
+                        <group string="Progreso del Usuario">
+                            <field name="redlmc_qr_scanned_date" readonly="0"/>
+                            <field name="redlmc_qr_filled_data" widget="boolean_toggle"/>
+                            <field name="redlmc_qr_opened_whatsapp" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Conversión Final">
+                            <field name="redlmc_qr_accepted_gift" widget="boolean_toggle"/>
+                            <field name="redlmc_qr_bought_pack" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </page>
+
+            </xpath>
+
+            <!-- ══════════════════════════════════════════════════════
+                 BOTÓN DE DASHBOARD EN EL HEADER
+                 ══════════════════════════════════════════════════════ -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="%(base.action_partner_form)d" 
+                        type="action"
+                        class="oe_stat_button"
+                        icon="fa-external-link"
+                        invisible="not redlmc_dashboard_url">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text text-primary">Abrir</span>
+                        <span class="o_stat_text text-primary">Dashboard</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button string="🌐 Acceder al Dashboard Externo" 
+                            type="object" 
+                            name="action_open_dashboard_url" 
+                            class="btn-primary" 
+                            invisible="not redlmc_dashboard_url"
+                            context="{'url': redlmc_dashboard_url}"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         ACCIÓN — "Asignar rol PremiosRed"
+         Aparece en el menú ⚙️ (Acción) del formulario de contacto.
+         Permite asignar el rol a cualquier contacto (nuevo COL, sponsor,
+         etc.) aunque el bloque Red Comercial esté oculto porque aún no
+         tiene rol.
+
+         Uso:
+           1. Abre el contacto (cliente potencial, empresa nueva…)
+           2. Menú Acción (⚙️) → "🌐 Asignar rol PremiosRed"
+           3. Se abre el mismo formulario en el campo redlmc_actor_type
+              para seleccionar el rol
+         ══════════════════════════════════════════════════════════════ -->
+    <record id="action_server_assign_premiosred_role" model="ir.actions.server">
+        <field name="name">🌐 Asignar rol PremiosRed</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+# Abre el formulario del partner en una vista que permita
+# seleccionar el tipo de actor PremiosRed
+action = {
+    'type': 'ir.actions.act_window',
+    'res_model': 'res.partner',
+    'res_id': record.id,
+    'view_mode': 'form',
+    'view_type': 'form',
+    'target': 'current',
+}
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         VISTAS EXCLUSIVAS PARA CLIENTES — Rol PremiosRed
+         ──────────────────────────────────────────────────────────────
+         ARQUITECTURA:
+           • view_partner_customer_list_redlmc  → vista lista Clientes
+           • view_partner_customer_kanban_redlmc → vista kanban Clientes
+           Son vistas PRIMARIAS (no inheriting globales) que clonan
+           las base de Odoo y añaden la columna/badge de Rol.
+
+           Las acciones de Proveedores siguen apuntando a las vistas
+           base originales → sin ninguna columna REDLMC.
+         ══════════════════════════════════════════════════════════════ -->
+
+    <!-- ─── 1. LISTA CLIENTES con columnas de Portal y Rol ─────────── -->
+    <record id="view_partner_customer_list_redlmc" model="ir.ui.view">
+        <field name="name">res.partner.customer.list.redlmc</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="mode">extension</field>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="multi_edit">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="after">
+                <field name="redlmc_actor_role_id" optional="show" widget="badge"/>
+                <field name="redlmc_portal_username" optional="show" string="Usuario Portal"/>
+                <field name="redlmc_portal_password" optional="show" string="Clave Portal"/>
+                <field name="redlmc_invitation_url" optional="hide" widget="url"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── 2. KANBAN CLIENTES con badge Rol PremiosRed ──────────── -->
+    <record id="view_partner_customer_kanban_redlmc" model="ir.ui.view">
+        <field name="name">res.partner.customer.kanban.redlmc</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="redlmc_actor_role_id"/>
+            </xpath>
+            <xpath expr="//main/footer/div" position="inside">
+                <span t-if="record.redlmc_actor_role_id.raw_value" class="badge rounded-pill text-bg-primary">
+                    <t t-esc="record.redlmc_actor_role_id.value"/>
+                </span>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── 3. REDIRECCIÓN DE VISTAS — manejada por post_init_hook ────
+         La redirección de base.action_partner_customer_form_view1/2
+         hacia las vistas dedicadas se realiza en hooks.py (post_init_hook).
+         El uninstall_hook restaura las referencias originales de base
+         para que Odoo quede limpio al desinstalar.
+         Ver: redlmc_partner_ext/hooks.py
+         ──────────────────────────────────────────────────────────── -->    <!-- ─── 4. GESTIÓN DE ROLES (Menú Configuración) ──── -->
+    <record id="action_redlmc_actor_role" model="ir.actions.act_window">
+        <field name="name">Roles PremiosRed</field>
+        <field name="res_model">redlmc.actor.role</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea un nuevo Rol en la Red PremiosRed
+            </p>
+            <p>
+                Define roles como COL, SUB, Usuarios QR, Patrocinadores, etc.
+                y su porcentaje de comisión predeterminado.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_redlmc_actor_role"
+              name="Roles PremiosRed"
+              parent="contacts.res_partner_menu_config"
+              action="action_redlmc_actor_role"
+              sequence="10"/>
+
+</odoo>

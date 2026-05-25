@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú principal en la barra de aplicaciones -->
+    <menuitem
+        id="menu_cartel_root"
+        name="Constructor de Carteles"
+        sequence="95"
+    />
+
+    <!-- Submenús -->
+    <menuitem
+        id="menu_cartel_editor"
+        name="🎨 Nuevo Cartel"
+        parent="menu_cartel_root"
+        action="action_cartel_editor"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_cartel_gallery"
+        name="🖼️ Mis Diseños"
+        parent="menu_cartel_root"
+        action="action_cartel_gallery"
+        sequence="20"
+    />
+</odoo>

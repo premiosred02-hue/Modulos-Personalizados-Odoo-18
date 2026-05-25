@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PrMyQRView" owl="1">
+<div class="pr_qr_root">
+
+    <!-- HEADER -->
+    <div class="pr_qr_header">
+        <div>
+            <div class="pr_leads_header_badges">
+                <span class="pr_leads_badge_gray">QR MANAGEMENT</span>
+                <span class="pr_qr_sync_dot">
+                    <span class="pr_qr_sync_pulse"/>
+                    Activo
+                </span>
+            </div>
+            <h2 class="pr_leads_title">Gestion de Codigos QR</h2>
+            <p class="pr_leads_sub">Identificadores seguros (SHA-256) · Portal de validacion · Seguimiento de escaneos</p>
+        </div>
+        <div class="pr_leads_header_right">
+            <button class="pr_leads_btn_alta" t-on-click="openAdd">+ Nuevo Registro</button>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="pr_qr_kpi_bar">
+        <div class="pr_qr_kpi"><div class="pr_qr_kpi_n" t-esc="kpi.total"/><div class="pr_qr_kpi_l">Registros</div></div>
+        <div class="pr_qr_kpi pr_qr_kpi_green"><div class="pr_qr_kpi_n" t-esc="kpi.activos"/><div class="pr_qr_kpi_l">Activos</div></div>
+        <div class="pr_qr_kpi pr_qr_kpi_blue"><div class="pr_qr_kpi_n" t-esc="kpi.scans"/><div class="pr_qr_kpi_l">Escaneos totales</div></div>
+        <div class="pr_qr_kpi pr_qr_kpi_accent"><div class="pr_qr_kpi_n" t-esc="kpi.topScan"/><div class="pr_qr_kpi_l">Record escaneos</div></div>
+    </div>
+
+    <!-- Loading -->
+    <div t-if="state.loading" class="pr_qr_loading">
+        <div class="pr_qr_spinner"/>
+        <span>Cargando registros...</span>
+    </div>
+
+    <!-- TABLA PRINCIPAL -->
+    <div t-elif="!state.loading" class="pr_dash_card">
+        <div class="pr_dash_card_head">
+            <span class="pr_dash_card_title">Registros QR</span>
+            <span class="pr_dash_card_sub"><t t-esc="state.records.length"/> registros</span>
+        </div>
+        <div class="pr_table_wrapper">
+        <table class="pr_table">
+            <thead>
+                <tr>
+                    <th>Negocio / Actor</th>
+                    <th>COL ID</th>
+                    <th>SUB</th>
+                    <th>SPP</th>
+                    <th>Portal</th>
+                    <th>Encrypted ID</th>
+                    <th>Escaneos</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="state.records" t-as="rec" t-key="rec.id">
+                    <tr class="pr_leads_row">
+                        <!-- Nombre -->
+                        <td>
+                            <div class="pr_dash_td_bold" t-esc="rec.name"/>
+                            <div class="pr_qr_td_label" t-esc="rec.customLabel || rec.label"/>
+                        </td>
+                        <!-- COL code -->
+                        <td>
+                            <span class="pr_qr_code_badge pr_qr_col" t-esc="rec.col_code"/>
+                        </td>
+                        <!-- SUB code -->
+                        <td>
+                            <span t-if="rec.sub_code" class="pr_qr_code_badge pr_qr_sub" t-esc="rec.sub_code"/>
+                            <span t-else="" class="pr_dash_td_muted">—</span>
+                        </td>
+                        <!-- Sponsor code -->
+                        <td>
+                            <span t-if="rec.sponsor_code" class="pr_qr_code_badge pr_qr_spp" t-esc="rec.sponsor_code"/>
+                            <span t-else="" class="pr_dash_td_muted">—</span>
+                        </td>
+                        <!-- Portal type -->
+                        <td>
+                            <span class="pr_qr_portal_badge"
+                                  t-att-data-type="rec.portalType"
+                                  t-esc="rec.portalType"/>
+                        </td>
+                        <!-- Encrypted ID -->
+                        <td>
+                            <code class="pr_qr_enc_id" t-esc="getShortId(rec.encryptedId)"/>
+                        </td>
+                        <!-- Escaneos -->
+                        <td>
+                            <span class="pr_qr_scan_count" t-esc="rec.scanCount"/>
+                        </td>
+                        <!-- Estado -->
+                        <td t-on-click.stop="">
+                            <select class="pr_qr_status_sel"
+                                    t-att-data-status="rec.status"
+                                    t-on-change="(ev) => this.changeStatus(rec, ev)">
+                                <option value="Activo"   t-att-selected="rec.status==='Activo'?1:0">Activo</option>
+                                <option value="Inactivo" t-att-selected="rec.status==='Inactivo'?1:0">Inactivo</option>
+                                <option value="Suspendido" t-att-selected="rec.status==='Suspendido'?1:0">Suspendido</option>
+                            </select>
+                        </td>
+                        <!-- Acciones -->
+                        <td t-on-click.stop="" class="pr_qr_actions_cell">
+                            <button class="pr_qr_act_btn pr_qr_act_primary" t-on-click="() => this.openQR(rec)" title="Ver QR">QR</button>
+                            <button class="pr_qr_act_btn" t-on-click="(ev) => this.openEdit(rec, ev)" title="Editar">Editar</button>
+                            <button class="pr_qr_act_btn pr_qr_act_warn"   t-on-click="() => this.resetScans(rec)" title="Resetear escaneos">Reset</button>
+                            <button class="pr_qr_act_btn pr_qr_act_sec"    t-on-click="() => this.regenerateId(rec)" title="Regenerar ID">Regen</button>
+                            <button class="pr_qr_act_btn pr_qr_act_del"    t-on-click="(ev) => this.deleteRecord(rec, ev)" title="Eliminar">Del</button>
+                        </td>
+                    </tr>
+                </t>
+                <tr t-if="state.records.length === 0">
+                    <td colspan="9" class="pr_crm_empty">Sin registros QR. Crea el primero con "+ Nuevo Registro".</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL: VER QR                                                     -->
+    <!-- ================================================================ -->
+    <div t-if="state.showQRModal and state.selected" class="pr_leads_modal_overlay" t-on-click="closeQR">
+        <div class="pr_qr_modal" t-on-click.stop="">
+
+            <!-- Header -->
+            <div class="pr_qr_modal_head">
+                <div>
+                    <div class="pr_qr_modal_title">Codigo QR — <t t-esc="state.selected.name"/></div>
+                    <div class="pr_qr_modal_sub">ID interno para <strong t-esc="state.selected.customLabel || 'PremiosRed'"/></div>
+                </div>
+                <button class="pr_crm_drawer_close" t-on-click="closeQR">x</button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="pr_qr_modal_body">
+
+                <!-- QR Image (via qrserver API) -->
+                <div class="pr_qr_img_wrap">
+                    <img t-att-src="getQRImg(state.selected, 240)"
+                         width="240" height="240"
+                         class="pr_qr_img"
+                         t-att-alt="'QR '+state.selected.name"/>
+                    <!-- Logo overlay simulado -->
+                    <div class="pr_qr_logo_overlay">PR</div>
+                </div>
+
+                <!-- Portal info -->
+                <div class="pr_qr_info_block">
+                    <div class="pr_qr_info_label">PORTAL OBJETIVO</div>
+                    <div class="pr_qr_info_val">
+                        <span class="pr_qr_portal_badge" t-att-data-type="state.selected.portalType"
+                              t-esc="state.selected.portalType"/>
+                        — <t t-esc="state.selected.customLabel"/>
+                    </div>
+                </div>
+
+                <!-- Codigos -->
+                <div class="pr_qr_codes_row">
+                    <div class="pr_qr_code_item">
+                        <div class="pr_qr_info_label">COL ID</div>
+                        <span class="pr_qr_code_badge pr_qr_col" t-esc="state.selected.col_code"/>
+                    </div>
+                    <div t-if="state.selected.sub_code" class="pr_qr_code_item">
+                        <div class="pr_qr_info_label">SUB</div>
+                        <span class="pr_qr_code_badge pr_qr_sub" t-esc="state.selected.sub_code"/>
+                    </div>
+                    <div t-if="state.selected.sponsor_code" class="pr_qr_code_item">
+                        <div class="pr_qr_info_label">PATROCINADOR</div>
+                        <span class="pr_qr_code_badge pr_qr_spp" t-esc="state.selected.sponsor_code"/>
+                    </div>
+                    <div class="pr_qr_code_item">
+                        <div class="pr_qr_info_label">ESCANEOS</div>
+                        <span class="pr_qr_scan_count" t-esc="state.selected.scanCount"/>
+                    </div>
+                </div>
+
+                <!-- URL del QR -->
+                <div class="pr_qr_url_box">
+                    <div class="pr_qr_info_label">URL DEL QR</div>
+                    <div class="pr_qr_url_row">
+                        <code class="pr_qr_url_code" t-esc="getQRUrl(state.selected)"/>
+                        <button class="pr_qr_copy_btn"
+                                t-att-class="'pr_qr_copy_btn' + (state.copiedUrl ? ' copied' : '')"
+                                t-on-click="() => this.copyUrl(state.selected)">
+                            <t t-if="state.copiedUrl">Copiado!</t>
+                            <t t-else="">Copiar</t>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Encrypted ID -->
+                <div class="pr_qr_enc_box">
+                    <div class="pr_qr_info_label">TOKEN SEGURO (SHA-256)</div>
+                    <code class="pr_qr_enc_full" t-esc="state.selected.encryptedId"/>
+                </div>
+
+                <!-- Acciones -->
+                <div class="pr_qr_modal_actions">
+                    <button class="pr_leads_btn_alta" t-on-click="() => this.downloadQR(state.selected)">Descargar PNG</button>
+                    <button class="pr_crm_btn_cancel" t-on-click="() => this.printQR(state.selected)">Imprimir QR</button>
+                    <button class="pr_crm_btn_cancel" t-on-click="() => this.resetScans(state.selected)">Reset escaneos</button>
+                    <button class="pr_qr_regen_btn" t-on-click="() => this.regenerateId(state.selected)">Regenerar ID</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL: ADD / EDIT                                                 -->
+    <!-- ================================================================ -->
+    <div t-if="state.showAddModal or state.showEditModal" class="pr_leads_modal_overlay" t-on-click="closeModal">
+        <div class="pr_leads_modal" t-on-click.stop="">
+            <div class="pr_leads_modal_head">
+                <h3><t t-if="state.showAddModal">Nuevo Registro QR</t><t t-else="">Editar Registro QR</t></h3>
+                <button class="pr_crm_drawer_close" t-on-click="closeModal">x</button>
+            </div>
+            <form class="pr_leads_modal_form" t-on-submit="submitForm">
+
+                <!-- Info -->
+                <div class="pr_qr_form_info">
+                    La URL del QR tendra la forma:<br/>
+                    <code>/verify/&lt;SHA-256&gt;?type=portal&amp;sub=SUB&amp;spon=SPP</code>
+                </div>
+
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Nombre del negocio / actor *</label>
+                        <input type="text" required="required"
+                               t-att-value="state.form.name"
+                               t-on-input="(ev) => this.onForm('name', ev)"
+                               placeholder="Bar El Rincon, Farmacia..."/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Etiqueta personalizada (customLabel)</label>
+                        <input type="text"
+                               t-att-value="state.form.customLabel"
+                               t-on-input="(ev) => this.onForm('customLabel', ev)"
+                               placeholder="Sorteo Navidad, Pack Viaje..."/>
+                    </div>
+                </div>
+
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Codigo COL *</label>
+                        <input type="text" required="required"
+                               t-att-value="state.form.col_code"
+                               t-on-input="(ev) => this.onForm('col_code', ev)"
+                               placeholder="COL-001"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Codigo SUB (si aplica)</label>
+                        <input type="text"
+                               t-att-value="state.form.sub_code"
+                               t-on-input="(ev) => this.onForm('sub_code', ev)"
+                               placeholder="SUB-001 (opcional)"/>
+                    </div>
+                </div>
+
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Codigo Patrocinador / SPP (si aplica)</label>
+                        <input type="text"
+                               t-att-value="state.form.sponsor_code"
+                               t-on-input="(ev) => this.onForm('sponsor_code', ev)"
+                               placeholder="SPP-01 (opcional)"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Tipo de portal</label>
+                        <select t-on-change="(ev) => this.onForm('portalType', ev)">
+                            <t t-foreach="PORTAL_TYPES" t-as="pt" t-key="pt.value">
+                                <option t-att-value="pt.value"
+                                        t-att-selected="state.form.portalType===pt.value?1:0"
+                                        t-esc="pt.label"/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Titulo del portal (label)</label>
+                        <input type="text"
+                               t-att-value="state.form.label"
+                               t-on-input="(ev) => this.onForm('label', ev)"
+                               placeholder="PremiosRed 2026"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Estado</label>
+                        <select t-on-change="(ev) => this.onForm('status', ev)">
+                            <option value="Activo"     t-att-selected="state.form.status==='Activo'?1:0">Activo</option>
+                            <option value="Inactivo"   t-att-selected="state.form.status==='Inactivo'?1:0">Inactivo</option>
+                            <option value="Suspendido" t-att-selected="state.form.status==='Suspendido'?1:0">Suspendido</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Preview URL -->
+                <div class="pr_qr_url_box">
+                    <div class="pr_qr_info_label">PREVIEW URL (se genera al guardar)</div>
+                    <code class="pr_qr_url_code">
+                        /verify/&lt;SHA-256 auto&gt;?type=<t t-esc="state.form.portalType"/>
+                        <t t-if="state.form.sub_code">&amp;sub=<t t-esc="state.form.sub_code"/></t>
+                        <t t-if="state.form.sponsor_code">&amp;spon=<t t-esc="state.form.sponsor_code"/></t>
+                    </code>
+                </div>
+
+                <div class="pr_crm_add_actions">
+                    <button type="button" class="pr_crm_btn_cancel" t-on-click="closeModal">Cancelar</button>
+                    <button type="submit" class="pr_leads_btn_alta" t-att-disabled="state.saving">
+                        <t t-if="state.saving">Guardando...</t>
+                        <t t-elif="state.showAddModal">Crear y Generar QR</t>
+                        <t t-else="">Guardar Cambios</t>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</t>
+</templates>

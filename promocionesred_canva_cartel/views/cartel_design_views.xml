@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista lista de diseños guardados -->
+    <record id="view_cc_cartel_design_list" model="ir.ui.view">
+        <field name="name">cc.cartel.design.list</field>
+        <field name="model">cc.cartel.design</field>
+        <field name="arch" type="xml">
+            <list string="Mis Diseños">
+                <field name="name"/>
+                <field name="active_format"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'ready'"
+                       decoration-warning="state == 'draft'"
+                       decoration-muted="state == 'archived'"/>
+                <field name="user_id"/>
+                <field name="write_date" string="Última modificación"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista form de diseño guardado -->
+    <record id="view_cc_cartel_design_form" model="ir.ui.view">
+        <field name="name">cc.cartel.design.form</field>
+        <field name="model">cc.cartel.design</field>
+        <field name="arch" type="xml">
+            <form string="Diseño de Cartel">
+                <header>
+                    <button name="action_mark_ready" string="✅ Marcar como Listo"
+                            type="object" class="btn-primary"
+                            invisible="state == 'ready'"/>
+                    <button name="action_archive" string="📦 Archivar"
+                            type="object"
+                            invisible="state == 'archived'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,ready,archived"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" placeholder="Nombre del diseño..."/>
+                        <field name="active_format"/>
+                        <field name="user_id" readonly="1"/>
+                    </group>
+                    <group string="Notas">
+                        <field name="notes" nolabel="1"
+                               placeholder="Notas internas sobre este diseño..."/>
+                    </group>
+                    <group string="Datos del Diseño (JSON)">
+                        <field name="design_json" nolabel="1" widget="text"
+                               placeholder="JSON del estado del editor..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

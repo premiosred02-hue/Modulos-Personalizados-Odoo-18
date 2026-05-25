@@ -1,0 +1,499 @@
+﻿/* ================================================================== */
+/* CUPONES v5.2 -- MEJORAS UI PREMIUM                                  */
+/* ================================================================== */
+
+/* --- KPI Cards mejoradas ------------------------------------------ */
+.pr_kpi_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+}
+.pr_kpi_card {
+    background: var(--pr-surface);
+    border: 1px solid var(--pr-border);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.pr_kpi_card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--pr-border);
+    border-radius: 14px 14px 0 0;
+}
+.pr_kpi_card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+.pr_kpi_green::before { background: linear-gradient(90deg, #059669, #34d399); }
+.pr_kpi_amber::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.pr_kpi_indigo::before { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+.pr_kpi_red::before   { background: linear-gradient(90deg, #dc2626, #f87171); }
+.pr_kpi_label {
+    font-size: 0.62rem; font-weight: 700; color: var(--pr-muted);
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px;
+}
+.pr_kpi_value {
+    font-size: 1.6rem; font-weight: 900; color: var(--pr-text);
+    line-height: 1; letter-spacing: -0.02em;
+}
+.pr_value_green  { color: #059669 !important; }
+.pr_value_amber  { color: #d97706 !important; }
+.pr_value_indigo { color: #4f46e5 !important; }
+
+/* --- Header section ---------------------------------------------- */
+.pr_section_header {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--pr-border);
+}
+.pr_section_header h2 {
+    margin: 0; font-size: 1.5rem; font-weight: 900;
+    color: var(--pr-text); letter-spacing: -0.03em;
+}
+.pr_section_subtitle { margin: 0.25rem 0 0; font-size: 0.78rem; color: var(--pr-muted); }
+.pr_header_actions { display: flex; gap: 0.75rem; align-items: center; }
+.pr_search_wrap {
+    position: relative; display: flex; align-items: center;
+}
+.pr_search_icon {
+    position: absolute; left: 0.75rem;
+    color: var(--pr-muted); font-size: 0.82rem; pointer-events: none;
+}
+.pr_search_input {
+    padding: 0.5rem 0.85rem 0.5rem 2.2rem;
+    border: 1px solid var(--pr-border); border-radius: 10px;
+    background: var(--pr-surface); color: var(--pr-text);
+    font-size: 0.82rem; min-width: 260px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pr_search_input:focus {
+    outline: none; border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+}
+
+/* --- Tabs premium ------------------------------------------------- */
+.pr_tabs_bar {
+    display: flex; gap: 0.35rem;
+    background: var(--pr-glass);
+    padding: 0.35rem;
+    border-radius: 12px;
+    border: 1px solid var(--pr-border);
+}
+.pr_tab_btn {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.82rem; font-weight: 700;
+    border-radius: 9px; border: none; cursor: pointer;
+    background: transparent; color: var(--pr-muted);
+    transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
+}
+.pr_tab_btn i { font-size: 0.9rem; }
+.pr_tab_btn:hover { background: rgba(79,70,229,0.08); color: #4f46e5; }
+.pr_tab_active {
+    background: #4f46e5 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 10px rgba(79,70,229,0.35) !important;
+}
+
+/* --- Tabla Banco de Codigos mejorada ------------------------------ */
+.pr_table_info_bar {
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--pr-border);
+    font-size: 0.78rem; color: var(--pr-muted);
+    background: linear-gradient(135deg, rgba(79,70,229,0.03), rgba(79,70,229,0.01));
+    border-left: 3px solid #4f46e5;
+}
+.pr_table th {
+    padding: 0.75rem 1rem;
+    font-size: 0.62rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--pr-muted); white-space: nowrap;
+    border-bottom: 2px solid var(--pr-border);
+}
+.pr_table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--pr-border); }
+.pr_table tbody tr { transition: background 0.12s; }
+.pr_table tbody tr:hover { background: rgba(79,70,229,0.025); }
+.pr_pat_name { font-weight: 800; font-size: 0.88rem; }
+.pr_pat_cat {
+    font-size: 0.65rem; color: var(--pr-muted);
+    margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+/* Barra de progreso mejorada */
+.pr_progress_wrap { display: flex; align-items: center; gap: 0.6rem; }
+.pr_progress_bar {
+    flex: 1; height: 8px;
+    background: var(--pr-border); border-radius: 999px; overflow: hidden;
+}
+.pr_progress_fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+.pr_progress_label { font-size: 0.72rem; font-weight: 800; white-space: nowrap; }
+
+/* Botones de acción en tabla */
+.pr_btn_sm {
+    padding: 0.3rem 0.7rem; border-radius: 7px;
+    font-size: 0.72rem; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    transition: all 0.15s;
+}
+.pr_btn_primary {
+    background: #4f46e5; color: #fff; border: none;
+}
+.pr_btn_primary:hover { background: #3730a3; transform: translateY(-1px); }
+
+/* --- Clientes Tab mejorado --------------------------------------- */
+.pr_clientes_section { display: flex; flex-direction: column; gap: 1rem; }
+.pr_filters_row { display: flex; gap: 0.75rem; align-items: center; }
+.pr_clientes_list {
+    background: var(--pr-surface);
+    border: 1px solid var(--pr-border);
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+.pr_cliente_card { border-bottom: 1px solid var(--pr-border); }
+.pr_cliente_card:last-child { border-bottom: none; }
+.pr_cliente_header {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem; cursor: pointer; flex-wrap: wrap;
+    transition: background 0.15s;
+}
+.pr_cliente_header:hover { background: rgba(79,70,229,0.025); }
+.pr_cliente_info { flex: 1; min-width: 0; }
+.pr_cliente_name { font-weight: 800; font-size: 0.92rem; }
+.pr_cliente_meta { font-size: 0.72rem; color: var(--pr-muted); margin-top: 2px; }
+.pr_cliente_stats { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+
+/* Chips de cupón */
+.pr_cupones_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.6rem; margin: 0.75rem 0;
+}
+.pr_cupon_chip {
+    border-radius: 10px; padding: 0.7rem 0.9rem;
+    border: 1px solid var(--pr-border);
+    background: var(--pr-glass);
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+.pr_cupon_chip:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.06); transform: translateY(-1px); }
+.pr_cupon_used {
+    border-color: rgba(5,150,105,0.3);
+    background: linear-gradient(135deg, rgba(5,150,105,0.05), rgba(5,150,105,0.02));
+}
+.pr_cupon_pending {
+    border-color: rgba(217,119,6,0.25);
+    background: linear-gradient(135deg, rgba(217,119,6,0.04), transparent);
+}
+.pr_cupon_chip_code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.75rem; font-weight: 800;
+    color: #4f46e5; margin-bottom: 2px;
+    letter-spacing: 0.03em;
+}
+.pr_cupon_chip_pat {
+    font-size: 0.65rem; font-weight: 700;
+    color: var(--pr-muted); text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.pr_cupon_chip_date {
+    font-size: 0.62rem; margin-top: 4px;
+    color: var(--pr-muted);
+}
+.pr_cupon_used .pr_cupon_chip_date { color: #059669; }
+
+/* Cuerpo expandido del cliente */
+.pr_cliente_body {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--pr-border);
+    background: rgba(79,70,229,0.015);
+    animation: pr_expand 0.2s ease;
+}
+@keyframes pr_expand {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.pr_cliente_detail_row {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+    font-size: 0.75rem; color: var(--pr-muted);
+    margin-bottom: 0.75rem;
+}
+.pr_detail_label { font-weight: 700; color: var(--pr-text); }
+
+/* --- Badges premium ---------------------------------------------- */
+.pr_badge {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.18rem 0.6rem; border-radius: 999px;
+    font-size: 0.65rem; font-weight: 700; white-space: nowrap;
+}
+.pr_badge_green  { background: rgba(5,150,105,0.1);  color: #059669; }
+.pr_badge_amber  { background: rgba(217,119,6,0.1);  color: #d97706; }
+.pr_badge_red    { background: rgba(220,38,38,0.1);  color: #dc2626; }
+.pr_badge_indigo { background: rgba(79,70,229,0.1);  color: #4f46e5; }
+
+/* --- ARBOL PDV v5.2 -- 4 niveles visuales ------------------------ */
+.pr_pdv_root { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Nivel 1: Empresa COL */
+.pr_tree_col_header {
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(79,70,229,0.06), rgba(79,70,229,0.02));
+    border: 1px solid rgba(79,70,229,0.2);
+    border-radius: 16px;
+    border-left: 4px solid #4f46e5;
+    box-shadow: 0 2px 12px rgba(79,70,229,0.08);
+    margin-bottom: 0.5rem;
+}
+.pr_tree_col_name {
+    font-size: 1.2rem; font-weight: 900;
+    color: var(--pr-text); letter-spacing: -0.02em;
+}
+.pr_tree_col_meta {
+    font-size: 0.75rem; color: var(--pr-muted); margin-top: 3px;
+}
+.pr_tree_stat {
+    text-align: center; min-width: 60px;
+}
+.pr_tree_stat_val {
+    font-size: 1.4rem; font-weight: 900;
+    line-height: 1; letter-spacing: -0.03em;
+    color: var(--pr-text);
+}
+.pr_tree_stat_lbl {
+    font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--pr-muted); margin-top: 2px;
+}
+
+/* Nivel 2: Tiendas */
+.pr_tree_tienda_header {
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    background: var(--pr-surface);
+    border: 1px solid var(--pr-border);
+    border-radius: 12px;
+    border-left: 3px solid #6366f1;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 1rem;
+}
+.pr_tree_tienda_header:hover {
+    background: rgba(79,70,229,0.03);
+    border-color: rgba(79,70,229,0.3);
+    box-shadow: 0 2px 10px rgba(79,70,229,0.06);
+}
+.pr_tree_tienda_name { font-weight: 800; font-size: 0.9rem; }
+.pr_tree_tienda_meta { font-size: 0.7rem; color: var(--pr-muted); margin-top: 2px; }
+.pr_tree_arrow {
+    color: var(--pr-muted); font-size: 0.75rem;
+    transition: transform 0.2s; flex-shrink: 0;
+}
+.pr_tree_arrow_sm { font-size: 0.65rem; }
+
+/* Nivel 3: Carteles */
+.pr_tree_tienda_body {
+    margin-left: 2.5rem;
+    display: flex; flex-direction: column; gap: 0.4rem;
+    padding: 0.5rem 0 0.5rem 0;
+    border-left: 2px solid rgba(79,70,229,0.15);
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
+    animation: pr_expand 0.18s ease;
+}
+.pr_tree_cartel_header {
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: var(--pr-glass);
+    border: 1px solid var(--pr-border);
+    border-radius: 10px;
+    border-left: 3px solid rgba(99,102,241,0.4);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.pr_tree_cartel_header:hover {
+    background: rgba(79,70,229,0.04);
+    border-color: rgba(79,70,229,0.25);
+    box-shadow: 0 1px 6px rgba(79,70,229,0.08);
+}
+.pr_qr_code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem; font-weight: 800;
+    background: rgba(79,70,229,0.08);
+    color: #4f46e5; padding: 0.15rem 0.5rem;
+    border-radius: 6px; border: 1px solid rgba(79,70,229,0.2);
+    letter-spacing: 0.05em;
+}
+
+/* Nivel 4: Codigos individuales */
+.pr_tree_cartel_body {
+    margin-left: 1.5rem;
+    border: 1px solid var(--pr-border);
+    border-radius: 10px; overflow: hidden;
+    border-left: 3px solid rgba(99,102,241,0.2);
+    background: var(--pr-surface);
+    margin-bottom: 0.25rem;
+    animation: pr_expand 0.18s ease;
+}
+
+/* Filtros de código */
+.pr_cod_filter_bar {
+    display: flex; gap: 0.35rem; padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--pr-border);
+    background: var(--pr-glass);
+    flex-wrap: wrap;
+}
+.pr_cod_filter_btn {
+    padding: 0.3rem 0.75rem; border-radius: 7px;
+    font-size: 0.72rem; font-weight: 700; cursor: pointer;
+    border: 1px solid var(--pr-border);
+    background: transparent; color: var(--pr-muted);
+    transition: all 0.15s;
+}
+.pr_cod_filter_btn:hover { border-color: #4f46e5; color: #4f46e5; }
+.pr_cod_filter_btn.active {
+    background: #4f46e5; color: #fff; border-color: #4f46e5;
+    box-shadow: 0 1px 6px rgba(79,70,229,0.3);
+}
+.pr_cod_filter_btn.active.green {
+    background: #059669; border-color: #059669;
+    box-shadow: 0 1px 6px rgba(5,150,105,0.3);
+}
+.pr_cod_filter_btn.active.amber {
+    background: #d97706; border-color: #d97706;
+    box-shadow: 0 1px 6px rgba(217,119,6,0.3);
+}
+
+/* Tabla de códigos */
+.pr_cod_table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem;
+}
+.pr_cod_table thead tr {
+    background: rgba(79,70,229,0.03);
+    border-bottom: 2px solid var(--pr-border);
+}
+.pr_cod_table th {
+    padding: 0.6rem 1rem;
+    font-size: 0.6rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--pr-muted); text-align: left;
+}
+.pr_cod_table td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--pr-border);
+    vertical-align: middle;
+}
+.pr_cod_table tbody tr { transition: background 0.1s; }
+.pr_cod_table tbody tr:last-child td { border-bottom: none; }
+.pr_cod_row_usado {
+    background: linear-gradient(135deg, rgba(5,150,105,0.04), transparent);
+}
+.pr_cod_row_usado:hover { background: rgba(5,150,105,0.07) !important; }
+.pr_cod_row_disp:hover { background: rgba(79,70,229,0.025) !important; }
+.pr_table_empty {
+    text-align: center; padding: 2rem;
+    color: var(--pr-muted); font-size: 0.82rem; font-style: italic;
+}
+
+/* Hash row */
+.pr_hash_row {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+    align-items: center; padding: 0.6rem 0.85rem;
+    background: rgba(79,70,229,0.03);
+    border-radius: 8px; border: 1px dashed rgba(79,70,229,0.2);
+    font-size: 0.72rem; margin-top: 0.5rem;
+}
+.pr_hash_label {
+    font-size: 0.62rem; font-weight: 800; color: #4f46e5;
+    text-transform: uppercase; letter-spacing: 0.07em;
+}
+.pr_hash_value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.65rem; color: var(--pr-muted); word-break: break-all;
+}
+
+/* Modal CSV mejorado */
+.pr_modal_backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    z-index: 9999; display: flex;
+    align-items: center; justify-content: center; padding: 1rem;
+}
+.pr_modal_box {
+    background: var(--pr-surface);
+    border-radius: 18px;
+    width: 100%; max-width: 500px;
+    padding: 1.75rem;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+    border: 1px solid var(--pr-border);
+    animation: pr_modal_in 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pr_modal_in {
+    from { opacity: 0; transform: scale(0.92) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.pr_modal_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+.pr_modal_title { margin: 0; font-weight: 900; font-size: 1.05rem; letter-spacing: -0.02em; }
+.pr_modal_close {
+    background: var(--pr-glass); border: 1px solid var(--pr-border);
+    border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+    color: var(--pr-muted); padding: 0.3rem 0.65rem;
+    transition: all 0.15s;
+}
+.pr_modal_close:hover { background: rgba(220,38,38,0.08); color: #dc2626; border-color: rgba(220,38,38,0.3); }
+.pr_modal_hint {
+    margin-bottom: 0.85rem; padding: 0.75rem;
+    background: rgba(79,70,229,0.05);
+    border-radius: 10px; border: 1px solid rgba(79,70,229,0.15);
+    border-left: 3px solid #4f46e5;
+    font-size: 0.78rem; color: var(--pr-muted); line-height: 1.55;
+}
+.pr_modal_textarea {
+    width: 100%; box-sizing: border-box;
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem;
+    resize: vertical; padding: 0.75rem;
+    border-radius: 10px; border: 1px solid var(--pr-border);
+    background: var(--pr-surface); color: var(--pr-text);
+    margin-bottom: 0.5rem; line-height: 1.6;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pr_modal_textarea:focus {
+    outline: none; border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+}
+.pr_modal_count { font-size: 0.72rem; color: var(--pr-muted); margin-bottom: 1rem; }
+.pr_modal_footer { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+.pr_btn_accent_outline {
+    padding: 0.55rem 1rem; border-radius: 10px;
+    border: 1px solid #4f46e5; background: rgba(79,70,229,0.06);
+    cursor: pointer; font-size: 0.82rem; font-weight: 700; color: #4f46e5;
+    transition: all 0.15s; display: flex; align-items: center; gap: 0.4rem;
+}
+.pr_btn_accent_outline:hover { background: rgba(79,70,229,0.14); }
+.pr_btn_full { width: 100%; margin-bottom: 0.75rem; justify-content: center; }
+.pr_btn_flex1 {
+    flex: 1; padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; border-radius: 10px;
+    border: 1px solid var(--pr-border); background: var(--pr-glass);
+    color: var(--pr-text); transition: background 0.15s;
+}
+.pr_btn_flex1:hover { background: var(--pr-surface-hover); }
+.pr_btn_flex2 {
+    flex: 2; padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; border-radius: 10px; border: none;
+    background: #4f46e5; color: #fff;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+.pr_btn_flex2:hover { background: #3730a3; box-shadow: 0 2px 10px rgba(79,70,229,0.35); }
+.pr_btn_flex2:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+/* Mono code */
+.pr_mono {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 700; letter-spacing: 0.03em;
+}

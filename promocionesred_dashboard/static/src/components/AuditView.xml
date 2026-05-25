@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="promocionesred_dashboard.PrAuditView">
+        <div class="pr_animate_in">
+            <header><h2>Commercial Audits (SEC-OPS)</h2>
+                <p class="pr_text_muted">On-site verification of signage and collaborator compliance.</p>
+            </header>
+            <div class="pr_kpi_grid">
+                <div class="pr_card" style="border-left:4px solid var(--pr-primary)">
+                    <h3>Pending Audits</h3><div class="pr_kpi_value">5</div>
+                    <p class="pr_text_muted" style="font-size:0.875rem">Locations due this week</p>
+                </div>
+                <div class="pr_card" style="border-left:4px solid #22c55e">
+                    <h3>Success Rate</h3><div class="pr_kpi_value">98.2%</div>
+                    <p class="pr_text_muted" style="font-size:0.875rem">Valid placements found</p>
+                </div>
+            </div>
+            <div class="pr_card" style="margin-top:2rem">
+                <h3>New Audit Report</h3>
+                <form style="margin-top:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                    <div class="pr_form_group"><label>Collaborator / Location</label><input type="text" placeholder="e.g. Bar Central"/></div>
+                    <div class="pr_form_group">
+                        <label>Signage Condition</label>
+                        <select><option>Perfect / New</option><option>Damaged (Needs replace)</option><option>Missing</option></select>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>QR Validation Test</label>
+                        <select><option>✅ Functional &amp; Verified</option><option>❌ Failed / Incorrect URL</option></select>
+                    </div>
+                    <div class="pr_form_group"><label>Photo Evidence Upload</label><input type="file"/></div>
+                    <button type="submit" class="pr_btn_primary" style="grid-column:span 2">Submit Audit Report</button>
+                </form>
+            </div>
+        </div>
+    </t>
+</templates>

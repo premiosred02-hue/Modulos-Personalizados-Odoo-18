@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- TemplateBanner150_50 — Banner horizontal 1500x500mm -->
+<t t-name="cc_cartel.TemplateBanner150_50" owl="1">
+    <div class="template-banner-150-50 templates-fidelity">
+        <div class="banner-left-col">
+            <div class="banner-brand">Premios<span>Red</span>.com</div>
+            <div class="banner-promo-title"><t t-esc="props.content.promo_title"/></div>
+            <div class="banner-highlight">¡20.000€ EN PREMIOS!</div>
+        </div>
+        <div class="banner-packs-col">
+            <t t-foreach="packs" t-as="pack" t-key="pack.id">
+                <div class="banner-pack-card" t-att-style="'border-top: 6px solid ' + pack.color">
+                    <div class="banner-pack-logo">
+                        <img t-att-src="pack.logo" alt=""/>
+                    </div>
+                    <div class="banner-pack-info">
+                        <div class="banner-pack-name" t-att-style="'color:' + pack.color">
+                            <t t-esc="pack.name"/>
+                        </div>
+                        <div class="banner-pack-price" t-att-style="'color:' + pack.color">
+                            <t t-esc="pack.price"/>€
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+        <div class="banner-qr-col">
+            <div class="qr-secure-box">
+                <div class="qr-header-label">ESCANEA Y PARTICIPA</div>
+                <img t-att-src="qrSrc" width="180" height="180" alt="QR"/>
+                <div class="qr-footer-label">ZONA 1</div>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

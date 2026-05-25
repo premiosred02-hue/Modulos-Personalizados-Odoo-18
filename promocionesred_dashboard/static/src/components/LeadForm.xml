@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PrLeadForm" owl="1">
+<div class="pr_leads_root">
+
+    <!-- HEADER -->
+    <div class="pr_leads_header">
+        <div>
+            <div class="pr_leads_header_badges">
+                <span class="pr_leads_badge_gray">COMERCIAL</span>
+                <span class="pr_leads_badge_green">50.06 · 50.05</span>
+                <span class="pr_leads_role_badge" t-att-style="roleBadgeStyle(userRole)"><t t-esc="userRole"/></span>
+            </div>
+            <h2 class="pr_leads_title">Pipeline de Leads COL</h2>
+            <p class="pr_leads_sub">Nichos objetivo · Estrategia de visitas · Argumentario — Red PremiosRed 2026</p>
+        </div>
+        <div class="pr_leads_header_right">
+            <span class="pr_leads_kpi_pill"><t t-esc="kpi.activos"/> activos · <t t-esc="kpi.prospectos"/> prospectos</span>
+            <button t-if="perms.canCreate" class="pr_leads_btn_alta" t-on-click="openAdd">+ Alta COL</button>
+            <span t-else="" class="pr_leads_no_perm_tag">Solo lectura</span>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="pr_leads_tabs">
+        <button t-att-class="'pr_leads_tab '+(state.tab==='pipeline'?'active':'')"   t-on-click="()=>this.setTab('pipeline')">Pipeline</button>
+        <button t-att-class="'pr_leads_tab '+(state.tab==='nichos'?'active':'')"     t-on-click="()=>this.setTab('nichos')">Nichos Objetivo</button>
+        <button t-att-class="'pr_leads_tab '+(state.tab==='estrategia'?'active':'')" t-on-click="()=>this.setTab('estrategia')">Estrategia de Visitas</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB PIPELINE                                                  -->
+    <!-- ============================================================ -->
+    <div t-if="state.tab==='pipeline'">
+
+        <!-- Filtros -->
+        <div class="pr_leads_filters">
+            <input class="pr_crm_search" type="search" placeholder="Buscar empresa, zona, nicho..."
+                   t-att-value="state.search" t-on-input="setSearch"/>
+            <div class="pr_leads_filter_sep"/>
+            <t t-foreach="[0,1,2,3]" t-as="t" t-key="t">
+                <button t-att-class="'pr_leads_filter_pill '+(state.filterTier===t?'active':'')"
+                        t-on-click="()=>this.setTier(t)" t-esc="TIER_LABELS[t]"/>
+            </t>
+            <div class="pr_leads_filter_sep"/>
+            <t t-foreach="['','PROSPECTO','CONTACTADO','EN PROCESO','ACTIVO']" t-as="e" t-key="e">
+                <button t-att-class="'pr_leads_filter_pill '+(state.filterEstado===e?'active':'')"
+                        t-on-click="()=>this.setEstado(e)">
+                    <t t-if="!e">Todos</t><t t-else="" t-esc="e"/>
+                </button>
+            </t>
+        </div>
+
+        <!-- TABLA + DRAWER -->
+        <div class="pr_leads_list_wrap">
+            <div class="pr_dash_card pr_leads_table_card">
+                <div class="pr_dash_card_head">
+                    <span class="pr_dash_card_title">Leads registrados</span>
+                    <span class="pr_dash_card_sub"><t t-esc="filteredLeads.length"/> resultados</span>
+                </div>
+                <div class="pr_table_wrapper">
+                <table class="pr_table">
+                    <thead>
+                        <tr>
+                            <th>Empresa</th><th>Nicho</th><th>Contacto</th><th>Zona</th>
+                            <th>T</th><th>Score</th><th>Estado</th><th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="filteredLeads" t-as="lead" t-key="lead.id">
+                            <tr class="pr_leads_row" t-on-click="()=>this.openDrawer(lead)">
+                                <td class="pr_dash_td_bold" t-esc="lead.nombre"/>
+                                <td class="pr_dash_td_muted" t-esc="lead.nicho"/>
+                                <td class="pr_dash_td_muted" t-esc="lead.contacto"/>
+                                <td class="pr_leads_td_mono" t-esc="lead.zona"/>
+                                <td>
+                                    <span class="pr_leads_tier_badge"
+                                          t-att-style="'color:'+tierColor(lead.tier)">T<t t-esc="lead.tier"/></span>
+                                </td>
+                                <td class="pr_leads_score"><t t-esc="lead.score"/>/10</td>
+                                <td t-on-click.stop="">
+                                    <t t-if="perms.canChangeStage">
+                                        <select class="pr_leads_estado_sel"
+                                                t-att-style="estadoStyle(lead.estado)"
+                                                t-on-change="(ev)=>this.moveEstado(lead,ev)">
+                                            <t t-foreach="ESTADOS" t-as="e" t-key="e">
+                                                <option t-att-value="e"
+                                                        t-att-selected="lead.estado===e?1:0"
+                                                        t-esc="e"/>
+                                            </t>
+                                        </select>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="pr_leads_estado_sel"
+                                              t-att-style="estadoStyle(lead.estado)"
+                                              t-esc="lead.estado"/>
+                                    </t>
+                                </td>
+                                <td t-on-click.stop="" class="pr_leads_actions_cell">
+                                    <!-- NOTA: todos los roles con canNote -->
+                                    <button t-if="perms.canNote"
+                                            class="pr_leads_act_btn pr_leads_act_note"
+                                            title="Agregar nota"
+                                            t-on-click="(ev)=>this.openNota(lead,ev)">+ Nota</button>
+                                    <!-- EDITAR: ADM y COL -->
+                                    <button t-if="perms.canEdit"
+                                            class="pr_leads_act_btn"
+                                            title="Editar lead"
+                                            t-on-click="(ev)=>this.openEdit(lead,ev)">Editar</button>
+                                    <!-- ELIMINAR: solo ADM -->
+                                    <button t-if="perms.canDelete"
+                                            class="pr_leads_act_btn pr_leads_act_del"
+                                            title="Eliminar lead"
+                                            t-on-click="(ev)=>this.deleteLead(lead,ev)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </t>
+                        <tr t-if="filteredLeads.length===0">
+                            <td colspan="8" class="pr_crm_empty">Sin resultados con los filtros aplicados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <!-- DRAWER DETALLE -->
+            <div t-if="state.selectedLead" class="pr_leads_drawer">
+                <div class="pr_leads_drawer_head">
+                    <div>
+                        <div class="pr_crm_drawer_name" t-esc="state.selectedLead.nombre"/>
+                        <span class="pr_leads_tier_badge"
+                              t-att-style="'color:'+tierColor(state.selectedLead.tier)">
+                            Tier <t t-esc="state.selectedLead.tier"/>
+                        </span>
+                    </div>
+                    <button class="pr_crm_drawer_close" t-on-click="closeDrawer">x</button>
+                </div>
+                <div class="pr_crm_drawer_body">
+                    <!-- Estado -->
+                    <div class="pr_crm_drawer_stage"
+                         t-att-style="estadoStyle(state.selectedLead.estado)">
+                        <t t-esc="state.selectedLead.estado"/>
+                    </div>
+                    <!-- Datos -->
+                    <div class="pr_crm_drawer_row"><span class="pr_crm_drawer_label">Nicho</span><span t-esc="state.selectedLead.nicho"/></div>
+                    <div class="pr_crm_drawer_row"><span class="pr_crm_drawer_label">Contacto</span><span t-esc="state.selectedLead.contacto||'-'"/></div>
+                    <div class="pr_crm_drawer_row"><span class="pr_crm_drawer_label">Zona</span><span t-esc="state.selectedLead.zona||'-'"/></div>
+                    <div class="pr_crm_drawer_row"><span class="pr_crm_drawer_label">Score</span><strong t-esc="state.selectedLead.score+'/10'"/></div>
+                    <div class="pr_crm_drawer_row" t-if="state.selectedLead.email"><span class="pr_crm_drawer_label">Email</span><a t-att-href="'mailto:'+state.selectedLead.email" t-esc="state.selectedLead.email"/></div>
+                    <div class="pr_crm_drawer_row" t-if="state.selectedLead.phone"><span class="pr_crm_drawer_label">Tel</span><a t-att-href="'tel:'+state.selectedLead.phone" t-esc="state.selectedLead.phone"/></div>
+
+                    <!-- Nota principal -->
+                    <div class="pr_crm_drawer_notes_label">Nota</div>
+                    <div class="pr_crm_drawer_notes" t-esc="state.selectedLead.nota||'Sin notas.'"/>
+
+                    <!-- Log de notas -->
+                    <t t-if="state.selectedLead.notas_log and state.selectedLead.notas_log.length">
+                        <div class="pr_crm_drawer_notes_label">Historial de notas</div>
+                        <div class="pr_leads_nota_log">
+                            <t t-foreach="state.selectedLead.notas_log" t-as="entry" t-key="entry_index">
+                                <div class="pr_leads_nota_entry" t-esc="entry"/>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- Acciones drawer -->
+                    <div class="pr_crm_drawer_actions">
+                        <button t-if="perms.canNote"  class="pr_leads_act_btn pr_leads_act_note" t-on-click="()=>this.openNota(state.selectedLead, null)">+ Agregar nota</button>
+                        <button t-if="perms.canEdit"  class="pr_leads_act_btn" t-on-click="()=>this.openEdit(state.selectedLead, null)">Editar</button>
+                        <button t-if="perms.canDelete" class="pr_leads_act_btn pr_leads_act_del" t-on-click="()=>this.deleteLead(state.selectedLead, null)">Eliminar</button>
+                    </div>
+
+                    <!-- Permisos info -->
+                    <div class="pr_leads_perm_info">
+                        <span class="pr_leads_role_badge" t-att-style="roleBadgeStyle(userRole)"><t t-esc="userRole"/></span>
+                        <span t-if="!perms.canDelete" class="pr_leads_perm_warn">Solo ADM puede eliminar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloque SAMAR -->
+        <div class="pr_leads_samar_box">
+            <span class="pr_leads_samar_icon">&#x1F988;</span>
+            <div>
+                <div class="pr_leads_samar_title">Regla SAMAR — Argumento nuclear</div>
+                <div class="pr_leads_samar_desc">
+                    600 autobuses x 30 pasajeros x 4 trayectos/dia = <strong>72.000 impactos/dia</strong>.
+                    Conv. 1% = <strong>720 packs/dia</strong>.
+                    Comision SAMAR 45%: <strong class="pr_leads_samar_green">97.200 EUR/mes estimado</strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB NICHOS                                                    -->
+    <!-- ============================================================ -->
+    <div t-elif="state.tab==='nichos'">
+        <div class="pr_leads_filters">
+            <t t-foreach="[0,1,2,3]" t-as="t" t-key="t">
+                <button t-att-class="'pr_leads_filter_pill '+(state.filterTier===t?'active':'')"
+                        t-on-click="()=>this.setTier(t)" t-esc="TIER_LABELS[t]"/>
+            </t>
+        </div>
+        <div class="pr_leads_nichos_grid">
+            <t t-foreach="filteredNichos" t-as="n" t-key="n.id">
+                <div class="pr_leads_nicho_card">
+                    <div class="pr_leads_nicho_head">
+                        <div><div class="pr_leads_nicho_name" t-esc="n.name"/><div class="pr_leads_nicho_ej" t-esc="n.ej"/></div>
+                        <div class="pr_leads_nicho_score_col">
+                            <span class="pr_leads_nicho_score" t-esc="n.score+'/10'"/>
+                            <span class="pr_leads_nicho_tier" t-att-style="'color:'+tierColor(n.tier)">TIER <t t-esc="n.tier"/></span>
+                        </div>
+                    </div>
+                    <div class="pr_leads_nicho_bar_track"><div class="pr_leads_nicho_bar_fill" t-att-style="'width:'+(n.score*10)+'%'"/></div>
+                    <div class="pr_leads_nicho_meta_grid">
+                        <div class="pr_leads_nicho_meta_item"><div class="pr_leads_nicho_meta_label">Tiempo cautivo</div><div class="pr_leads_nicho_meta_val" t-esc="n.cautivo"/></div>
+                        <div class="pr_leads_nicho_meta_item"><div class="pr_leads_nicho_meta_label">Volumen</div><div class="pr_leads_nicho_meta_val" t-esc="starDot(n.vol)"/></div>
+                        <div class="pr_leads_nicho_meta_item"><div class="pr_leads_nicho_meta_label">Friccion</div><div class="pr_leads_nicho_meta_val" t-att-style="'color:'+fricColor(n.fricOk)" t-esc="n.fric"/></div>
+                        <div class="pr_leads_nicho_meta_item"><div class="pr_leads_nicho_meta_label">Estimado EUR</div><div class="pr_leads_nicho_meta_val" t-esc="n.ingreso"/></div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB ESTRATEGIA                                                -->
+    <!-- ============================================================ -->
+    <div t-elif="state.tab==='estrategia'" class="pr_leads_estrategia_grid">
+        <div class="pr_dash_card">
+            <div class="pr_dash_card_head"><span class="pr_dash_card_title">Flujo de cierre</span><span class="pr_dash_card_sub">16 min totales</span></div>
+            <div class="pr_leads_fases">
+                <t t-foreach="FASES" t-as="f" t-key="f.n">
+                    <div class="pr_leads_fase_row">
+                        <div class="pr_leads_fase_num" t-esc="f.n"/>
+                        <div><div class="pr_leads_fase_title" t-esc="f.title"/><div class="pr_leads_fase_desc" t-esc="f.desc"/></div>
+                    </div>
+                </t>
+            </div>
+        </div>
+        <div class="pr_dash_card">
+            <div class="pr_dash_card_head"><span class="pr_dash_card_title">Calculadora de impacto</span></div>
+            <div class="pr_table_wrapper">
+            <table class="pr_table">
+                <thead><tr><th>Tipo COL</th><th>Clientes/dia</th><th>Conv.</th><th>Packs/mes</th><th>Comision</th></tr></thead>
+                <tbody>
+                    <t t-foreach="CALC_TABLE" t-as="row" t-key="row.tipo">
+                        <tr t-att-class="row.star?'pr_leads_star_row':''">
+                            <td t-att-class="row.star?'pr_dash_td_bold':'pr_dash_td_muted'" t-esc="row.tipo"/>
+                            <td class="pr_leads_td_mono" t-esc="row.clientes"/>
+                            <td class="pr_leads_td_mono" t-esc="row.conv"/>
+                            <td class="pr_leads_td_mono" t-esc="row.packs"/>
+                            <td t-att-class="row.star?'pr_leads_star_val':'pr_dash_td_muted'" t-esc="row.comision"/>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="pr_dash_card pr_leads_pitch_card">
+            <div class="pr_leads_pitch_label">Pitch de 60 segundos</div>
+            <div class="pr_leads_pitch_text">
+                "Somos PremiosRed 2026. Ponemos un cartel con QR en su negocio — <strong>nosotros lo pagamos, imprimimos y enviamos</strong>.
+                Sus clientes compran un Pack Digital y entran en un sorteo de Navidad.
+                <strong>Cada compra desde su QR le da el 45% del precio. No hace nada — el dinero llega a su cuenta el dia 6 de cada mes</strong>.
+                Le muestro en la tablet lo que ganaria con sus clientes?"
+            </div>
+        </div>
+        <div class="pr_dash_card pr_leads_estrat_card">
+            <div class="pr_leads_pitch_label">Estrategia de penetracion — 3 fases</div>
+            <t t-foreach="ESTRATEGIA" t-as="ef" t-key="ef.fase">
+                <div class="pr_leads_estrat_row">
+                    <div class="pr_leads_estrat_fase" t-esc="ef.fase"/>
+                    <div class="pr_leads_estrat_title" t-esc="ef.title"/>
+                    <div class="pr_leads_estrat_desc"  t-esc="ef.desc"/>
+                </div>
+            </t>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL: ADD / EDIT                                             -->
+    <!-- ============================================================ -->
+    <div t-if="state.modalMode" class="pr_leads_modal_overlay" t-on-click="closeModal">
+        <div class="pr_leads_modal" t-on-click.stop="">
+            <div class="pr_leads_modal_head">
+                <h3><t t-if="state.modalMode==='add'">Registrar Lead COL</t><t t-else="">Editar Lead</t></h3>
+                <button class="pr_crm_drawer_close" t-on-click="closeModal">x</button>
+            </div>
+            <form class="pr_leads_modal_form" t-on-submit="submitLead">
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Nombre / Empresa *</label>
+                        <input type="text" required="required" t-att-value="state.formData.nombre"
+                               t-on-input="(ev)=>this.onField('nombre',ev)" placeholder="Ej: SAMAR, Bar El Rincon..."/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Nicho / Sector</label>
+                        <select t-on-change="(ev)=>this.onField('nicho',ev)">
+                            <t t-foreach="NICHOS" t-as="n" t-key="n.id">
+                                <option t-att-value="n.name"
+                                        t-att-selected="state.formData.nicho===n.name?1:0"
+                                        t-esc="n.name"/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Persona de contacto</label>
+                        <input type="text" t-att-value="state.formData.contacto"
+                               t-on-input="(ev)=>this.onField('contacto',ev)"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Zona / Ciudad</label>
+                        <input type="text" t-att-value="state.formData.zona"
+                               t-on-input="(ev)=>this.onField('zona',ev)" placeholder="Madrid, Sevilla..."/>
+                    </div>
+                </div>
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Email</label>
+                        <input type="email" t-att-value="state.formData.email"
+                               t-on-input="(ev)=>this.onField('email',ev)"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Telefono</label>
+                        <input type="tel" t-att-value="state.formData.phone"
+                               t-on-input="(ev)=>this.onField('phone',ev)"/>
+                    </div>
+                </div>
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Tier</label>
+                        <select t-on-change="(ev)=>this.onNum('tier',ev)">
+                            <option value="1" t-att-selected="state.formData.tier===1?1:0">Tier 1 - Elite</option>
+                            <option value="2" t-att-selected="state.formData.tier===2?1:0">Tier 2 - Gran impacto</option>
+                            <option value="3" t-att-selected="state.formData.tier===3?1:0">Tier 3 - Estrategico</option>
+                        </select>
+                    </div>
+                    <div class="pr_form_group">
+                        <label>Estado</label>
+                        <select t-on-change="(ev)=>this.onField('estado',ev)">
+                            <t t-foreach="ESTADOS" t-as="e" t-key="e">
+                                <option t-att-value="e"
+                                        t-att-selected="state.formData.estado===e?1:0"
+                                        t-esc="e"/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+                <div class="pr_form_row">
+                    <div class="pr_form_group">
+                        <label>Score (1-10)</label>
+                        <input type="number" min="1" max="10" t-att-value="state.formData.score"
+                               t-on-input="(ev)=>this.onNum('score',ev)"/>
+                    </div>
+                </div>
+                <div class="pr_form_group">
+                    <label>Nota principal</label>
+                    <textarea rows="3" placeholder="Contexto, potencial, proximos pasos..."
+                              t-on-input="(ev)=>this.onField('nota',ev)"><t t-esc="state.formData.nota"/></textarea>
+                </div>
+                <div class="pr_crm_add_actions">
+                    <button type="button" class="pr_crm_btn_cancel" t-on-click="closeModal">Cancelar</button>
+                    <button type="submit" class="pr_leads_btn_alta" t-att-disabled="state.saving">
+                        <t t-if="state.saving">Guardando...</t>
+                        <t t-elif="state.modalMode==='add'">Registrar Lead</t>
+                        <t t-else="">Guardar Cambios</t>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL: NOTA                                                   -->
+    <!-- ============================================================ -->
+    <div t-if="state.notaModal" class="pr_leads_modal_overlay" t-on-click="closeNota">
+        <div class="pr_leads_modal pr_leads_nota_modal" t-on-click.stop="">
+            <div class="pr_leads_modal_head">
+                <h3>Agregar nota — <t t-esc="state.notaModal.nombre"/></h3>
+                <button class="pr_crm_drawer_close" t-on-click="closeNota">x</button>
+            </div>
+            <form class="pr_leads_modal_form" t-on-submit="saveNota">
+                <div class="pr_leads_nota_meta">
+                    <span class="pr_leads_role_badge" t-att-style="roleBadgeStyle(userRole)"><t t-esc="userRole"/></span>
+                    <span class="pr_leads_nota_user" t-esc="userName"/>
+                </div>
+                <!-- Historial previo -->
+                <div t-if="state.notaModal.notas_log and state.notaModal.notas_log.length" class="pr_leads_nota_log pr_leads_nota_log_sm">
+                    <t t-foreach="state.notaModal.notas_log" t-as="entry" t-key="entry_index">
+                        <div class="pr_leads_nota_entry" t-esc="entry"/>
+                    </t>
+                </div>
+                <div class="pr_form_group">
+                    <label>Nueva nota *</label>
+                    <textarea rows="4" required="required"
+                              placeholder="Escribe el seguimiento, acuerdo, observacion..."
+                              t-att-value="state.notaText"
+                              t-on-input="onNotaText"/>
+                </div>
+                <div class="pr_crm_add_actions">
+                    <button type="button" class="pr_crm_btn_cancel" t-on-click="closeNota">Cancelar</button>
+                    <button type="submit" class="pr_leads_btn_alta">Guardar nota</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</t>
+</templates>

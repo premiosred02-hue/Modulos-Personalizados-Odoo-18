@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú raíz: aparece en la barra superior de Odoo -->
+    <menuitem
+        id="menu_promocionesred_root"
+        name="PromocionesRed.com"
+        action="action_promocionesred_dashboard"
+        sequence="200"
+    />
+</odoo>

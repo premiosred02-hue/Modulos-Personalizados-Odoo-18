@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- PREMIOSRED: Portal publico de verificacion QR -->
+<!-- Ruta: /verify/encrypted_id?type=portal&amp;label=...&amp;sub=...&amp;spon=... -->
+<!-- Replica: VerificationPortal.jsx del SISTEMA QR React original -->
+
+
+<template id="qr_verify_portal" name="PremiosRed - Verificacion QR">
+    <t t-call="web.layout">
+        <t t-set="head">
+            <title>Verificacion QR — PremiosRed</title>
+            <meta name="robots" content="noindex, nofollow"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <style>
+                /* Reset + fuente */
+                *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 1.5rem;
+                    transition: background .3s;
+                }
+                /* Temas (replica themes de VerificationPortal.jsx) */
+                body.theme-standard  { background: #f9fafb; }
+                body.theme-premium   { background: #eff6ff; }
+                body.theme-marketing { background: #fdf2f8; }
+
+                .card {
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 32px rgba(0,0,0,.08);
+                    padding: 2.5rem;
+                    max-width: 480px;
+                    width: 100%;
+                    text-align: center;
+                }
+                .card.theme-standard  { border-top: 4px solid #111827; }
+                .card.theme-premium   { border-top: 4px solid #2563eb; }
+                .card.theme-marketing { border-top: 4px solid #db2777; }
+
+                /* Icono */
+                .icon-wrap {
+                    width: 64px; height: 64px;
+                    border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    margin: 0 auto 1.5rem;
+                    font-size: 2rem;
+                }
+                .theme-standard  .icon-wrap { background: #11182711; color: #111827; border-radius: 50%; }
+                .theme-premium   .icon-wrap { background: #2563eb11; color: #2563eb; border-radius: 12px; }
+                .theme-marketing .icon-wrap { background: #db277711; color: #db2777; border-radius: 50%; }
+
+                h1 { font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: .75rem; }
+                .subtitle { color: #6b7280; margin-bottom: 2rem; font-size: .925rem; line-height: 1.5; }
+
+                /* Info box */
+                .info-box {
+                    background: #fff; border: 1px solid #e5e7eb;
+                    border-radius: 12px; padding: 1.25rem;
+                    margin-bottom: 1.5rem; text-align: left;
+                }
+                .info-row {
+                    display: flex; align-items: flex-start;
+                    gap: .75rem; margin-bottom: .875rem;
+                }
+                .info-row:last-child { margin-bottom: 0; }
+                .info-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+                .info-label { font-size: .7rem; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+                .info-val   { font-size: .875rem; color: #374151; font-family: monospace; word-break: break-all; }
+
+                /* Codes row */
+                .codes-row { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
+                .code-badge { font-size: .68rem; font-weight: 700; font-family: monospace; padding: 3px 10px; border-radius: 6px; }
+                .code-col  { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+                .code-sub  { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+                .code-spp  { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
+                /* Status badge */
+                .status-badge {
+                    display: inline-flex; align-items: center; gap: .4rem;
+                    font-size: .72rem; font-weight: 700; text-transform: uppercase;
+                    padding: 4px 12px; border-radius: 9999px; margin-bottom: 1.5rem;
+                }
+                .status-valid   { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+                .status-invalid { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+                .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+                /* Back link */
+                .back-link {
+                    display: inline-flex; align-items: center; gap: .4rem;
+                    color: #6b7280; font-size: .875rem; font-weight: 500;
+                    text-decoration: none; margin-top: .5rem;
+                    transition: color .15s;
+                }
+                .back-link:hover { color: #111827; }
+
+                /* CTA button */
+                .cta-btn {
+                    display: block; width: 100%; padding: .875rem;
+                    border-radius: 10px; border: none; cursor: pointer;
+                    font-size: .9rem; font-weight: 700; text-decoration: none;
+                    margin-bottom: 1rem; transition: opacity .15s;
+                }
+                .cta-btn:hover { opacity: .88; }
+                .theme-standard  .cta-btn { background: #111827; color: #fff; }
+                .theme-premium   .cta-btn { background: #2563eb; color: #fff; }
+                .theme-marketing .cta-btn { background: #db2777; color: #fff; }
+
+                /* Footer */
+                .footer-note { font-size: .68rem; color: #9ca3af; margin-top: 1.5rem; }
+
+                @media (max-width: 480px) {
+                    .card { padding: 1.5rem; }
+                    h1 { font-size: 1.25rem; }
+                }
+            </style>
+        </t>
+
+        <!-- Script para aplicar clase de tema al body -->
+        <script>
+            document.body.className = 'theme-<t t-esc="portal_type"/>';
+        </script>
+
+
+        <div t-att-class="'card theme-' + portal_type">
+
+            <!-- Icono segun tipo -->
+            <div class="icon-wrap">
+                <t t-if="portal_type == 'premium'">&#x2B50;</t>
+                <t t-elif="portal_type == 'marketing'">&#x1F514;</t>
+                <t t-else="">&#x2705;</t>
+            </div>
+
+            <!-- Titulo -->
+            <h1 t-esc="label"/>
+
+            <!-- Estado validacion -->
+            <t t-if="valid">
+                <div class="status-badge status-valid">
+                    <span class="status-dot"/>
+                    Codigo validado correctamente
+                </div>
+            </t>
+            <t t-else="">
+                <div class="status-badge status-invalid">
+                    <span class="status-dot"/>
+                    QR no reconocido
+                </div>
+            </t>
+
+            <!-- Subtitulo segun tipo -->
+            <p class="subtitle">
+                <t t-if="portal_type == 'marketing'">
+                    Descubre ofertas exclusivas con tu codigo seguro.
+                </t>
+                <t t-elif="portal_type == 'premium'">
+                    Acceso Premium verificado con exito.
+                </t>
+                <t t-else="">
+                    Codigo de acceso validado correctamente por el sistema PremiosRed.
+                </t>
+            </p>
+
+            <!-- Datos del actor si se encontro -->
+            <t t-if="valid and actor">
+                <div class="codes-row">
+                    <span class="code-badge code-col" t-esc="actor.col_code or ('COL-' + str(actor.id).zfill(3))"/>
+                    <t t-if="actor.sub_code">
+                        <span class="code-badge code-sub" t-esc="actor.sub_code"/>
+                    </t>
+                    <t t-if="actor.sponsor_code">
+                        <span class="code-badge code-spp" t-esc="actor.sponsor_code"/>
+                    </t>
+                </div>
+            </t>
+            <t t-elif="sub_code or spon_code">
+                <div class="codes-row">
+                    <t t-if="sub_code">
+                        <span class="code-badge code-sub" t-esc="sub_code"/>
+                    </t>
+                    <t t-if="spon_code">
+                        <span class="code-badge code-spp" t-esc="spon_code"/>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Info box (Token + timestamp) -->
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-icon">&#x1F6E1;</span>
+                    <div>
+                        <div class="info-label">Token ID</div>
+                        <div class="info-val" t-esc="short_id"/>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-icon">&#x1F552;</span>
+                    <div>
+                        <div class="info-label">Validado el</div>
+                        <div class="info-val" t-esc="now_ts"/>
+                    </div>
+                </div>
+                <t t-if="valid and actor">
+                    <div class="info-row">
+                        <span class="info-icon">&#x1F4E6;</span>
+                        <div>
+                            <div class="info-label">Colaborador</div>
+                            <div class="info-val" t-esc="actor.name"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- CTA -->
+            <t t-if="valid">
+                <a href="https://premiosred.com" class="cta-btn">
+                    Comprar Pack Digital — PremiosRed 2026
+                </a>
+            </t>
+
+            <!-- Back link -->
+            <a href="/" class="back-link">&#8592; Volver al inicio</a>
+
+            <!-- Footer -->
+            <div class="footer-note">
+                PremiosRed 2026 · Sorteo Navidad · REDROYAL SL<br/>
+                Sistema seguro — Ley 13/2011 de regulacion del juego
+            </div>
+        </div>
+
+    </t>
+
+</template>
+
+</odoo>

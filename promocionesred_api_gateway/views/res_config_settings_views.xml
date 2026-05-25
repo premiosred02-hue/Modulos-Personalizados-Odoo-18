@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_api_gateway" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.api.gateway</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="PremiosRed API" string="PremiosRed API" name="promocionesred_api_gateway" groups="base.group_system">
+                    <block title="Seguridad Headless (React)" name="api_headless_security">
+                        <setting string="Bearer Token Maestro" help="Tu web externa lo utilizará como contraseña para conectarse (Ej: Webhook y Leads)">
+                            <field name="pr_api_master_key" password="True"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Acción de Ventana para los Ajustes -->
+    <record id="action_api_gateway_config" model="ir.actions.act_window">
+        <field name="name">Ajustes API PremiosRed</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'promocionesred_api_gateway'}</field>
+    </record>
+
+    <!-- Elemento de menú bajo la pestaña Ajustes (base.menu_administration) -->
+    <menuitem id="menu_api_gateway_config" 
+              name="PremiosRed API" 
+              parent="base.menu_administration" 
+              action="action_api_gateway_config" 
+              sequence="100"/>
+</odoo>

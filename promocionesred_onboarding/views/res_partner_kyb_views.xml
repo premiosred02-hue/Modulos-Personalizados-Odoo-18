@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extensión de la vista form de res.partner para KYB -->
+    <record id="view_partner_form_kyb_ext" model="ir.ui.view">
+        <field name="name">res.partner.kyb.ext</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Onboarding KYB" name="kyb_page" invisible="redlmc_actor_type == False">
+                    <group>
+                        <group string="Estado KYB">
+                            <field name="redlmc_kyb_estado" widget="badge" 
+                                   decoration-info="redlmc_kyb_estado == 'incompleto'"
+                                   decoration-warning="redlmc_kyb_estado == 'pendiente'"
+                                   decoration-success="redlmc_kyb_estado == 'verificado'"
+                                   decoration-danger="redlmc_kyb_estado == 'rechazado'"/>
+                            <field name="redlmc_kyb_fecha"/>
+                            <field name="redlmc_kyb_notas"/>
+                            <field name="redlmc_kill_switch_active" invisible="1"/>
+                            
+                            <button name="action_verify_kyb" type="object" string="Verificar KYB" 
+                                    class="btn-primary" invisible="redlmc_kyb_estado in ('verificado', 'incompleto')"/>
+                            <button name="action_reject_kyb" type="object" string="Rechazar KYB" 
+                                    class="btn-danger" invisible="redlmc_kyb_estado in ('rechazado', 'incompleto')"/>
+                        </group>
+                        <group string="Documentos Identidad">
+                            <field name="redlmc_kyb_dni_front" widget="many2one_binary"/>
+                            <field name="redlmc_kyb_dni_back" widget="many2one_binary"/>
+                            <field name="redlmc_kyb_cif" widget="many2one_binary" invisible="is_company == False"/>
+                            <field name="redlmc_kyb_ubo" widget="many2one_binary" invisible="is_company == False"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Certificados Oficiales">
+                            <field name="redlmc_kyb_reta" widget="many2one_binary"/>
+                            <field name="redlmc_kyb_aeat" widget="many2one_binary"/>
+                            <field name="redlmc_kyb_ss" widget="many2one_binary"/>
+                        </group>
+                        <group string="Contrato y Vinculación">
+                            <field name="redlmc_kyb_contrato" widget="many2one_binary"/>
+                            <field name="redlmc_kyb_iban_cert" widget="many2one_binary"/>
+                            <field name="redlmc_kyb_auth_col" widget="many2one_binary" invisible="redlmc_actor_type != 'sub'"/>
+                            <field name="redlmc_kyb_foto_local" widget="many2one_binary" invisible="redlmc_actor_type != 'col'"/>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+            
+            <!-- Bloquear activación si KYB no está verificado -->
+            <!-- Aquí asumiremos que action_activate_actor existe en redlmc_partner_ext y lo reemplazaremos o añadiremos un warning si es posible. -->
+        </field>
+    </record>
+</odoo>

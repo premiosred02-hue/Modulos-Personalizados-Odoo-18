@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        REDLMC SL — Personalización del Login Page
+        Módulo: redlmc_es_labels
+
+        Estrategia correcta en Odoo 18:
+        - El "Powered by Odoo" está en: web.brand_promotion → web.brand_promotion_message
+        - Lo sobreescribimos con branding REDLMC
+        - El CSS se carga via web.assets_frontend (ya registrado en __manifest__.py)
+    -->
+
+    <!-- ── Sobreescribir "Powered by Odoo" con branding REDLMC ──────────── -->
+    <template id="redlmc_brand_promotion"
+              inherit_id="web.brand_promotion"
+              priority="50">
+        <!-- Reemplazar TODO el contenido por branding REDLMC -->
+        <xpath expr="//div[hasclass('o_brand_promotion')]" position="replace">
+            <div class="o_brand_promotion redlmc-brand-zone text-center">
+                <!-- Copyright REDLMC SL -->
+                <div style="
+                    font-size: 0.6rem;
+                    color: rgba(255,255,255,0.25);
+                    font-family: 'Inter', sans-serif;
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                    padding: 4px 0 2px;
+                ">
+                    © 2026 REDLMC SL · PromocionesRed.com
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- ── Badge de sistema en línea ───────────────────────────────────── -->
+    <template id="redlmc_login_badge" inherit_id="web.login" priority="30">
+        <xpath expr="//t[@t-call='web.login_layout']" position="inside">
+            <div style="
+                position: fixed;
+                bottom: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 50px;
+                padding: 4px 14px;
+                font-size: 0.6rem;
+                color: rgba(255,255,255,0.28);
+                font-family: Inter, sans-serif;
+                letter-spacing: 0.05em;
+                backdrop-filter: blur(10px);
+                white-space: nowrap;
+                z-index: 100;
+            ">
+                <span style="
+                    display: inline-block;
+                    width: 5px; height: 5px;
+                    background: #F0A500;
+                    border-radius: 50%;
+                    margin-right: 4px;
+                    animation: redlmc-blink 2s ease-in-out infinite;
+                "></span>
+                Sistema ERP · v18 Enterprise · Entorno Seguro
+            </div>
+            <style>
+                @keyframes redlmc-blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.2; }
+                }
+            </style>
+        </xpath>
+    </template>
+
+</odoo>

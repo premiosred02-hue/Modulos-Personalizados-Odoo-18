@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- TemplateA4V1 — Layout 2 columnas con grid de packs -->
+<t t-name="cc_cartel.TemplateA4V1" owl="1">
+    <div class="template-a4-v2 a4-v1 templates-fidelity">
+        <header class="template-header">
+            <div class="template-brand">Premios<span>Red</span>.com</div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="amazon-header-logo"/>
+        </header>
+
+        <div class="main-layout-v1">
+            <div class="left-column">
+                <div class="promo-context">PROMOCIÓN EXCLUSIVA POR TIEMPO LIMITADO</div>
+                <h1 class="title-v1"><t t-esc="props.content.promo_title"/></h1>
+                <div class="subtitle-v1"><t t-esc="props.content.promo_subtitle"/></div>
+
+                <div class="packs-grid-v1">
+                    <t t-foreach="packs" t-as="pack" t-key="pack.id">
+                        <div class="improved-pack-card" t-att-style="'border-color:' + pack.color">
+                            <div class="pack-top-label" t-att-style="'background-color:' + pack.color">
+                                <t t-esc="pack.name"/>
+                            </div>
+                            <div class="pack-main-content">
+                                <div class="pack-logo-container">
+                                    <img t-att-src="pack.logo" alt=""/>
+                                </div>
+                                <div class="pack-details">
+                                    <ul>
+                                        <t t-foreach="pack.items.slice(0,2)" t-as="item" t-key="item_index">
+                                            <li><t t-esc="item"/></li>
+                                        </t>
+                                    </ul>
+                                </div>
+                                <div class="pack-price-tag">
+                                    <div class="price-amount" t-att-style="'color:' + pack.color">
+                                        <t t-esc="pack.price"/><span>€</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                <div class="solidarity-stripe"><t t-esc="props.content.solidarity_text"/></div>
+            </div>
+
+            <div class="right-sidebar-v1">
+                <div class="qr-secure-box v1-qr">
+                    <div class="qr-header-label">PARTICIPA</div>
+                    <img t-att-src="qrSrc" width="160" height="160" alt="QR Code"/>
+                    <div class="qr-footer-label">ESCANEA AQUÍ</div>
+                </div>
+                <div class="call-to-action-v1">
+                    <div class="cta-arrow">⤵</div>
+                    <div class="cta-text">DISFRUTA<br/>TUS VENTAJAS<br/>HOY MISMO</div>
+                </div>
+                <div class="partners-box-v1">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Galp_logo.svg" alt="Galp"/>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon"/>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer-v1">
+            <div class="legal-v1"><t t-esc="props.content.legal_text"/></div>
+        </footer>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.EmpresasView">
+<div class="pr_view_container">
+
+    <!-- ═══ HEADER ════════════════════════════════════════════════════ -->
+    <div class="pr_section_header">
+        <div>
+            <h2 class="pr_section_title">🏪 Empresas Colaboradoras (COL)</h2>
+            <p class="pr_section_subtitle">Puntos de venta QR · Comisión 45% directa / 20% asistida</p>
+        </div>
+        <button class="pr_btn_new" id="btn_nueva_empresa" t-on-click="newEmpresa">
+            ＋ Nueva Empresa
+        </button>
+    </div>
+
+    <div t-if="state.loading" class="pr_loading_box"><div class="pr_spinner"/><p>Cargando...</p></div>
+
+    <t t-if="!state.loading">
+
+        <!-- ═══ KPIs ══════════════════════════════════════════════════ -->
+        <div class="pr_kpi_grid">
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">🏪</span><div><div class="pr_kpi_label">Total COL</div><div class="pr_kpi_value"><t t-esc="kpis.total"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">✅</span><div><div class="pr_kpi_label">Activos</div><div class="pr_kpi_value" style="color:#059669"><t t-esc="kpis.activos"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">⏳</span><div><div class="pr_kpi_label">KYB Pendiente</div><div class="pr_kpi_value" style="color:#d97706"><t t-esc="kpis.kyb_pend"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">🧑‍💼</span><div><div class="pr_kpi_label">Total SUBs</div><div class="pr_kpi_value" style="color:#4f46e5"><t t-esc="kpis.total_subs"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">💶</span><div><div class="pr_kpi_label">Ventas</div><div class="pr_kpi_value" style="color:#059669"><t t-esc="fmt(kpis.total_sales)"/></div></div></div>
+            <div class="pr_kpi_card"><span class="pr_kpi_icon">💰</span><div><div class="pr_kpi_label">Comisiones</div><div class="pr_kpi_value" style="color:#d97706"><t t-esc="fmt(kpis.total_earned)"/></div></div></div>
+        </div>
+
+        <!-- ═══ FILTROS ═══════════════════════════════════════════════ -->
+        <div class="pr_filter_bar">
+            <input class="pr_input" id="emp_search" placeholder="🔍 Nombre, CIF, email, ciudad..."
+                   t-att-value="state.search" t-on-input="setSearch"/>
+            <select class="pr_select" id="emp_sector" t-on-change="setSector">
+                <option value="all">Todos sectores</option>
+                <option value="hosteleria">🍺 Hostelería</option>
+                <option value="restauracion">🍽️ Restauración</option>
+                <option value="transporte">🚌 Transporte</option>
+                <option value="hotel">🏨 Hotel</option>
+                <option value="comercio">🛍️ Comercio</option>
+                <option value="aerolinea">✈️ Aerolínea</option>
+                <option value="otro">🏢 Otro</option>
+            </select>
+            <select class="pr_select" id="emp_kyb" t-on-change="setKYB">
+                <option value="all">Todos KYB</option>
+                <option value="pending">⏳ Pendiente</option>
+                <option value="submitted">📤 Enviado</option>
+                <option value="approved">✅ Aprobado</option>
+                <option value="rejected">❌ Rechazado</option>
+            </select>
+            <select class="pr_select" id="emp_estado" t-on-change="setActive">
+                <option value="all">Todos</option>
+                <option value="active">✅ Activos</option>
+                <option value="inactive">🚫 Inactivos</option>
+            </select>
+            <span class="pr_result_count"><t t-esc="filtered.length"/> resultado(s)</span>
+        </div>
+
+        <!-- ═══ TABLA ══════════════════════════════════════════════════ -->
+        <div class="pr_table_wrapper">
+            <table class="pr_table">
+                <thead><tr>
+                    <th>COL / Sector</th><th>CIF / Contacto</th><th>Ciudad</th>
+                    <th>KYB</th><th>Captador</th><th>SUBs</th>
+                    <th>Ventas / Comisión</th><th>QR</th><th>Estado</th><th>Acciones</th>
+                </tr></thead>
+                <tbody>
+                    <t t-if="filtered.length === 0">
+                        <tr><td colspan="10" class="pr_table_empty">No se encontraron colaboradores.</td></tr>
+                    </t>
+                    <t t-foreach="filtered" t-as="col" t-key="col.id">
+                        <tr t-att-class="!col.active ? 'pr_row_inactive' : ''">
+                            <!-- Empresa -->
+                            <td>
+                                <div class="pr_actor_cell">
+                                    <div class="pr_actor_avatar"><t t-esc="sectorIcon(col.sector)"/></div>
+                                    <div>
+                                        <div class="pr_actor_name"><t t-esc="col.name"/></div>
+                                        <div class="pr_actor_sub"><t t-esc="col.sector"/></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <!-- CIF / Email -->
+                            <td>
+                                <div class="pr_mono pr_accent"><t t-esc="col.tax_id || '—'"/></div>
+                                <div class="pr_text_xs pr_muted"><t t-esc="col.email || ''"/></div>
+                            </td>
+                            <!-- Ciudad -->
+                            <td class="pr_text_sm pr_muted"><t t-esc="col.city || '—'"/></td>
+                            <!-- KYB -->
+                            <td>
+                                <span class="pr_badge" t-att-style="'background:' + kybCfg(col.kyb_status).bg + ';color:' + kybCfg(col.kyb_status).color">
+                                    <t t-esc="kybCfg(col.kyb_status).label"/>
+                                </span>
+                                <div t-if="col.iban_verified"  class="pr_text_xs" style="color:#059669;font-weight:700">✅ IBAN ok</div>
+                                <div t-if="!col.iban_verified" class="pr_text_xs" style="color:#d97706;font-weight:700">⚠️ IBAN pendiente</div>
+                            </td>
+                            <!-- Captador -->
+                            <td>
+                                <t t-if="col.captador">
+                                    <div class="pr_text_xs" t-att-style="'color:' + capColor(col.captador_role) + ';font-weight:800'"><t t-esc="col.captador_role"/></div>
+                                    <div class="pr_text_xs pr_muted"><t t-esc="col.captador"/></div>
+                                </t>
+                                <t t-else=""><span class="pr_text_xs pr_muted">Alta directa</span></t>
+                            </td>
+                            <!-- SUBs -->
+                            <td class="pr_text_center"><span class="pr_badge pr_badge_neutral">🧑‍💼 <t t-esc="col.subs_count || 0"/></span></td>
+                            <!-- Ventas / Comisión -->
+                            <td>
+                                <div class="pr_text_sm" style="font-weight:700"><t t-esc="fmt(col.total_sales)"/></div>
+                                <div class="pr_text_xs" style="color:#059669;font-weight:700"><t t-esc="fmt(col.total_earned)"/> comisión</div>
+                            </td>
+                            <!-- QR -->
+                            <td>
+                                <t t-if="col.qr_code_id"><span class="pr_mono pr_accent pr_text_xs"><t t-esc="col.qr_code_id"/></span></t>
+                                <t t-else=""><span class="pr_text_xs" style="color:#d97706;font-weight:700">⚠️ Sin QR</span></t>
+                            </td>
+                            <!-- Estado toggle -->
+                            <td>
+                                <span class="pr_badge" t-att-style="col.active ? 'background:rgba(5,150,105,0.1);color:#059669' : 'background:rgba(220,38,38,0.1);color:#dc2626'">
+                                    <t t-esc="col.active ? '✅ Activo' : '🚫 Inactivo'"/>
+                                </span>
+                            </td>
+                            <!-- Acciones -->
+                            <td>
+                                <div class="pr_row_btns">
+                                    <button class="pr_btn_icon_sm" title="Ver detalle"
+                                            t-att-id="'btn_ver_' + col.id"
+                                            t-on-click="() => this.openDetail(col, 'view')">👁️</button>
+                                    <button class="pr_btn_icon_sm pr_btn_edit" title="Editar"
+                                            t-att-id="'btn_edit_' + col.id"
+                                            t-on-click="() => this.openDetail(col, 'edit')">✏️</button>
+                                    <button class="pr_btn_icon_sm pr_btn_toggle" title="Activar / Desactivar"
+                                            t-att-id="'btn_toggle_' + col.id"
+                                            t-on-click="() => this.toggleActive(col)">
+                                        <t t-esc="col.active ? '🚫' : '✅'"/>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <div class="pr_table_footer">
+                <span><t t-esc="filtered.length"/> de <t t-esc="state.cols.length"/> COLs · Contrato COL-v2.0</span>
+                <span>45% directa · 20% asistida · 25% SUB</span>
+            </div>
+        </div>
+
+    </t><!-- /!loading -->
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PANEL LATERAL: VER / EDITAR / NUEVA EMPRESA                    -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <t t-if="state.panel">
+
+        <!-- Backdrop semitransparente -->
+        <div class="pr_panel_backdrop" t-on-click="closePanel"/>
+
+        <!-- Panel deslizable desde la derecha -->
+        <div class="pr_side_panel">
+
+            <!-- Header del panel -->
+            <div class="pr_panel_header">
+                <div class="pr_panel_title_wrap">
+                    <t t-if="state.panelMode === 'new'">
+                        <span class="pr_panel_badge pr_panel_badge_new">NUEVA</span>
+                        <h3 class="pr_panel_title">Nueva Empresa COL</h3>
+                    </t>
+                    <t t-elif="state.panelMode === 'edit'">
+                        <span class="pr_panel_badge pr_panel_badge_edit">EDITAR</span>
+                        <h3 class="pr_panel_title"><t t-esc="state.form.name || 'Empresa'"/></h3>
+                    </t>
+                    <t t-else="">
+                        <span class="pr_panel_badge">DETALLE</span>
+                        <h3 class="pr_panel_title"><t t-esc="state.form.name"/></h3>
+                    </t>
+                </div>
+                <div class="pr_panel_header_actions">
+                    <t t-if="state.panelMode === 'view'">
+                        <button class="pr_btn_panel_edit" id="panel_btn_editar"
+                                t-on-click="() => this.switchToEdit()">✏️ Editar</button>
+                    </t>
+                    <button class="pr_panel_close" id="panel_btn_close" t-on-click="closePanel">✕</button>
+                </div>
+            </div>
+
+            <!-- Saving spinner -->
+            <div t-if="state.saving" class="pr_panel_saving">
+                <div class="pr_spinner"/> Guardando...
+            </div>
+
+            <!-- ── MODO VER ─────────────────────────────────────────── -->
+            <t t-if="state.panelMode === 'view'">
+                <div class="pr_panel_body">
+                    <div class="pr_detail_section_label">Identificación</div>
+                    <div class="pr_detail_rows">
+                        <div class="pr_detail_row"><span class="pr_detail_label">Nombre</span><span><t t-esc="state.form.name || '—'"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">CIF / NIF</span><span class="pr_mono"><t t-esc="state.form.tax_id || '—'"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">Sector</span><span><t t-esc="sectorIcon(state.form.sector)"/> <t t-esc="state.form.sector || '—'"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">Ciudad</span><span><t t-esc="state.form.city || '—'"/></span></div>
+                    </div>
+                    <div class="pr_detail_section_label">Contacto</div>
+                    <div class="pr_detail_rows">
+                        <div class="pr_detail_row"><span class="pr_detail_label">Email</span><span><t t-esc="state.form.email || '—'"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">Teléfono</span><span><t t-esc="state.form.phone || '—'"/></span></div>
+                    </div>
+                    <div class="pr_detail_section_label">Cumplimiento</div>
+                    <div class="pr_detail_rows">
+                        <div class="pr_detail_row"><span class="pr_detail_label">KYB</span>
+                            <span class="pr_badge" t-att-style="'background:' + kybCfg(state.form.kyb_status).bg + ';color:' + kybCfg(state.form.kyb_status).color">
+                                <t t-esc="kybCfg(state.form.kyb_status).label"/>
+                            </span>
+                        </div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">IBAN</span><span><t t-esc="state.form.iban_verified ? '✅ Verificado' : '⚠️ Pendiente'"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">QR</span><span class="pr_mono"><t t-esc="state.form.qr_code_id || '⚠️ Sin QR'"/></span></div>
+                    </div>
+                    <div class="pr_detail_section_label">Red</div>
+                    <div class="pr_detail_rows">
+                        <div class="pr_detail_row"><span class="pr_detail_label">Captador</span><span><t t-esc="state.form.captador || 'Alta directa'"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">SUBs vinculados</span><span><t t-esc="state.form.subs_count || 0"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">Alta</span><span><t t-esc="state.form.joined_at || '—'"/></span></div>
+                    </div>
+                    <div class="pr_detail_section_label">Financiero</div>
+                    <div class="pr_detail_rows">
+                        <div class="pr_detail_row"><span class="pr_detail_label">Ventas</span><span><t t-esc="fmt(state.form.total_sales)"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">Comisión acumulada</span><span style="color:#059669;font-weight:800"><t t-esc="fmt(state.form.total_earned)"/></span></div>
+                        <div class="pr_detail_row"><span class="pr_detail_label">Estado</span>
+                            <span class="pr_badge" t-att-style="state.form.active ? 'background:rgba(5,150,105,0.1);color:#059669' : 'background:rgba(220,38,38,0.1);color:#dc2626'">
+                                <t t-esc="state.form.active ? '✅ Activo' : '🚫 Inactivo'"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pr_panel_footer">
+                    <button class="pr_btn_panel_secondary" t-on-click="closePanel">Cerrar</button>
+                    <button class="pr_btn_panel_primary" t-on-click="() => this.switchToEdit()">✏️ Editar</button>
+                </div>
+            </t>
+
+            <!-- ── MODO EDITAR / NUEVO ─────────────────────────────── -->
+            <t t-if="state.panelMode === 'edit' or state.panelMode === 'new'">
+                <div class="pr_panel_body">
+
+                    <!-- BLOQUE: Identificación -->
+                    <div class="pr_detail_section_label">Identificación</div>
+                    <div class="pr_form_group">
+                        <label for="fe_name">Nombre de la empresa *</label>
+                        <input id="fe_name" class="pr_panel_input" type="text"
+                               t-att-value="state.form.name"
+                               t-on-input="(e) => this.setField('name', e.target.value)"
+                               placeholder="Ej. Bar La Paloma S.L."/>
+                    </div>
+                    <div class="pr_form_row">
+                        <div class="pr_form_group">
+                            <label for="fe_taxid">CIF / NIF</label>
+                            <input id="fe_taxid" class="pr_panel_input pr_font_mono" type="text"
+                                   t-att-value="state.form.tax_id"
+                                   t-on-input="(e) => this.setField('tax_id', e.target.value)"
+                                   placeholder="B12345678"/>
+                        </div>
+                        <div class="pr_form_group">
+                            <label for="fe_sector">Sector</label>
+                            <select id="fe_sector" class="pr_panel_input"
+                                    t-on-change="(e) => this.setField('sector', e.target.value)">
+                                <option value="">Seleccionar...</option>
+                                <option value="hosteleria"   t-att-selected="state.form.sector === 'hosteleria'">🍺 Hostelería</option>
+                                <option value="restauracion" t-att-selected="state.form.sector === 'restauracion'">🍽️ Restauración</option>
+                                <option value="transporte"   t-att-selected="state.form.sector === 'transporte'">🚌 Transporte</option>
+                                <option value="hotel"        t-att-selected="state.form.sector === 'hotel'">🏨 Hotel</option>
+                                <option value="comercio"     t-att-selected="state.form.sector === 'comercio'">🛍️ Comercio</option>
+                                <option value="aerolinea"    t-att-selected="state.form.sector === 'aerolinea'">✈️ Aerolínea</option>
+                                <option value="otro"         t-att-selected="state.form.sector === 'otro'">🏢 Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pr_form_group">
+                        <label for="fe_city">Ciudad</label>
+                        <input id="fe_city" class="pr_panel_input" type="text"
+                               t-att-value="state.form.city"
+                               t-on-input="(e) => this.setField('city', e.target.value)"
+                               placeholder="Madrid, Barcelona..."/>
+                    </div>
+
+                    <!-- BLOQUE: Contacto -->
+                    <div class="pr_detail_section_label">Contacto</div>
+                    <div class="pr_form_group">
+                        <label for="fe_email">Email</label>
+                        <input id="fe_email" class="pr_panel_input" type="email"
+                               t-att-value="state.form.email"
+                               t-on-input="(e) => this.setField('email', e.target.value)"
+                               placeholder="contacto@empresa.com"/>
+                    </div>
+                    <div class="pr_form_group">
+                        <label for="fe_phone">Teléfono</label>
+                        <input id="fe_phone" class="pr_panel_input" type="tel"
+                               t-att-value="state.form.phone"
+                               t-on-input="(e) => this.setField('phone', e.target.value)"
+                               placeholder="+34 600 000 000"/>
+                    </div>
+
+                    <!-- BLOQUE: Cumplimiento KYB -->
+                    <div class="pr_detail_section_label">Cumplimiento KYB</div>
+                    <div class="pr_form_row">
+                        <div class="pr_form_group">
+                            <label for="fe_kyb">Estado KYB</label>
+                            <select id="fe_kyb" class="pr_panel_input"
+                                    t-on-change="(e) => this.setField('kyb_status', e.target.value)">
+                                <option value="pending"   t-att-selected="state.form.kyb_status === 'pending'">⏳ Pendiente</option>
+                                <option value="submitted" t-att-selected="state.form.kyb_status === 'submitted'">📤 Enviado</option>
+                                <option value="approved"  t-att-selected="state.form.kyb_status === 'approved'">✅ Aprobado</option>
+                                <option value="rejected"  t-att-selected="state.form.kyb_status === 'rejected'">❌ Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="pr_form_group">
+                            <label>IBAN verificado</label>
+                            <div class="pr_toggle_wrap">
+                                <input type="checkbox" class="pr_toggle_input" id="fe_iban"
+                                       t-att-checked="state.form.iban_verified"
+                                       t-on-change="(e) => this.setField('iban_verified', e.target.checked)"/>
+                                <label class="pr_toggle_label" for="fe_iban"/>
+                                <span class="pr_toggle_text"><t t-esc="state.form.iban_verified ? '✅ Verificado' : '⚠️ Pendiente'"/></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUE: Estado -->
+                    <div class="pr_detail_section_label">Estado</div>
+                    <div class="pr_form_group">
+                        <label>Empresa activa</label>
+                        <div class="pr_toggle_wrap">
+                            <input type="checkbox" class="pr_toggle_input" id="fe_active"
+                                   t-att-checked="state.form.active"
+                                   t-on-change="(e) => this.setField('active', e.target.checked)"/>
+                            <label class="pr_toggle_label" for="fe_active"/>
+                            <span class="pr_toggle_text"><t t-esc="state.form.active ? '✅ Activa' : '🚫 Inactiva'"/></span>
+                        </div>
+                    </div>
+
+                    <!-- Alerta de validación -->
+                    <div t-if="state.saveError" class="pr_alert_error">
+                        ⚠️ <t t-esc="state.saveError"/>
+                    </div>
+
+                </div><!-- /panel_body -->
+
+                <!-- Footer de acciones -->
+                <div class="pr_panel_footer">
+                    <button class="pr_btn_panel_secondary" id="panel_btn_cancelar" t-on-click="closePanel">Cancelar</button>
+                    <button class="pr_btn_panel_danger"    id="panel_btn_eliminar"
+                            t-if="state.panelMode === 'edit' and state.form.id"
+                            t-on-click="() => this.deleteEmpresa()">🗑️ Eliminar</button>
+                    <button class="pr_btn_panel_primary"   id="panel_btn_guardar"
+                            t-att-disabled="state.saving"
+                            t-on-click="saveEmpresa">
+                        <t t-if="state.saving">Guardando...</t>
+                        <t t-else="">💾 Guardar</t>
+                    </button>
+                </div>
+            </t>
+
+        </div><!-- /pr_side_panel -->
+    </t><!-- /panel -->
+
+</div><!-- /pr_view_container -->
+</t>
+</templates>

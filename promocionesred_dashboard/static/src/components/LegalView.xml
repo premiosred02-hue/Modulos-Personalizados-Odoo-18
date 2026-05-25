@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PrLegalView" owl="1">
+<div class="pr_legal_root">
+
+    <!-- ── Header ──────────────────────────────────────────────────────── -->
+    <div class="pr_section_header">
+        <div>
+            <h2 class="pr_section_title">⚖️ Marco Legal &amp; Contratos</h2>
+            <p class="pr_section_sub">Documentación legal oficial PremiosRed 2026 · REDROYAL SL · NIF: B26946517</p>
+        </div>
+        <div class="pr_legal_header_badges">
+            <span class="pr_legal_badge pr_legal_badge_notarial">🏛️ Depósito Notarial ABACO</span>
+            <span class="pr_legal_badge pr_legal_badge_eu">🇪🇺 TJUE Respaldado</span>
+            <span class="pr_legal_badge pr_legal_badge_dgoj">✅ Art. 3.i Ley 13/2011</span>
+        </div>
+    </div>
+
+    <!-- ── Split financiero rápido ──────────────────────────────────────── -->
+    <div class="pr_legal_split_bar">
+        <span class="pr_legal_split_label">Split de cada venta:</span>
+        <t t-foreach="splitInfo" t-as="s" t-key="s.label">
+            <div class="pr_legal_split_item" t-att-style="'border-left: 3px solid ' + s.color">
+                <span class="pr_legal_split_pct" t-att-style="'color:' + s.color" t-esc="s.pct"/>
+                <span class="pr_legal_split_name" t-esc="s.label"/>
+                <span class="pr_legal_split_detail" t-esc="s.detalle"/>
+            </div>
+        </t>
+    </div>
+
+    <!-- ── Layout principal ────────────────────────────────────────────── -->
+    <div class="pr_legal_layout">
+
+        <!-- Sidebar: lista de contratos -->
+        <div class="pr_legal_sidebar">
+            <div class="pr_legal_sidebar_title">Contratos &amp; Documentos</div>
+            <t t-foreach="contratos" t-as="c" t-key="c.id">
+                <button
+                    class="pr_legal_nav_item"
+                    t-att-class="{ 'pr_legal_nav_active': state.activeContrato === c.id }"
+                    t-att-style="state.activeContrato === c.id ? 'border-left: 3px solid ' + c.color + '; background:' + c.bg : ''"
+                    t-on-click="() => this.selectContrato(c.id)">
+                    <span class="pr_legal_nav_icon" t-esc="c.icon"/>
+                    <div class="pr_legal_nav_info">
+                        <span class="pr_legal_nav_label" t-esc="c.label"/>
+                        <span class="pr_legal_nav_code" t-esc="c.code + ' · ' + c.version"/>
+                    </div>
+                    <span class="pr_legal_nav_pct"
+                          t-if="c.comision !== '—'"
+                          t-att-style="'color:' + c.color"
+                          t-esc="c.comision.split(' ')[0]"/>
+                </button>
+            </t>
+        </div>
+
+        <!-- Panel de detalle -->
+        <div class="pr_legal_detail">
+
+            <!-- Header del contrato seleccionado -->
+            <div class="pr_legal_detail_header" t-att-style="'background:' + selected.bg + '; border-left: 4px solid ' + selected.color">
+                <div class="pr_legal_detail_icon" t-att-style="'font-size:2rem'"><t t-esc="selected.icon"/></div>
+                <div class="pr_legal_detail_meta">
+                    <div class="pr_legal_detail_title" t-esc="selected.label"/>
+                    <div class="pr_legal_detail_desc" t-esc="selected.descripcion"/>
+                    <div class="pr_legal_detail_partes">
+                        <strong>Partes:</strong> <t t-esc="selected.partes"/>
+                    </div>
+                    <div class="pr_legal_detail_ley">
+                        <strong>Marco legal:</strong> <t t-esc="selected.marco_legal"/>
+                    </div>
+                </div>
+                <div class="pr_legal_detail_actions">
+                    <span class="pr_legal_version_badge" t-att-style="'background:' + selected.color + '; color:#fff'" t-esc="selected.version"/>
+                    <button class="pr_btn_download" t-on-click="downloadPDF">📄 Descargar PDF</button>
+                    <button class="pr_btn_email" t-on-click="copyEmail">✉️ legal@premiosred.com</button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="pr_legal_tabs">
+                <button class="pr_legal_tab" t-att-class="{ 'pr_legal_tab_active': state.activeTab === 'clausulas' }"
+                        t-on-click="() => this.setTab('clausulas')">📋 Cláusulas</button>
+                <button class="pr_legal_tab" t-att-class="{ 'pr_legal_tab_active': state.activeTab === 'comisiones' }"
+                        t-if="selected.tabla_comisiones"
+                        t-on-click="() => this.setTab('comisiones')">💰 Tabla Comisiones</button>
+                <button class="pr_legal_tab" t-att-class="{ 'pr_legal_tab_active': state.activeTab === 'kyb' }"
+                        t-if="selected.kyb_docs"
+                        t-on-click="() => this.setTab('kyb')">📁 Documentación KYB</button>
+            </div>
+
+            <!-- Tab: Cláusulas -->
+            <div t-if="state.activeTab === 'clausulas'" class="pr_legal_clausulas">
+                <t t-foreach="selected.clausulas" t-as="cl" t-key="cl.titulo">
+                    <div class="pr_legal_clausula_card">
+                        <div class="pr_legal_clausula_titulo"
+                             t-att-style="'color:' + selected.color"
+                             t-esc="cl.titulo"/>
+                        <div class="pr_legal_clausula_texto" t-esc="cl.texto"/>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Tab: Tabla Comisiones -->
+            <div t-if="state.activeTab === 'comisiones' and selected.tabla_comisiones" class="pr_legal_comisiones">
+                <div class="pr_legal_comision_info">
+                    <span class="pr_legal_comision_main" t-att-style="'color:' + selected.color">
+                        Comisión: <t t-esc="selected.comision"/>
+                    </span>
+                    <span class="pr_legal_comision_sub">Liquidación días 6-10 de cada mes · Transferencia SEPA directa de REDROYAL SL</span>
+                </div>
+
+                <!-- COL / SUB / CCP: packs -->
+                <t t-if="selected.id === 'col'">
+                    <div class="pr_table_wrapper">
+                    <table class="pr_table">
+                        <thead><tr>
+                            <th>Pack</th><th>PVP</th>
+                            <th>COL 45% (directa)</th><th>SUB 25% (asistida)</th><th>COL 20% (asistida)</th>
+                        </tr></thead>
+                        <tbody>
+                            <t t-foreach="selected.tabla_comisiones" t-as="r" t-key="r.pack">
+                                <tr>
+                                    <td t-esc="r.pack"/><td t-esc="r.pvp"/>
+                                    <td class="pr_legal_td_green" t-esc="r.col_45"/>
+                                    <td class="pr_legal_td_purple" t-esc="r.sub_25"/>
+                                    <td class="pr_legal_td_blue" t-esc="r.col_asist"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="pr_legal_note">⭐ El COL siempre cobra su % íntegro. Los captadores (CCP/COM/ASE) cobran del pool REDROYAL (55%) sin afectar al pool de distribución del COL.</div>
+                </t>
+
+                <t t-if="selected.id === 'sub'">
+                    <div class="pr_table_wrapper">
+                    <table class="pr_table">
+                        <thead><tr><th>Pack</th><th>PVP</th><th>SUB 25% (asistida)</th></tr></thead>
+                        <tbody>
+                            <t t-foreach="selected.tabla_comisiones" t-as="r" t-key="r.pack">
+                                <tr>
+                                    <td t-esc="r.pack"/><td t-esc="r.pvp"/>
+                                    <td class="pr_legal_td_green" t-esc="r.sub_25"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="pr_legal_note">⚠️ REDROYAL SL paga DIRECTAMENTE al SUB. El dinero NUNCA pasa por el COL. Solo aplica en venta asistida (QR móvil del SUB).</div>
+                </t>
+
+                <t t-if="selected.id === 'ccp'">
+                    <div class="pr_table_wrapper">
+                    <table class="pr_table">
+                        <thead><tr><th>Pack</th><th>PVP</th><th>CCP 3% por venta</th></tr></thead>
+                        <tbody>
+                            <t t-foreach="selected.tabla_comisiones" t-as="r" t-key="r.pack">
+                                <tr>
+                                    <td t-esc="r.pack"/><td t-esc="r.pvp"/>
+                                    <td class="pr_legal_td_green" t-esc="r.captador"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="pr_legal_note">ℹ️ Un COL = un captador (inamovible hasta 21/12/2026). El 3% aplica a TODAS las ventas del COL captado (directas + asistidas).</div>
+                </t>
+
+                <t t-if="selected.id === 'com' or selected.id === 'ase'">
+                    <div class="pr_table_wrapper">
+                    <table class="pr_table">
+                        <thead><tr>
+                            <th>Escenario</th>
+                            <th t-esc="selected.id === 'com' ? 'COM 2%' : 'ASE 2%'"/>
+                        </tr></thead>
+                        <tbody>
+                            <t t-foreach="selected.tabla_comisiones" t-as="r" t-key="r.concepto">
+                                <tr>
+                                    <td t-esc="r.concepto"/>
+                                    <td class="pr_legal_td_green"
+                                        t-esc="selected.id === 'com' ? r.com_2 : r.ase_2"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="pr_legal_note">⚠️ Solo puede haber UN captador activo por COL (CCP, COM o ASE son mutuamente excluyentes).</div>
+                </t>
+            </div>
+
+            <!-- Tab: KYB Docs -->
+            <div t-if="state.activeTab === 'kyb' and selected.kyb_docs" class="pr_legal_kyb">
+                <div class="pr_legal_kyb_header">
+                    <span>📁 Documentación obligatoria para activar el contrato</span>
+                    <span class="pr_legal_kyb_deadline">⏱️ Plazo: 72h desde el alta</span>
+                </div>
+                <div class="pr_legal_kyb_grid">
+                    <t t-foreach="selected.kyb_docs" t-as="doc" t-key="doc">
+                        <div class="pr_legal_kyb_item">
+                            <span class="pr_legal_kyb_icon">📄</span>
+                            <span t-esc="doc"/>
+                        </div>
+                    </t>
+                </div>
+                <div class="pr_legal_note" style="margin-top:1rem">
+                    Enviar documentación a: <strong>onboarding@premiosred.com</strong> · La activación del QR y el acceso al panel quedan bloqueados hasta confirmar el alta completa.
+                </div>
+
+                <!-- Bloque fiscal especial para ASE -->
+                <t t-if="selected.id === 'ase'">
+                    <div class="pr_legal_kyb_header" style="margin-top:1rem">
+                        💶 Régimen Fiscal — Marcar una opción al firmar
+                    </div>
+                    <div class="pr_legal_kyb_grid">
+                        <div class="pr_legal_kyb_item">☐ <strong>Autónomo RETA</strong> — Factura: Base + IVA 21% + IRPF 15%</div>
+                        <div class="pr_legal_kyb_item">☐ <strong>Persona física sin actividad</strong> — REDROYAL aplica retención fiscal correspondiente</div>
+                        <div class="pr_legal_kyb_item">☐ <strong>Entidad mercantil</strong> — NIF: _____ · Factura con IVA 21%</div>
+                    </div>
+                </t>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Panel Botón de Parada de Emergencia ──────────────────────────── -->
+    <div class="pr_legal_emergency">
+        <div class="pr_legal_emergency_icon">⏱️</div>
+        <div class="pr_legal_emergency_info">
+            <strong>Botón de Parada de Emergencia</strong>
+            <span>21 de diciembre de 2026 a las 23:59:59 — Cierre automático de TODAS las comisiones de la red</span>
+        </div>
+        <div class="pr_legal_emergency_sorteo">
+            <strong>Sorteo ante Notario</strong>
+            <span>22 de diciembre de 2026 · 12:00h · Notaría ABACO · Ciudad Real</span>
+        </div>
+    </div>
+
+</div>
+</t>
+</templates>

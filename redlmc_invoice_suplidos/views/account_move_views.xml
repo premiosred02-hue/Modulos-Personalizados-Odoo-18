@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_inherit_suplidos" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.suplidos</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Añadir el checkbox de 'Es Suplido' en las líneas de factura -->
+            <!-- Enterprise 18: la vista usa 'list' en lugar de 'tree' -->
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='name']" position="after">
+                <field name="is_suplido" optional="show"/>
+            </xpath>
+
+            <!-- Mostrar los totales desglosados justo antes del widget nativo de totales -->
+            <xpath expr="//field[@name='tax_totals']" position="before">
+                <!-- Solo se muestran si hay suplidos en la factura para no ensuciar facturas normales -->
+                <field name="amount_base_real" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="amount_suplidos == 0"/>
+                <field name="amount_suplidos" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="amount_suplidos == 0"/>
+            </xpath>
+            
+        </field>
+    </record>
+</odoo>

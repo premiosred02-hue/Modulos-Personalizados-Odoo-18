@@ -1,0 +1,649 @@
+/**
+ * editor.css
+ * Estilos del Editor de Carteles — OWL / Odoo 18
+ *
+ * REGLA CLAVE: Todo selector debe estar anidado bajo .cc-main-wrapper
+ * para evitar contaminar el CSS global de Odoo (Bootstrap 5).
+ * NO usar: *, html, body, a, h1-h6, table, input, select sin prefijo.
+ */
+
+/* ── Variables CSS — confinadas al wrapper del editor ─────────────────── */
+.cc-main-wrapper {
+    --cc-primary:       #f37021;
+    --cc-secondary:     #232f3e;
+    --cc-bg-canvas:     #1e1e1e;
+    --cc-sidebar-width: 340px;
+    --cc-header-height: 60px;
+    --cc-font:          'Inter', system-ui, -apple-system, sans-serif;
+    --cc-shadow-sm:     0 2px 4px rgba(0,0,0,0.05);
+    --cc-shadow-md:     0 4px 12px rgba(0,0,0,0.10);
+    --cc-shadow-lg:     0 10px 30px rgba(0,0,0,0.15);
+    --cc-radius:        8px;
+
+    font-family: var(--cc-font);
+    display: flex;
+    flex-direction: column;
+    height: 100%;           /* 100% del contenedor de Odoo, NO 100vh */
+    width: 100%;
+    overflow: hidden;
+    background: var(--cc-bg-canvas);
+    color: #333;
+    /* ⚠️ box-sizing sólo en este elemento, NO con el selector global * */
+    box-sizing: border-box;
+}
+
+/*
+ * ELIMINADO: *, *::before, *::after { box-sizing: inherit; }
+ * Era el causante principal de la deformación de toda la UI de Odoo.
+ * Odoo/Bootstrap ya define box-sizing en su propio reset CSS.
+ */
+
+/* ── Anular fuentes de Google de forma segura ──────────────────────────
+   Se usa font-face local o system-ui. @import bloqueante eliminado.
+   La tipografía Inter se carga solo dentro de .cc-main-wrapper.       */
+.cc-main-wrapper * {
+    font-family: var(--cc-font);
+    box-sizing: border-box;     /* aplica box-sizing solo dentro del editor */
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-global-header {
+    height: var(--cc-header-height);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #e1e4e8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+    z-index: 100;   /* Reducido: no interferir con modales de Odoo (z>1000) */
+    gap: 12px;
+    width: 100%;
+}
+
+.cc-main-wrapper .cc-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cc-main-wrapper .cc-brand-icon { font-size: 1.4rem; }
+
+.cc-main-wrapper .cc-brand-name {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--cc-secondary);
+    white-space: nowrap;
+}
+
+.cc-main-wrapper .cc-header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.cc-main-wrapper .cc-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cc-main-wrapper .cc-toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: #e1e4e8;
+    margin: 0 4px;
+}
+
+/* ── Botones del Toolbar ──────────────────────────────────────────────── */
+.cc-main-wrapper .cc-btn-tool {
+    padding: 6px 14px;
+    border-radius: var(--cc-radius);
+    font-size: 0.76rem;
+    font-weight: 700;
+    border: 1px solid #e1e4e8;
+    background: white;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    color: #495057;
+    white-space: nowrap;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.cc-main-wrapper .cc-btn-tool:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+    box-shadow: var(--cc-shadow-sm);
+    color: #495057;
+}
+
+.cc-main-wrapper .cc-btn-tool.cc-btn-primary {
+    background: var(--cc-primary);
+    color: white;
+    border-color: var(--cc-primary);
+}
+
+.cc-main-wrapper .cc-btn-tool.cc-btn-primary:hover {
+    background: #e06620;
+    box-shadow: 0 4px 12px rgba(243,112,33,0.3);
+    color: white;
+}
+
+.cc-main-wrapper .cc-btn-tool.cc-active-feature {
+    background: #fff3eb;
+    color: var(--cc-primary);
+    border-color: var(--cc-primary);
+}
+
+.cc-main-wrapper .cc-btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    line-height: 1;
+    transition: background 0.15s;
+    color: #333;
+}
+
+.cc-main-wrapper .cc-btn-icon:hover { background: #e9ecef; }
+
+/* ── Zoom Control ─────────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-zoom-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8f9fa;
+    padding: 3px 10px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.cc-main-wrapper .cc-zoom-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #333;
+    min-width: 42px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.cc-main-wrapper .cc-zoom-slider {
+    width: 90px;
+    height: 4px;
+    cursor: pointer;
+    accent-color: var(--cc-primary);
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+/* ── Format Badge ─────────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-format-badge {
+    background: #f1f3f5;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    white-space: nowrap;
+}
+
+/* ── APP CONTAINER ────────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-app-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;      /* critical: permite que flex hijos se compriman */
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-editor-sidebar {
+    width: var(--cc-sidebar-width);
+    background: white;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    z-index: 10;
+    box-shadow: var(--cc-shadow-md);
+    transition: width 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+}
+
+.cc-main-wrapper .cc-editor-sidebar.collapsed {
+    width: 0;
+    border: none;
+    box-shadow: none;
+}
+
+.cc-main-wrapper .cc-sidebar-inner {
+    width: var(--cc-sidebar-width);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    min-width: var(--cc-sidebar-width);
+}
+
+/* Sidebar Header con Tabs */
+.cc-main-wrapper .cc-sidebar-header {
+    padding: 12px 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+    background: white;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cc-main-wrapper .cc-sidebar-tabs {
+    display: flex;
+    gap: 2px;
+}
+
+.cc-main-wrapper .cc-tab {
+    flex: 1;
+    padding: 7px 4px;
+    border: none;
+    background: #f8f9fa;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.cc-main-wrapper .cc-tab.active {
+    background: var(--cc-primary);
+    color: white;
+}
+
+.cc-main-wrapper .cc-tab:hover:not(.active) {
+    background: #e9ecef;
+    color: #333;
+}
+
+.cc-main-wrapper .cc-btn-export-sidebar {
+    align-self: flex-end;
+    padding: 5px 12px;
+    background: var(--cc-secondary);
+    color: white;
+    border: none;
+    border-radius: var(--cc-radius);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+    line-height: 1.4;
+}
+
+.cc-main-wrapper .cc-btn-export-sidebar:hover { background: #1a2332; }
+
+.cc-main-wrapper .cc-sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 16px;
+    min-height: 0;
+}
+
+.cc-main-wrapper .cc-sidebar-scroll::-webkit-scrollbar { width: 5px; }
+.cc-main-wrapper .cc-sidebar-scroll::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 4px;
+}
+
+.cc-main-wrapper .cc-sidebar-section { margin-bottom: 8px; }
+
+.cc-main-wrapper .cc-section-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #495057;
+    margin: 0 0 16px 0;
+    font-weight: 800;
+    border-bottom: 2px solid var(--cc-primary);
+    padding-bottom: 6px;
+}
+
+/* ── Form Controls (SCOPED) ───────────────────────────────────────────── */
+.cc-main-wrapper .cc-input-group { margin-bottom: 14px; }
+
+.cc-main-wrapper .cc-input-group label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #495057;
+}
+
+.cc-main-wrapper .cc-value-badge {
+    background: #f1f3f5;
+    padding: 1px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--cc-primary);
+    border: 1px solid #dee2e6;
+}
+
+/* Inputs — sólo dentro del editor */
+.cc-main-wrapper .cc-input-group input[type="text"],
+.cc-main-wrapper .cc-input-group input[type="url"],
+.cc-main-wrapper .cc-input-group textarea,
+.cc-main-wrapper .cc-input-group select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #ced4da;
+    border-radius: var(--cc-radius);
+    font-size: 0.85rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+    color: #333;
+    background: white;
+    line-height: 1.4;
+}
+
+.cc-main-wrapper .cc-input-group input:focus,
+.cc-main-wrapper .cc-input-group textarea:focus,
+.cc-main-wrapper .cc-input-group select:focus {
+    outline: none;
+    border-color: var(--cc-primary);
+    box-shadow: 0 0 0 3px rgba(243,112,33,0.12);
+}
+
+.cc-main-wrapper .cc-input-group input[type="range"] {
+    width: 100%;
+    height: 4px;
+    padding: 0;
+    border: none;
+    accent-color: var(--cc-primary);
+    cursor: pointer;
+    background: transparent;
+}
+
+.cc-main-wrapper .cc-color-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.cc-main-wrapper .cc-color-picker {
+    width: 42px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid #ced4da;
+    border-radius: var(--cc-radius);
+    cursor: pointer;
+    background: none;
+    flex-shrink: 0;
+}
+
+.cc-main-wrapper .cc-color-picker-full {
+    width: 100%;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid #ced4da;
+    border-radius: var(--cc-radius);
+    cursor: pointer;
+}
+
+.cc-main-wrapper .cc-checkbox-group { margin-bottom: 10px; }
+
+.cc-main-wrapper .cc-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #495057;
+}
+
+.cc-main-wrapper .cc-security-label { color: var(--cc-primary); }
+
+.cc-main-wrapper .cc-legal-notice {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: var(--cc-radius);
+    padding: 8px 12px;
+    font-size: 0.72rem;
+    color: #856404;
+    margin-bottom: 12px;
+}
+
+/* ── Pack Editor ──────────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-pack-editor {
+    background: #fafafa;
+    border-radius: var(--cc-radius);
+    margin-bottom: 10px;
+    padding: 0 12px 12px;
+    border: 1px solid #f0f0f0;
+    border-left-width: 4px;
+    transition: box-shadow 0.2s;
+}
+
+.cc-main-wrapper .cc-pack-editor:hover { box-shadow: var(--cc-shadow-sm); }
+
+.cc-main-wrapper .cc-pack-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.cc-main-wrapper .cc-pack-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cc-main-wrapper .cc-pack-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex: 1;
+    color: #333;
+}
+
+.cc-main-wrapper .cc-pack-price-badge {
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #333;
+}
+
+.cc-main-wrapper .cc-pack-chevron {
+    font-size: 0.8rem;
+    color: #adb5bd;
+}
+
+.cc-main-wrapper .cc-pack-fields { padding-top: 4px; }
+
+.cc-main-wrapper .cc-pack-price-color {
+    display: flex;
+    gap: 8px;
+}
+
+.cc-main-wrapper .cc-pack-price-color .cc-half { flex: 1; }
+
+.cc-main-wrapper .cc-sub-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6c757d;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cc-main-wrapper .cc-text-xs { font-size: 0.78rem !important; }
+
+/* ── Sidebar Toggle Bar ───────────────────────────────────────────────── */
+.cc-main-wrapper .cc-sidebar-toggle {
+    position: absolute;
+    left: var(--cc-sidebar-width);
+    top: 0;
+    height: 100%;
+    width: 14px;
+    z-index: 20;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px);
+    border: none;
+    border-right: 1px solid rgba(0,0,0,0.06);
+    border-left: 1px solid rgba(0,0,0,0.06);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    color: #adb5bd;
+    font-size: 10px;
+}
+
+.cc-main-wrapper .cc-sidebar-toggle.collapsed {
+    left: 0;
+    background: white;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+}
+
+.cc-main-wrapper .cc-sidebar-toggle:hover {
+    width: 24px;
+    background: var(--cc-primary);
+    color: white;
+}
+
+/* ── CANVAS VIEWPORT ─────────────────────────────────────────────────── */
+.cc-main-wrapper .cc-canvas-viewport {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cc-bg-canvas);
+    position: relative;
+    user-select: none;
+    min-width: 0;
+    min-height: 0;
+}
+
+.cc-main-wrapper .cc-canvas-container {
+    will-change: transform;
+    /* Sin transition aquí — el pan/zoom se aplica inline con JS */
+}
+
+.cc-main-wrapper .cc-design-canvas {
+    background: white;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+/* ── Borde de Seguridad (Anticopia) ──────────────────────────────────── */
+.cc-main-wrapper .cc-security-border-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 10;
+    border: 30px solid transparent;
+    border-image-source: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10l100 80M0 20l100 70M0 30l100 60M0 40l100 50M0 50l100 40M0 60l100 30M0 70l100 20M0 80l100 10' stroke='%23f37021' stroke-width='0.5' opacity='0.3'/%3E%3Ctext y='15' font-size='4' font-family='monospace' fill='%23232f3e' opacity='0.4'%3EPREMIOSRED ORIGINAL SECURE DOCUMENT NO-COPY%3C/text%3E%3C/svg%3E");
+    border-image-slice: 30;
+    border-image-repeat: repeat;
+}
+
+/* ── Processing Overlay ───────────────────────────────────────────────── */
+/*
+ * ⚠️ SCOPE: El overlay es position:absolute sobre el .cc-main-wrapper,
+ * NO position:fixed (que cubriría toda la ventana de Odoo incluso
+ * si se navega a otra sección).
+ */
+.cc-main-wrapper .cc-processing-overlay {
+    position: absolute;     /* relativo a .cc-main-wrapper, no al viewport */
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.cc-main-wrapper .cc-processing-modal {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+}
+
+.cc-main-wrapper .cc-processing-modal h3 {
+    font-size: 1.3rem;
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.cc-main-wrapper .cc-processing-modal p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 16px;
+}
+
+.cc-main-wrapper .cc-spinner {
+    width: 52px;
+    height: 52px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--cc-primary);
+    border-radius: 50%;
+    animation: cc-spin 0.9s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes cc-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.cc-main-wrapper .cc-preview-import {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.cc-main-wrapper .cc-hidden-input { display: none !important; }
+
+/* ── Print ────────────────────────────────────────────────────────────── */
+@media print {
+    .no-print { display: none !important; }
+    .cc-main-wrapper { height: auto; background: white; }
+    .cc-main-wrapper .cc-design-canvas { box-shadow: none; }
+    .cc-main-wrapper .cc-app-container { background: white; }
+}

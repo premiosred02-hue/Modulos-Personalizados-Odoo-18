@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Productos base para licenciamiento SaaS -->
+        
+        <record id="product_saas_bas" model="product.template">
+            <field name="name">Licencia SaaS PremiosRed — Básica</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">500.0</field>
+            <field name="default_code">LIC-SAAS-BAS</field>
+        </record>
+
+        <record id="product_saas_std" model="product.template">
+            <field name="name">Licencia SaaS PremiosRed — Estándar</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">800.0</field>
+            <field name="default_code">LIC-SAAS-STD</field>
+        </record>
+
+        <record id="product_saas_pre" model="product.template">
+            <field name="name">Licencia SaaS PremiosRed — Premium</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">1200.0</field>
+            <field name="default_code">LIC-SAAS-PRE</field>
+        </record>
+
+        <record id="product_saas_wl" model="product.template">
+            <field name="name">Licencia White Label</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">499.0</field>
+            <field name="default_code">LIC-SAAS-WL</field>
+        </record>
+
+        <record id="product_saas_royalty" model="product.template">
+            <field name="name">Royalty Variable sobre ventas (5%)</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">0.0</field>
+            <field name="default_code">ROY-VAR</field>
+        </record>
+
+        <record id="product_saas_soporte_inc" model="product.template">
+            <field name="name">Soporte técnico incidencias (hora)</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">90.0</field>
+            <field name="default_code">SOP-INC</field>
+        </record>
+
+        <record id="product_saas_soporte_evl" model="product.template">
+            <field name="name">Soporte evolutivo / nueva funcionalidad</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">75.0</field>
+            <field name="default_code">SOP-EVL</field>
+        </record>
+
+        <record id="product_saas_setup" model="product.template">
+            <field name="name">Setup inicial instancia nueva</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+            <field name="list_price">500.0</field>
+            <field name="default_code">INF-SET</field>
+        </record>
+
+    </data>
+</odoo>

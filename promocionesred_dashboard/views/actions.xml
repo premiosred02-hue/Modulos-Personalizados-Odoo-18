@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        ir.actions.client para el Dashboard principal de PromocionesRed.com.
+        ⚠️ El tag DEBE coincidir exactamente con:
+            registry.category("actions").add("promocionesred.DashboardApp", DashboardApp);
+    -->
+    <record id="action_promocionesred_dashboard" model="ir.actions.client">
+        <field name="name">PromocionesRed.com Dashboard</field>
+        <field name="tag">promocionesred.DashboardApp</field>
+        <field name="target">current</field>
+    </record>
+    <!-- Secuencia para códigos de actor RR-COL-YYYYMMDD-MAD-000001 -->
+    <record id="seq_pr_actor" model="ir.sequence">
+        <field name="name">PremiosRed Actor Sequence</field>
+        <field name="code">pr.actor.sequence</field>
+        <field name="prefix"></field>
+        <field name="padding">6</field>
+        <field name="number_increment">1</field>
+    </record>
+</odoo>

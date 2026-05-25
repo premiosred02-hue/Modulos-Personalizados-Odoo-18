@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+<t t-name="promocionesred_dashboard.PrFinanceView" owl="1">
+<div class="pr_fin_root">
+
+    <!-- ── HEADER ─────────────────────────────────────────────────────── -->
+    <div class="pr_fin_header">
+        <div>
+            <div class="pr_leads_header_badges">
+                <span class="pr_leads_badge_gray">FINANZAS</span>
+                <span class="pr_fin_badge_model">Modelo 55/45 v1.2</span>
+            </div>
+            <h2 class="pr_leads_title">Centro Financiero</h2>
+            <p class="pr_leads_sub">Reparto 55/45 · Proyecciones · Costes operativos · Arquitectura bancaria · Calendario fiscal</p>
+        </div>
+        <div class="pr_fin_kpi_badges">
+            <span class="pr_fin_kpi_badge pr_fin_badge_green">Break-even ~4.330 packs</span>
+            <span class="pr_fin_kpi_badge pr_fin_badge_red">Provision IRPF 6.560EUR</span>
+            <span class="pr_fin_kpi_badge pr_fin_badge_amber">Infra <t t-esc="fmtFixed(totalFijo,2)"/>EUR/mes</span>
+        </div>
+    </div>
+
+    <!-- ── KPIs TOP 4 ─────────────────────────────────────────────────── -->
+    <div class="pr_fin_kpi4">
+        <div class="pr_fin_kpi_card"><div class="pr_fin_kpi_val" style="color:#4f46e5">55% del PVP</div><div class="pr_fin_kpi_lbl">Margen REDROYAL</div></div>
+        <div class="pr_fin_kpi_card"><div class="pr_fin_kpi_val" style="color:#16a34a">45% del PVP</div><div class="pr_fin_kpi_lbl">Pool Actores</div></div>
+        <div class="pr_fin_kpi_card"><div class="pr_fin_kpi_val" style="color:#7c3aed">100.000 uds</div><div class="pr_fin_kpi_lbl">Obj. packs</div></div>
+        <div class="pr_fin_kpi_card"><div class="pr_fin_kpi_val" style="color:#d97706">22/12/2026</div><div class="pr_fin_kpi_lbl">Sorteo</div></div>
+    </div>
+
+    <!-- ── TABS ────────────────────────────────────────────────────────── -->
+    <div class="pr_fin_tabs">
+        <button t-att-class="'pr_fin_tab'+(state.tab==='reparto'?' active':'')"      t-on-click="()=>setTab('reparto')">Reparto 55/45</button>
+        <button t-att-class="'pr_fin_tab'+(state.tab==='proyecciones'?' active':'')" t-on-click="()=>setTab('proyecciones')">Proyecciones</button>
+        <button t-att-class="'pr_fin_tab'+(state.tab==='costes'?' active':'')"       t-on-click="()=>setTab('costes')">Costes operativos</button>
+        <button t-att-class="'pr_fin_tab'+(state.tab==='bancos'?' active':'')"       t-on-click="()=>setTab('bancos')">Arquitectura bancaria</button>
+        <button t-att-class="'pr_fin_tab'+(state.tab==='fiscal'?' active':'')"       t-on-click="()=>setTab('fiscal')">Calendario fiscal</button>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB: REPARTO 55/45                                               -->
+    <!-- ================================================================ -->
+    <div t-if="state.tab==='reparto'" class="pr_fin_tab_body">
+
+        <!-- Selector tipo venta -->
+        <div class="pr_fin_tipo_row">
+            <span class="pr_fin_tipo_lbl">Tipo de venta:</span>
+            <button t-att-class="'pr_fin_tipo_btn'+(state.tipoVenta==='directa'?' active':'')"  t-on-click="()=>setTipo('directa')">QR Fijo (Directa)</button>
+            <button t-att-class="'pr_fin_tipo_btn'+(state.tipoVenta==='asistida'?' active':'')" t-on-click="()=>setTipo('asistida')">QR Movil SUB (Asistida)</button>
+        </div>
+
+        <!-- Grid 2 col: barras + tabla euros/pack -->
+        <div class="pr_fin_grid2">
+
+            <!-- Card barras distribución -->
+            <div class="pr_fin_card">
+                <div class="pr_fin_card_head">
+                    <span class="pr_fin_card_title">Distribucion por actor — <t t-esc="state.tipoVenta"/></span>
+                </div>
+                <div class="pr_fin_card_body">
+                    <t t-foreach="actores" t-as="a" t-key="a.actor">
+                        <div class="pr_fin_bar_row">
+                            <div class="pr_fin_bar_head">
+                                <span class="pr_fin_bar_actor" t-esc="a.actor"/>
+                                <span class="pr_fin_bar_pct" t-att-style="'color:'+a.col" t-esc="a.pct+'%'"/>
+                            </div>
+                            <div class="pr_fin_bar_track">
+                                <div class="pr_fin_bar_fill" t-att-style="'width:'+a.pct+'%;background:'+a.col"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Card tabla euros por pack con selector PVP -->
+            <div class="pr_fin_card">
+                <div class="pr_fin_card_head">
+                    <span class="pr_fin_card_title">Euros por pack</span>
+                    <div class="pr_fin_pvp_row">
+                        <t t-foreach="PACKS" t-as="p" t-key="p.id">
+                            <button t-att-class="'pr_fin_pvp_btn'+(state.pvpSel===p.pvp?' active':'')"
+                                    t-on-click="()=>setPvp(p.pvp)">
+                                <t t-esc="p.id"/> <t t-esc="p.pvp"/>EUR
+                            </button>
+                        </t>
+                    </div>
+                </div>
+                <div class="pr_fin_card_body pr_fin_card_body_pad0">
+                    <table class="pr_fin_table">
+                        <thead>
+                            <tr>
+                                <th>Actor</th><th>%</th><th>Euros/pack</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="actores" t-as="a" t-key="a.actor">
+                                <tr>
+                                    <td class="pr_fin_td_bold" t-esc="a.actor"/>
+                                    <td t-att-style="'color:'+a.col+';font-weight:700'" t-esc="a.pct+'%'"/>
+                                    <td t-att-style="'color:'+a.col+';font-weight:800;font-size:.9rem'" t-esc="eurosActor(a)"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla cruzada: todos los packs x actores directa -->
+        <div class="pr_fin_card">
+            <div class="pr_fin_card_head">
+                <span class="pr_fin_card_title">Euros por pack — Los 4 packs en venta directa</span>
+            </div>
+            <div class="pr_fin_card_body pr_fin_card_body_pad0 pr_fin_overflow">
+                <table class="pr_fin_table" style="min-width:600px">
+                    <thead>
+                        <tr>
+                            <th>Actor</th>
+                            <t t-foreach="PACKS" t-as="p" t-key="p.id">
+                                <th><t t-esc="p.id"/> (<t t-esc="p.pvp"/>EUR)</th>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="ACTORES_DIRECTA" t-as="a" t-key="a.actor">
+                            <tr class="pr_fin_tr_hover">
+                                <td class="pr_fin_td_bold" t-esc="a.actor"/>
+                                <t t-foreach="PACKS" t-as="p" t-key="p.id">
+                                    <td t-att-style="'color:'+a.col+';font-weight:700'" t-esc="eurosPack(p,a)"/>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB: PROYECCIONES                                                -->
+    <!-- ================================================================ -->
+    <div t-if="state.tab==='proyecciones'" class="pr_fin_tab_body">
+
+        <!-- 4 escenarios -->
+        <div class="pr_fin_kpi4">
+            <t t-foreach="ESCENARIOS" t-as="e" t-key="e.ico">
+                <div class="pr_fin_card pr_fin_esc_card" t-att-style="'border-top:3px solid '+e.col">
+                    <div class="pr_fin_esc_tipo" t-att-style="'color:'+e.col" t-esc="e.ico"/>
+                    <div class="pr_fin_esc_packs"><t t-esc="fmtNum(e.packs)"/> packs</div>
+                    <div class="pr_fin_esc_ingreso">Ingreso bruto: <t t-esc="fmtNum(e.ingreso)"/>EUR</div>
+                    <div class="pr_fin_esc_sep"/>
+                    <div class="pr_fin_esc_label" t-att-style="'color:'+e.col">REDROYAL bruto 55%</div>
+                    <div class="pr_fin_esc_bruto"><t t-esc="fmtNum(e.rr_bruto)"/>EUR</div>
+                    <div class="pr_fin_esc_neto">Neto ~50%: <t t-esc="fmtNum(e.rr_neto)"/>EUR</div>
+                </div>
+            </t>
+        </div>
+
+        <!-- Tabla break-even -->
+        <div class="pr_fin_card">
+            <div class="pr_fin_card_head">
+                <span class="pr_fin_card_title">Acumulacion PROVISION IRPF (objetivo: 6.560EUR)</span>
+                <span class="pr_fin_card_sub">Break-even fiscal: ~2.000 packs</span>
+            </div>
+            <div class="pr_fin_card_body pr_fin_card_body_pad0 pr_fin_overflow">
+                <table class="pr_fin_table">
+                    <thead>
+                        <tr>
+                            <th>Packs</th><th>Ingresos brutos</th><th>Pool RR 55%</th>
+                            <th>Captadores</th><th>Donaciones</th><th>Disponible RR</th>
+                            <th>Oblig. AEAT</th><th>Margen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="BREAK_EVEN" t-as="r" t-key="r.packs">
+                            <tr class="pr_fin_tr_hover">
+                                <td class="pr_fin_td_bold"><t t-esc="fmtNum(r.packs)"/></td>
+                                <td class="pr_fin_td_muted"><t t-esc="fmtNum(r.ingreso)"/>EUR</td>
+                                <td style="color:#4f46e5;font-weight:700"><t t-esc="fmtNum(r.pool)"/>EUR</td>
+                                <td class="pr_fin_td_muted"><t t-esc="r.captadores"/>EUR</td>
+                                <td class="pr_fin_td_muted"><t t-esc="r.donaciones"/>EUR</td>
+                                <td class="pr_fin_td_bold"><t t-esc="fmtNum(r.disponible)"/>EUR</td>
+                                <td style="color:#dc2626;font-weight:700"><t t-esc="fmtNum(r.aeat)"/>EUR</td>
+                                <td t-att-style="'font-weight:800;color:'+margenColor(r.margen)"
+                                    t-esc="margenFmt(r.margen)"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB: COSTES OPERATIVOS                                           -->
+    <!-- ================================================================ -->
+    <div t-if="state.tab==='costes'" class="pr_fin_tab_body">
+
+        <!-- KPIs costes -->
+        <div class="pr_fin_grid3">
+            <div class="pr_fin_card pr_fin_coste_kpi" style="border-left:3px solid #4f46e5">
+                <div class="pr_fin_coste_val" style="color:#4f46e5" t-esc="kpiInfra"/>
+                <div class="pr_fin_coste_lbl">Infraestructura fija</div>
+            </div>
+            <div class="pr_fin_card pr_fin_coste_kpi" style="border-left:3px solid #d97706">
+                <div class="pr_fin_coste_val" style="color:#d97706" t-esc="kpiPersonal"/>
+                <div class="pr_fin_coste_lbl">Personal estimado</div>
+            </div>
+            <div class="pr_fin_card pr_fin_coste_kpi" style="border-left:3px solid #7c3aed">
+                <div class="pr_fin_coste_val" style="color:#7c3aed" t-esc="kpiVar"/>
+                <div class="pr_fin_coste_lbl">Variable x1000 ventas</div>
+            </div>
+        </div>
+
+        <!-- Tabla por categoria -->
+        <t t-foreach="CATEGORIAS" t-as="cat" t-key="cat">
+            <t t-if="costePorCat(cat).length > 0">
+            <div class="pr_fin_card">
+                <div class="pr_fin_card_head">
+                    <span class="pr_fin_card_title" t-esc="cat"/>
+                    <span class="pr_fin_total_badge">Total: <t t-esc="fmtFixed(totalCat(cat),2)"/>EUR/mes</span>
+                </div>
+                <div class="pr_fin_card_body pr_fin_card_body_pad0">
+                    <table class="pr_fin_table">
+                        <thead><tr><th>Concepto</th><th>EUR/mes</th><th>EUR/anual</th><th>Estado</th></tr></thead>
+                        <tbody>
+                            <t t-foreach="costePorCat(cat)" t-as="c" t-key="c.concepto">
+                                <tr class="pr_fin_tr_hover">
+                                    <td class="pr_fin_td_semi" t-esc="c.concepto"/>
+                                    <td t-att-style="'font-weight:700;color:'+(c.mes>0?'#111827':'#16a34a')">
+                                        <t t-if="c.mes===0">GRATIS</t>
+                                        <t t-else=""><t t-esc="fmtFixed(c.mes,2)"/>EUR</t>
+                                    </td>
+                                    <td class="pr_fin_td_muted">
+                                        <t t-if="c.anual===0">0</t>
+                                        <t t-else=""><t t-esc="fmtFixed(c.anual,2)"/>EUR</t>
+                                    </td>
+                                    <td>
+                                        <span class="pr_fin_estado_badge"
+                                              t-att-style="'background:'+estadoBg(c.estado)+';color:'+estadoColor(c.estado)"
+                                              t-esc="c.estado"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </t>
+        </t>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB: ARQUITECTURA BANCARIA                                       -->
+    <!-- ================================================================ -->
+    <div t-if="state.tab==='bancos'" class="pr_fin_tab_body">
+
+        <!-- 4 cuentas -->
+        <div class="pr_fin_grid2">
+            <t t-foreach="CUENTAS" t-as="c" t-key="c.id">
+                <div class="pr_fin_card pr_fin_cuenta_card"
+                     t-att-style="'border-left:4px solid '+c.color">
+                    <div class="pr_fin_cuenta_head">
+                        <div>
+                            <div class="pr_fin_cuenta_id" t-att-style="'color:'+c.color">Cta. <t t-esc="c.id"/></div>
+                            <div class="pr_fin_cuenta_nombre" t-esc="c.nombre"/>
+                            <div class="pr_fin_cuenta_banco" t-esc="c.banco"/>
+                        </div>
+                        <span class="pr_fin_cuenta_exp"
+                              t-att-style="'background:'+c.bg+';color:'+c.color+';border:1px solid '+c.color+'40'"
+                              t-esc="c.exposicion"/>
+                    </div>
+                    <div class="pr_fin_cuenta_funcion"
+                         t-att-style="'background:'+c.bg+';color:'+c.color"
+                         t-esc="c.funcion"/>
+                </div>
+            </t>
+        </div>
+
+        <!-- Cash sweep + Provision IRPF -->
+        <div class="pr_fin_grid2">
+
+            <!-- Cash Sweep -->
+            <div class="pr_fin_card">
+                <div class="pr_fin_card_head">
+                    <span class="pr_fin_card_title">Reglas Cash Sweep (dia 6 de cada mes)</span>
+                </div>
+                <div class="pr_fin_card_body">
+                    <t t-foreach="this.CASH_SWEEP" t-as="cs" t-key="cs.paso">
+                        <div class="pr_fin_sweep_row">
+                            <span class="pr_fin_sweep_paso" t-att-style="'color:'+cs.col" t-esc="cs.paso"/>
+                            <span class="pr_fin_sweep_flujo" t-esc="cs.flujo"/>
+                            <span class="pr_fin_sweep_desc" t-esc="cs.desc"/>
+                        </div>
+                    </t>
+                    <div class="pr_fin_fgd_alert">
+                        Regla FGD: si Cta. D supera 100.000EUR, excedente a Letras del Tesoro
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provision IRPF -->
+            <div class="pr_fin_card">
+                <div class="pr_fin_card_head">
+                    <span class="pr_fin_card_title">Provision IRPF Premio (6.560EUR)</span>
+                </div>
+                <div class="pr_fin_card_body">
+                    <t t-foreach="this.PROVISION_ITEMS" t-as="pv" t-key="pv.desc">
+                        <div class="pr_fin_prov_row">
+                            <div>
+                                <div class="pr_fin_prov_desc" t-esc="pv.desc"/>
+                                <div class="pr_fin_prov_cuando" t-esc="pv.cuando"/>
+                            </div>
+                            <span class="pr_fin_prov_val" t-att-style="'color:'+pv.col" t-esc="pv.val"/>
+                        </div>
+                    </t>
+                    <div class="pr_fin_prov_total">
+                        <span class="pr_fin_prov_total_lbl">TOTAL PROVISION</span>
+                        <span class="pr_fin_prov_total_val">6.560EUR</span>
+                    </div>
+                    <div class="pr_fin_prov_nota">Provisionada en Cuenta B (gastos) — CaixaBank IBAN ES06 2100 8256 1502 0009 9417</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB: CALENDARIO FISCAL                                           -->
+    <!-- ================================================================ -->
+    <div t-if="state.tab==='fiscal'" class="pr_fin_tab_body">
+        <div class="pr_fin_card">
+            <div class="pr_fin_card_head">
+                <span class="pr_fin_card_title">Calendario Fiscal REDROYAL SL — Campana 2026</span>
+                <span class="pr_fin_card_sub">Gestion: Gestoria + REDROYAL SL</span>
+            </div>
+            <div>
+                <t t-foreach="FISCAL" t-as="f" t-key="f.accion">
+                    <div t-att-class="'pr_fin_fiscal_row'+(f_last?'':' pr_fin_fiscal_sep')">
+                        <div class="pr_fin_fiscal_fecha" t-esc="f.fecha"/>
+                        <div class="pr_fin_fiscal_body">
+                            <div class="pr_fin_fiscal_accion" t-esc="f.accion"/>
+                            <div class="pr_fin_fiscal_resp">Responsable: <t t-esc="f.responsable"/></div>
+                        </div>
+                        <div class="pr_fin_fiscal_right">
+                            <span t-if="f.importe > 0"
+                                  class="pr_fin_fiscal_importe"
+                                  t-esc="fmtNum(f.importe)+'EUR'"/>
+                            <span class="pr_fin_tipo_badge"
+                                  t-att-style="'background:'+tipoBg(f.tipo)+';color:'+tipoColor(f.tipo)"
+                                  t-esc="f.tipo"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </div>
+
+</div>
+</t>
+</templates>

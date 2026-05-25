@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+        ══════════════════════════════════════════════════════
+        VISTAS — Ajustes > REDLMC AI
+        ══════════════════════════════════════════════════════
+        -->
+        <record id="res_config_settings_view_redlmc_ai" model="ir.ui.view">
+            <field name="name">res.config.settings.view.redlmc.ai</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="REDLMC AI" string="REDLMC AI" name="redlmc_ai_assistant">
+                        <block title="🤖 REDLMC AI — Gemini Ultra (Google Workspace)" name="gemini_main_settings">
+
+                            <!-- API Key -->
+                            <setting string="Gemini API Key" help="Obtén tu clave en: aistudio.google.com">
+                                <field name="redlmc_gemini_api_key" password="True" placeholder="AIza..."/>
+                            </setting>
+
+                            <!-- Modelo Gemini -->
+                            <setting string="Modelo Gemini" help="Pro = más preciso · Flash = más rápido y económico">
+                                <field name="redlmc_gemini_model"/>
+                            </setting>
+
+                            <!-- Clasificación automática de facturas -->
+                            <setting string="Clasificación automática" help="Gemini analiza PDFs adjuntos en facturas.">
+                                <field name="redlmc_ai_invoice_auto"/>
+                            </setting>
+
+                            <!-- Alertas fiscales -->
+                            <setting string="Alertas Fiscales" help="Recordatorios 7 días antes de Mod. 036, 303, etc.">
+                                <field name="redlmc_ai_fiscal_alerts"/>
+                                <div class="content-group mt8" invisible="not redlmc_ai_fiscal_alerts">
+                                    <div class="row">
+                                        <label for="redlmc_ai_alert_email" class="col-lg-4 o_light_label" string="Email alertas"/>
+                                        <field name="redlmc_ai_alert_email" placeholder="admin@redlmc.com"/>
+                                    </div>
+                                </div>
+                            </setting>
+
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+        <!--
+        ══════════════════════════════════════════════════════
+        VISTA — Facturas proveedor: campos AI + botón Analizar
+        ══════════════════════════════════════════════════════
+        -->
+        <record id="view_move_form_redlmc_ai" model="ir.ui.view">
+            <field name="name">account.move.form.redlmc.ai</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <!-- Añadir botón en la barra de botones -->
+                <xpath expr="//button[@name='action_post']" position="before">
+                    <button name="action_analyze_with_ai"
+                            string="🤖 Extraer y Analizar (IA + OCR)"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="move_type not in ['in_invoice', 'in_refund']"
+                            help="Extrae el texto con OCR local y analiza la factura con Gemini AI para poblar todos los campos y líneas"/>
+                </xpath>
+                <!-- Añadir campos AI en la pestaña de notas/información adicional -->
+                <xpath expr="//page[@name='invoice_tab']" position="after">
+                    <page string="🤖 Análisis IA"
+                          name="ai_analysis_tab"
+                          invisible="not ai_analyzed">
+                        <group>
+                            <group string="Resultado del análisis">
+                                <field name="ai_confidence" widget="percentage"/>
+                                <field name="ai_analyzed"/>
+                            </group>
+                        </group>
+                        <field name="ai_suggestion" readonly="1"
+                               widget="text"
+                               placeholder="Aquí aparecerá la sugerencia de Gemini tras el análisis..."/>
+                    </page>
+                </xpath>
+                <!-- Campos AI ocultos (para lógica interna) -->
+                <xpath expr="//sheet" position="inside">
+                    <field name="ai_analyzed" invisible="1"/>
+                    <field name="ai_analysis_result" invisible="1"/>
+                    <field name="ai_confidence" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+<!--
+    OnboardingView — Formularios de Alta de Actores
+    Migrado desde: OnboardingDashboard.tsx (React + Supabase)
+    → Owl + ORM Odoo · t-name DEBE coincidir con static template en OnboardingView.js
+-->
+<t t-name="promocionesred_dashboard.OnboardingView">
+<div class="pr_onboarding_root">
+
+    <!-- ══ VISTA FORMULARIO DE ALTA ════════════════════════════════════════ -->
+    <t t-if="state.activeView !== 'dashboard'">
+        <div class="pr_form_wrapper">
+
+            <!-- Cabecera del formulario -->
+            <div class="pr_form_header">
+                <div>
+                    <h2 class="pr_form_title">
+                        <t t-esc="currentFormConfig.icon"/>
+                        Alta de <t t-esc="currentFormConfig.label"/>
+                    </h2>
+                    <p class="pr_form_subtitle">
+                        FORM-<t t-esc="currentFormType"/> v1.0 ·
+                        <t t-esc="currentFormConfig.commission"/> ·
+                        <t t-esc="currentFormConfig.req"/>
+                    </p>
+                </div>
+                <button class="pr_btn_back" t-on-click="backToDashboard">
+                    ← Volver al Onboarding
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <div class="pr_form_card">
+
+                <!-- BLOQUE 1 — Datos de identidad -->
+                <div class="pr_form_section">
+                    <div class="pr_form_section_title">📋 Datos de Identificación</div>
+                    <div class="pr_form_grid2">
+                        <div class="pr_field">
+                            <label>Nombre / Razón Social *</label>
+                            <input type="text" t-att-value="state.form.name"
+                                   t-on-input="(e) => this.setFormField('name', e)"
+                                   placeholder="Nombre completo o razón social"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Nombre Comercial</label>
+                            <input type="text" t-att-value="state.form.legal_name"
+                                   t-on-input="(e) => this.setFormField('legal_name', e)"
+                                   placeholder="Nombre comercial si difiere"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>CIF / NIF / NIE *</label>
+                            <input type="text" t-att-value="state.form.tax_id"
+                                   t-on-input="(e) => this.setFormField('tax_id', e)"
+                                   placeholder="B12345678 / 12345678A"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Régimen fiscal</label>
+                            <select t-att-value="state.form.fiscal_type"
+                                    t-on-change="(e) => this.setFormField('fiscal_type', e)">
+                                <option value="autonomo">Autónomo / RETA</option>
+                                <option value="mercantil">Sociedad Mercantil</option>
+                                <option value="informal">Informal / Sin alta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE 2 — Contacto y dirección -->
+                <div class="pr_form_section">
+                    <div class="pr_form_section_title">📍 Contacto y Domicilio</div>
+                    <div class="pr_form_grid2">
+                        <div class="pr_field">
+                            <label>Email *</label>
+                            <input type="email" t-att-value="state.form.email"
+                                   t-on-input="(e) => this.setFormField('email', e)"
+                                   placeholder="correo@ejemplo.com"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Teléfono *</label>
+                            <input type="tel" t-att-value="state.form.phone"
+                                   t-on-input="(e) => this.setFormField('phone', e)"
+                                   placeholder="+34 600 000 000"/>
+                        </div>
+                        <div class="pr_field pr_field_full">
+                            <label>Dirección</label>
+                            <input type="text" t-att-value="state.form.address"
+                                   t-on-input="(e) => this.setFormField('address', e)"
+                                   placeholder="Calle, número, piso..."/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Municipio</label>
+                            <input type="text" t-att-value="state.form.municipio"
+                                   t-on-input="(e) => this.setFormField('municipio', e)"
+                                   placeholder="Madrid"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Provincia</label>
+                            <input type="text" t-att-value="state.form.provincia"
+                                   t-on-input="(e) => this.setFormField('provincia', e)"
+                                   placeholder="Madrid"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Código Postal</label>
+                            <input type="text" t-att-value="state.form.cp"
+                                   t-on-input="(e) => this.setFormField('cp', e)"
+                                   placeholder="28001"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE 3 — Datos bancarios -->
+                <div class="pr_form_section">
+                    <div class="pr_form_section_title">🏦 Datos Bancarios (para abono de comisiones)</div>
+                    <div class="pr_form_grid2">
+                        <div class="pr_field">
+                            <label>Titular de la cuenta</label>
+                            <input type="text" t-att-value="state.form.banco_titular"
+                                   t-on-input="(e) => this.setFormField('banco_titular', e)"
+                                   placeholder="Nombre del titular"/>
+                        </div>
+                        <div class="pr_field">
+                            <label>Entidad bancaria</label>
+                            <input type="text" t-att-value="state.form.banco_nombre"
+                                   t-on-input="(e) => this.setFormField('banco_nombre', e)"
+                                   placeholder="Santander, BBVA, CaixaBank..."/>
+                        </div>
+                        <div class="pr_field pr_field_full">
+                            <label>IBAN (España — empieza por ES) *</label>
+                            <input type="text" t-att-value="state.form.banco_iban"
+                                   t-on-input="(e) => this.setFormField('banco_iban', e)"
+                                   placeholder="ES00 0000 0000 0000 0000 0000"
+                                   style="font-family: monospace; letter-spacing: 0.05em;"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE COL/SUB — Referencia al COL padre (solo para SUB) -->
+                <t t-if="currentFormType === 'SUB'">
+                    <div class="pr_form_section">
+                        <div class="pr_form_section_title">🏪 COL que propone este SUB</div>
+                        <div class="pr_form_grid2">
+                            <div class="pr_field">
+                                <label>Nombre del establecimiento COL *</label>
+                                <input type="text" t-att-value="state.form.parent_name"
+                                       t-on-input="(e) => this.setFormField('parent_name', e)"
+                                       placeholder="Bar El Rincón..."/>
+                            </div>
+                            <div class="pr_field">
+                                <label>Código de actor COL</label>
+                                <input type="text" t-att-value="state.form.parent_code"
+                                       t-on-input="(e) => this.setFormField('parent_code', e)"
+                                       placeholder="RR-COL-20260101-MAD-000001"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- BLOQUE 4 — Consentimientos RGPD (NUNCA pre-marcados) -->
+                <div class="pr_form_section pr_form_section_rgpd">
+                    <div class="pr_form_section_title">📋 Consentimientos RGPD — Art. 7 RGPD (obligatorio)</div>
+                    <p class="pr_rgpd_note">
+                        ⚠️ Ningún checkbox puede estar pre-marcado (Art. 7 RGPD + Considerando 32).
+                        El titular debe marcar cada consentimiento de forma activa.
+                    </p>
+                    <div class="pr_consent_list">
+                        <label class="pr_consent_item">
+                            <input type="checkbox"
+                                   t-att-checked="state.form.consent_privacidad"
+                                   t-on-change="(e) => this.setFormField('consent_privacidad', e)"/>
+                            <span>He leído y acepto la <strong>Política de Privacidad</strong> de REDROYAL SL *</span>
+                        </label>
+                        <label class="pr_consent_item">
+                            <input type="checkbox"
+                                   t-att-checked="state.form.consent_mayoria_edad"
+                                   t-on-change="(e) => this.setFormField('consent_mayoria_edad', e)"/>
+                            <span>Declaro ser <strong>mayor de 18 años</strong> *</span>
+                        </label>
+                        <label class="pr_consent_item">
+                            <input type="checkbox"
+                                   t-att-checked="state.form.consent_comisiones"
+                                   t-on-change="(e) => this.setFormField('consent_comisiones', e)"/>
+                            <span>Acepto el <strong>sistema de comisiones</strong> y el Kill Switch (21/12/2026) *</span>
+                        </label>
+                        <label class="pr_consent_item">
+                            <input type="checkbox"
+                                   t-att-checked="state.form.consent_titular"
+                                   t-on-change="(e) => this.setFormField('consent_titular', e)"/>
+                            <span>Soy el <strong>titular real</strong> del IBAN indicado</span>
+                        </label>
+                        <label class="pr_consent_item">
+                            <input type="checkbox"
+                                   t-att-checked="state.form.consent_contrato"
+                                   t-on-change="(e) => this.setFormField('consent_contrato', e)"/>
+                            <span>He leído y acepto el <strong>contrato mercantil</strong> aplicable a mi tipo de actor</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="pr_form_actions">
+                    <button class="pr_btn_cancel" t-on-click="backToDashboard"
+                            t-att-disabled="state.saving">
+                        Cancelar
+                    </button>
+                    <button class="pr_btn_save" t-on-click="saveActor"
+                            t-att-disabled="state.saving">
+                        <t t-if="state.saving">
+                            <i class="fa fa-spinner fa-spin"/> Guardando...
+                        </t>
+                        <t t-else="">
+                            ✓ Registrar <t t-esc="currentFormConfig.label"/>
+                        </t>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- ══ VISTA DASHBOARD ONBOARDING ═══════════════════════════════════════ -->
+    <t t-elif="state.activeView === 'dashboard'">
+
+        <!-- Header con gradiente -->
+        <div class="pr_ob_header">
+            <div>
+                <div class="pr_ob_header_title">
+                    <span>📝</span>
+                    <h1>Formularios de Alta</h1>
+                </div>
+                <p class="pr_ob_header_sub">
+                    Registro y activación · COL · SUB · CCP · COM · ASE — Red PremiosRed 2026
+                </p>
+                <p class="pr_ob_header_welcome">
+                    Hola, <t t-esc="session.name"/> 👋
+                </p>
+            </div>
+            <div class="pr_ob_header_kpis">
+                <div class="pr_ob_header_kpi">
+                    <div class="pr_ob_header_kpi_val" t-esc="state.stats.total"/>
+                    <div class="pr_ob_header_kpi_lbl">Total</div>
+                </div>
+                <div class="pr_ob_header_kpi">
+                    <div class="pr_ob_header_kpi_val pr_ob_header_kpi_green" t-esc="state.stats.activos"/>
+                    <div class="pr_ob_header_kpi_lbl">Activos</div>
+                </div>
+                <div class="pr_ob_header_kpi">
+                    <div class="pr_ob_header_kpi_val pr_ob_header_kpi_yellow" t-esc="state.stats.pendientes"/>
+                    <div class="pr_ob_header_kpi_lbl">Pendientes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIs detallados -->
+        <div class="pr_ob_kpis">
+            <div class="pr_ob_kpi_card" style="border-color: #4f46e520;">
+                <div class="pr_ob_kpi_icon" style="color:#4f46e5">👥</div>
+                <div class="pr_ob_kpi_val" style="color:#4f46e5" t-esc="state.stats.total"/>
+                <div class="pr_ob_kpi_lbl">Total actores</div>
+            </div>
+            <div class="pr_ob_kpi_card" style="border-color: #05966920;">
+                <div class="pr_ob_kpi_icon" style="color:#059669">✅</div>
+                <div class="pr_ob_kpi_val" style="color:#059669" t-esc="state.stats.activos"/>
+                <div class="pr_ob_kpi_lbl">Activos</div>
+            </div>
+            <div class="pr_ob_kpi_card" style="border-color: #d9770620;">
+                <div class="pr_ob_kpi_icon" style="color:#d97706">⏳</div>
+                <div class="pr_ob_kpi_val" style="color:#d97706" t-esc="state.stats.pendientes"/>
+                <div class="pr_ob_kpi_lbl">Pendientes</div>
+            </div>
+            <div class="pr_ob_kpi_card" style="border-color: #7c3aed20;">
+                <div class="pr_ob_kpi_icon" style="color:#7c3aed">🏪</div>
+                <div class="pr_ob_kpi_val" style="color:#7c3aed" t-esc="state.stats.cols"/>
+                <div class="pr_ob_kpi_lbl">COLs</div>
+            </div>
+            <div class="pr_ob_kpi_card" style="border-color: #db277720;">
+                <div class="pr_ob_kpi_icon" style="color:#db2777">📋</div>
+                <div class="pr_ob_kpi_val" style="color:#db2777">5</div>
+                <div class="pr_ob_kpi_lbl">Formularios</div>
+            </div>
+        </div>
+
+        <!-- Kill Switch Banner -->
+        <div class="pr_ob_ks_banner">
+            <div class="pr_ob_ks_left">
+                <div class="pr_ob_ks_title">⚡ Kill Switch Activo — Cláusula §8</div>
+                <div class="pr_ob_ks_sub">Las comisiones cesan automáticamente el 21 Dic 2026 · REDROYAL SL</div>
+            </div>
+            <div class="pr_ob_ks_units">
+                <div class="pr_ob_ks_unit">
+                    <div class="pr_ob_ks_num" t-esc="padTime(state.killSwitch.days)"/>
+                    <div class="pr_ob_ks_lbl">Días</div>
+                </div>
+                <div class="pr_ob_ks_unit">
+                    <div class="pr_ob_ks_num" t-esc="padTime(state.killSwitch.hours)"/>
+                    <div class="pr_ob_ks_lbl">Horas</div>
+                </div>
+                <div class="pr_ob_ks_unit">
+                    <div class="pr_ob_ks_num" t-esc="padTime(state.killSwitch.minutes)"/>
+                    <div class="pr_ob_ks_lbl">Min</div>
+                </div>
+                <div class="pr_ob_ks_unit">
+                    <div class="pr_ob_ks_num" t-esc="padTime(state.killSwitch.seconds)"/>
+                    <div class="pr_ob_ks_lbl">Seg</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjetas de formularios -->
+        <div class="pr_ob_forms_header">
+            <div>
+                <h2 class="pr_ob_forms_title">Formularios de Alta</h2>
+                <p class="pr_ob_forms_sub">Todos los actores disponibles · Haz clic para iniciar el registro</p>
+            </div>
+            <span class="pr_ob_forms_badge">✓ 5/5 activos</span>
+        </div>
+
+        <div class="pr_ob_forms_grid">
+            <t t-foreach="getActorTypes()" t-as="atype" t-key="atype">
+                <div class="pr_ob_form_card"
+                     t-on-click="() => this.openForm(atype)"
+                     t-att-style="'border-color:' + getActorConfig(atype).color + '40'">
+                    <!-- Barra de color superior -->
+                    <div class="pr_ob_form_card_bar"
+                         t-att-style="'background:' + getActorConfig(atype).color"/>
+                    <!-- Header icon + badge -->
+                    <div class="pr_ob_form_card_top">
+                        <span class="pr_ob_form_card_icon" t-esc="getActorConfig(atype).icon"/>
+                        <span class="pr_ob_form_card_badge"
+                              t-att-style="'color:' + getActorConfig(atype).color + '; background:' + getActorConfig(atype).color + '15; border-color:' + getActorConfig(atype).color + '30'">
+                            Disponible
+                        </span>
+                    </div>
+                    <!-- Title -->
+                    <div class="pr_ob_form_card_name">
+                        FORM-<t t-esc="atype"/>
+                        <span class="pr_ob_form_card_label" t-esc="getActorConfig(atype).label"/>
+                    </div>
+                    <!-- Descripción -->
+                    <p class="pr_ob_form_card_desc" t-esc="getActorConfig(atype).desc"/>
+                    <!-- Tags -->
+                    <div class="pr_ob_form_card_tags">
+                        <span class="pr_ob_form_card_tag_comm"
+                              t-att-style="'color:' + getActorConfig(atype).color + '; background:' + getActorConfig(atype).color + '10'">
+                            💰 <t t-esc="getActorConfig(atype).commission"/>
+                        </span>
+                        <span class="pr_ob_form_card_tag_req">
+                            📋 <t t-esc="getActorConfig(atype).req"/>
+                        </span>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <!-- Tabla de actores registrados -->
+        <div class="pr_ob_table_card">
+            <!-- Cabecera con filtros -->
+            <div class="pr_ob_table_header">
+                <div>
+                    <span class="pr_ob_table_title">Actores registrados</span>
+                    <span class="pr_ob_table_count">
+                        <t t-esc="filteredActors.length"/>
+                        <t t-if="state.filterType !== 'ALL'"> <t t-esc="state.filterType"/></t>
+                        <t t-else=""> total</t>
+                    </span>
+                </div>
+                <div class="pr_ob_filters">
+                    <t t-foreach="['ALL','COL','SUB','CCP','COM','ASE']" t-as="ft" t-key="ft">
+                        <button t-on-click="() => this.setFilter(ft)"
+                                t-att-class="state.filterType === ft ? 'pr_ob_filter active' : 'pr_ob_filter'">
+                            <t t-if="ft === 'ALL'">◉ Todos</t>
+                            <t t-else=""><t t-esc="getActorConfig(ft).icon"/> <t t-esc="ft"/></t>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-container" style="border:none; border-radius:0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th><th>Tipo</th><th>Nombre</th>
+                            <th>Municipio</th><th>Estado</th><th>Alta</th>
+                            <th style="text-align:right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Loading -->
+                        <tr t-if="state.loading">
+                            <td colspan="7" style="text-align:center; padding:2.5rem; color:var(--text-muted)">
+                                <i class="fa fa-spinner fa-spin fa-2x"/>
+                                <div style="margin-top:.5rem; font-size:.82rem">Cargando actores...</div>
+                            </td>
+                        </tr>
+                        <!-- Filas de actores -->
+                        <t t-elif="filteredActors.length > 0">
+                            <tr t-foreach="filteredActors" t-as="actor" t-key="actor.id">
+                                <td>
+                                    <code class="pr_code" t-esc="actor.code or '—'"/>
+                                </td>
+                                <td>
+                                    <span class="pr_type_badge"
+                                          t-att-style="'color:' + getActorConfig(actor.actor_type).color + '; background:' + getActorConfig(actor.actor_type).color + '15'">
+                                        <t t-esc="getActorConfig(actor.actor_type).icon"/>
+                                        <t t-esc="actor.actor_type"/>
+                                    </span>
+                                </td>
+                                <td style="font-weight:600; font-size:.85rem" t-esc="actor.name"/>
+                                <td style="color:var(--text-muted); font-size:.8rem">
+                                    <t t-if="actor.municipio">📍 <t t-esc="actor.municipio"/></t>
+                                    <t t-else="">—</t>
+                                </td>
+                                <td>
+                                    <span t-att-class="'pr_status_badge pr_status_' + actor.status.toLowerCase()"
+                                          t-esc="actor.status"/>
+                                </td>
+                                <td style="color:var(--text-muted); font-size:.75rem; white-space:nowrap"
+                                    t-esc="actor.create_date ? actor.create_date.split(' ')[0] : '—'"/>
+                                <td>
+                                    <div class="pr_actions_cell">
+                                        <button class="btn-action" title="Ver detalle">👁</button>
+                                        <button t-if="actor.status === 'PENDIENTE'"
+                                                class="btn-action save" title="Activar actor"
+                                                t-on-click="() => this.activarActor(actor.id)">✓</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </t>
+                        <!-- Estado vacío -->
+                        <tr t-else="">
+                            <td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted)">
+                                <div style="font-size:2.5rem; margin-bottom:.625rem">📭</div>
+                                <div style="font-weight:700; font-size:.85rem; margin-bottom:.25rem">Sin actores registrados</div>
+                                <div style="font-size:.75rem">Usa los formularios de arriba para registrar el primero</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reglas críticas del sistema -->
+        <div class="pr_ob_rules_card">
+            <div class="pr_ob_rules_header">⚠️ Reglas Críticas del Sistema</div>
+            <div class="pr_ob_rules_body">
+                <t t-foreach="getCriticalRules()" t-as="rule" t-key="rule_index">
+                    <div class="pr_ob_rule_item">
+                        <span class="pr_ob_rule_icon" t-esc="rule[1]"/>
+                        <span class="pr_ob_rule_num">R<t t-esc="rule_index + 1"/></span>
+                        <span class="pr_ob_rule_text" t-esc="rule[0]"/>
+                    </div>
+                </t>
+            </div>
+        </div>
+
+    </t><!-- fin dashboard -->
+</div>
+</t>
+</templates>

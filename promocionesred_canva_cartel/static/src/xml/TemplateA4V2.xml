@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- TemplateA4V2 — Conversión OWL de TemplateA4V2.jsx -->
+<t t-name="cc_cartel.TemplateA4V2" owl="1">
+    <div class="template-a4-v2">
+
+        <!-- Header -->
+        <header class="template-header">
+            <div class="template-brand">Premios<span>Red</span>.com</div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
+                 alt="Amazon" class="amazon-header-logo"/>
+        </header>
+
+        <div class="subtitle-top">VIVE EXPERIENCIAS PREMIUM CON LAS MEJORES MARCAS</div>
+        <div class="promo-title-main">
+            <t t-esc="props.content.promo_title"/>
+        </div>
+        <div class="highlight-bar">¡TÚ DECIDES QUÉ GANAR! HAY 20.000€ EN PREMIOS A REPARTIR</div>
+
+        <!-- Sección solidaria -->
+        <div class="support-section">
+            <div class="support-title">CONVIERTE TU COMPRA EN ESPERANZA</div>
+            <div class="support-subtitle">Ayúdanos a ayudar: El 2% de cada participación se dona para cambiar vidas.</div>
+            <div class="charity-grid">
+                <div class="charity-box cancer">
+                    <div class="charity-icon">🎀</div>
+                    <div class="charity-box-text"><span>Tu suerte hoy puede salvar una vida mañana.</span> CONTRA EL CÁNCER</div>
+                </div>
+                <div class="charity-box caritas">
+                    <div class="charity-icon">❤️</div>
+                    <div class="charity-box-text"><span>Aquí ganamos todos.</span> Nadie se queda atrás<br/>CÁRITAS</div>
+                </div>
+                <div class="charity-box manos">
+                    <div class="charity-icon">🤝</div>
+                    <div class="charity-box-text"><span>Tus manos también cuentan.</span> Combate el hambre.<br/>MANOS UNIDAS</div>
+                </div>
+                <div class="charity-box iglesia">
+                    <div class="charity-icon">⛪</div>
+                    <div class="charity-box-text"><span>Que a nadie le falte el pan.</span> IGLESIA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Packs con drag-and-drop -->
+        <div class="packs-container">
+            <t t-foreach="packs" t-as="pack" t-key="pack.id">
+                <div class="improved-pack-card"
+                     t-att-style="'border-color:' + pack.color"
+                     draggable="true"
+                     t-on-dragstart="(ev) => onDragStart(ev, pack_index)"
+                     t-on-dragend="onDragEnd"
+                     t-on-dragover="onDragOver"
+                     t-on-drop="(ev) => onDrop(ev, pack_index)">
+                    <div class="pack-top-label" t-att-style="'background-color:' + pack.color">
+                        <t t-esc="pack.name"/> <t t-esc="pack.subtitle"/>
+                    </div>
+                    <div class="pack-main-content">
+                        <div class="pack-logo-container">
+                            <img t-att-src="pack.logo" alt=""/>
+                        </div>
+                        <div class="pack-details">
+                            <ul>
+                                <t t-foreach="pack.items.slice(0,3)" t-as="item" t-key="item_index">
+                                    <li><t t-esc="item"/></li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="pack-price-tag">
+                            <div class="price-small-label">PRECIO</div>
+                            <div class="price-amount" t-att-style="'color:' + pack.color">
+                                <t t-esc="pack.price"/><span>€</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pack-footer-bar" t-att-style="'background-color:' + pack.color">
+                        <t t-esc="pack.items[3] || ''"/>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <!-- Sección inferior: Legal + CTA + QR -->
+        <div class="bottom-section">
+            <div class="legal-box"><t t-esc="props.content.legal_text"/></div>
+            <div class="call-to-action">
+                <div class="arrow-curved-up">
+                    <svg width="60" height="40" viewBox="0 0 60 40">
+                        <path d="M10 30 Q 30 5 50 25" fill="none" stroke="#f37021" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M42 25 L 50 25 L 50 17" fill="none" stroke="#f37021" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="cta-text">ESCANEA AQUÍ<br/>PARA COMPRAR Y<br/>PARTICIPAR</div>
+                <div class="arrow-curved-down">
+                    <svg width="60" height="40" viewBox="0 0 60 40">
+                        <path d="M10 10 Q 30 35 50 15" fill="none" stroke="#f37021" stroke-width="4" stroke-linecap="round"/>
+                        <path d="M42 15 L 50 15 L 50 23" fill="none" stroke="#f37021" stroke-width="4" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="qr-secure-box">
+                <div class="qr-header-label">CODIGO</div>
+                <img t-att-src="qrSrc" width="110" height="110" alt="QR Code"/>
+                <div class="qr-footer-label">ZONA 1</div>
+            </div>
+        </div>
+
+    </div>
+</t>
+
+</templates>
